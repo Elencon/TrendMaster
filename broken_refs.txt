@@ -1,0 +1,18 @@
+c:\Economy\Invest\TrendMaster\src\api\data_processor.py:3: SyntaxWarning: invalid escape sequence '\E'
+  Path: C:\Economy\Invest\TrendMaster\src\api\data_processor.py
+c:\Economy\Invest\TrendMaster\src\api\example_usage.py:2: SyntaxWarning: invalid escape sequence '\E'
+  Path: C:\Economy\Invest\TrendMaster\src\api\example_usage.py
+c:\Economy\Invest\TrendMaster\src\api\rate_limiter.py:2: SyntaxWarning: invalid escape sequence '\E'
+  Path: C:\Economy\Invest\TrendMaster\src\api\rate_limiter.py
+Checking src...
+Checking tests...
+
+Broken references found:
+c:\Economy\Invest\TrendMaster\src\logging_system.py:20 - cannot find module 'structlog'
+c:\Economy\Invest\TrendMaster\src\logging_system.py:21 - cannot find module 'structlog'
+c:\Economy\Invest\TrendMaster\src\auth\password_handler.py:6 - cannot find module 'bcrypt'
+c:\Economy\Invest\TrendMaster\src\auth\two_factor_auth.py:6 - cannot find module 'pyotp'
+c:\Economy\Invest\TrendMaster\src\auth\two_factor_auth.py:7 - cannot find module 'qrcode'
+c:\Economy\Invest\TrendMaster\src\database\db_manager.py:27 - cannot find module 'pandas_optimizer'
+c:\Economy\Invest\TrendMaster\src\database\db_manager.py:33 - cannot find module 'data_validator'
+c:\Economy\Invest\TrendMaster\tests\database\test_pdf_generation.py:6 - cannot find module 'reports.pdf_generator'

@@ -1,0 +1,1616 @@
+customer_id,order_date,order_id,order_status,required_date,shipped_date,staff_name,store,order_status_name
+259,2016-01-01,1,4,2016-01-03,2016-01-03,Mireya,Santa Cruz Bikes,Completed
+1212,2016-01-01,2,4,2016-01-04,2016-01-03,Marcelene,Baldwin Bikes,Completed
+523,2016-01-02,3,4,2016-01-05,2016-01-03,Venita,Baldwin Bikes,Completed
+175,2016-01-03,4,4,2016-01-04,2016-01-05,Genna,Santa Cruz Bikes,Completed
+1324,2016-01-03,5,4,2016-01-06,2016-01-06,Marcelene,Baldwin Bikes,Completed
+94,2016-01-04,6,4,2016-01-07,2016-01-05,Marcelene,Baldwin Bikes,Completed
+324,2016-01-04,7,4,2016-01-07,2016-01-05,Marcelene,Baldwin Bikes,Completed
+1204,2016-01-04,8,4,2016-01-05,2016-01-05,Venita,Baldwin Bikes,Completed
+60,2016-01-05,9,4,2016-01-08,2016-01-08,Mireya,Santa Cruz Bikes,Completed
+442,2016-01-05,10,4,2016-01-06,2016-01-06,Marcelene,Baldwin Bikes,Completed
+1326,2016-01-05,11,4,2016-01-08,2016-01-07,Venita,Baldwin Bikes,Completed
+91,2016-01-06,12,4,2016-01-08,2016-01-09,Mireya,Santa Cruz Bikes,Completed
+873,2016-01-08,13,4,2016-01-11,2016-01-11,Marcelene,Baldwin Bikes,Completed
+258,2016-01-09,14,4,2016-01-11,2016-01-12,Genna,Santa Cruz Bikes,Completed
+450,2016-01-09,15,4,2016-01-10,2016-01-12,Venita,Baldwin Bikes,Completed
+552,2016-01-12,16,4,2016-01-15,2016-01-15,Genna,Santa Cruz Bikes,Completed
+1175,2016-01-12,17,4,2016-01-14,2016-01-14,Genna,Santa Cruz Bikes,Completed
+541,2016-01-14,18,4,2016-01-17,2016-01-15,Genna,Santa Cruz Bikes,Completed
+696,2016-01-14,19,4,2016-01-17,2016-01-16,Mireya,Santa Cruz Bikes,Completed
+923,2016-01-14,20,4,2016-01-16,2016-01-17,Mireya,Santa Cruz Bikes,Completed
+1250,2016-01-15,21,4,2016-01-16,2016-01-18,Marcelene,Baldwin Bikes,Completed
+1035,2016-01-16,22,4,2016-01-18,2016-01-17,Mireya,Santa Cruz Bikes,Completed
+1149,2016-01-16,23,4,2016-01-19,2016-01-19,Mireya,Santa Cruz Bikes,Completed
+636,2016-01-18,24,4,2016-01-20,2016-01-19,Venita,Baldwin Bikes,Completed
+657,2016-01-18,25,4,2016-01-21,2016-01-21,Marcelene,Baldwin Bikes,Completed
+1280,2016-01-18,26,4,2016-01-21,2016-01-19,Venita,Baldwin Bikes,Completed
+57,2016-01-19,27,4,2016-01-21,2016-01-20,Venita,Baldwin Bikes,Completed
+252,2016-01-19,28,4,2016-01-20,2016-01-21,Marcelene,Baldwin Bikes,Completed
+437,2016-01-20,29,4,2016-01-22,2016-01-21,Marcelene,Baldwin Bikes,Completed
+1348,2016-01-20,30,4,2016-01-21,2016-01-21,Marcelene,Baldwin Bikes,Completed
+1238,2016-01-20,31,4,2016-01-22,2016-01-22,Kali,Rowlett Bikes,Completed
+1259,2016-01-21,32,4,2016-01-24,2016-01-22,Genna,Santa Cruz Bikes,Completed
+236,2016-01-21,33,4,2016-01-22,2016-01-22,Marcelene,Baldwin Bikes,Completed
+80,2016-01-22,34,4,2016-01-25,2016-01-23,Marcelene,Baldwin Bikes,Completed
+813,2016-01-22,35,4,2016-01-25,2016-01-24,Venita,Baldwin Bikes,Completed
+1321,2016-01-23,36,4,2016-01-24,2016-01-24,Marcelene,Baldwin Bikes,Completed
+164,2016-01-25,37,4,2016-01-28,2016-01-26,Marcelene,Baldwin Bikes,Completed
+583,2016-01-25,38,4,2016-01-27,2016-01-26,Venita,Baldwin Bikes,Completed
+1296,2016-01-25,39,4,2016-01-26,2016-01-26,Venita,Baldwin Bikes,Completed
+348,2016-01-27,40,4,2016-01-28,2016-01-29,Genna,Santa Cruz Bikes,Completed
+979,2016-01-27,41,4,2016-01-30,2016-01-29,Marcelene,Baldwin Bikes,Completed
+1095,2016-01-27,42,4,2016-01-28,2016-01-30,Venita,Baldwin Bikes,Completed
+1434,2016-01-27,43,4,2016-01-28,2016-01-30,Venita,Baldwin Bikes,Completed
+861,2016-01-28,44,4,2016-01-31,2016-01-30,Venita,Baldwin Bikes,Completed
+1220,2016-01-28,45,4,2016-01-31,2016-01-31,Venita,Baldwin Bikes,Completed
+746,2016-01-29,46,4,2016-01-31,2016-01-31,Venita,Baldwin Bikes,Completed
+1234,2016-01-29,47,4,2016-01-30,2016-01-31,Venita,Baldwin Bikes,Completed
+1012,2016-01-30,48,4,2016-02-01,2016-02-02,Venita,Baldwin Bikes,Completed
+608,2016-01-31,49,4,2016-02-01,2016-02-02,Marcelene,Baldwin Bikes,Completed
+872,2016-01-31,50,4,2016-02-03,2016-02-02,Kali,Rowlett Bikes,Completed
+1047,2016-02-01,51,4,2016-02-02,2016-02-03,Venita,Baldwin Bikes,Completed
+767,2016-02-03,52,4,2016-02-04,2016-02-05,Mireya,Santa Cruz Bikes,Completed
+965,2016-02-03,53,4,2016-02-04,2016-02-05,Marcelene,Baldwin Bikes,Completed
+535,2016-02-04,54,4,2016-02-07,2016-02-07,Venita,Baldwin Bikes,Completed
+1173,2016-02-04,55,4,2016-02-07,2016-02-06,Marcelene,Baldwin Bikes,Completed
+1241,2016-02-04,56,4,2016-02-06,2016-02-07,Marcelene,Baldwin Bikes,Completed
+1305,2016-02-04,57,4,2016-02-06,2016-02-06,Venita,Baldwin Bikes,Completed
+504,2016-02-05,58,4,2016-02-07,2016-02-07,Marcelene,Baldwin Bikes,Completed
+563,2016-02-05,59,4,2016-02-07,2016-02-06,Venita,Baldwin Bikes,Completed
+151,2016-02-06,60,4,2016-02-08,2016-02-07,Genna,Santa Cruz Bikes,Completed
+277,2016-02-06,61,4,2016-02-09,2016-02-09,Venita,Baldwin Bikes,Completed
+208,2016-02-07,62,4,2016-02-10,2016-02-10,Mireya,Santa Cruz Bikes,Completed
+1075,2016-02-07,63,4,2016-02-09,2016-02-09,Venita,Baldwin Bikes,Completed
+1185,2016-02-07,64,4,2016-02-08,2016-02-09,Marcelene,Baldwin Bikes,Completed
+996,2016-02-08,65,4,2016-02-09,2016-02-11,Marcelene,Baldwin Bikes,Completed
+1253,2016-02-09,66,4,2016-02-12,2016-02-12,Venita,Baldwin Bikes,Completed
+526,2016-02-09,67,4,2016-02-11,2016-02-10,Kali,Rowlett Bikes,Completed
+381,2016-02-10,68,4,2016-02-11,2016-02-13,Marcelene,Baldwin Bikes,Completed
+1413,2016-02-10,69,4,2016-02-12,2016-02-11,Venita,Baldwin Bikes,Completed
+50,2016-02-11,70,3,2016-02-11,,Layla,Rowlett Bikes,Rejected
+797,2016-02-11,71,4,2016-02-14,2016-02-12,Venita,Baldwin Bikes,Completed
+1386,2016-02-12,72,4,2016-02-15,2016-02-13,Mireya,Santa Cruz Bikes,Completed
+612,2016-02-12,73,4,2016-02-15,2016-02-14,Venita,Baldwin Bikes,Completed
+264,2016-02-13,74,4,2016-02-15,2016-02-15,Venita,Baldwin Bikes,Completed
+587,2016-02-14,75,4,2016-02-15,2016-02-17,Marcelene,Baldwin Bikes,Completed
+9,2016-02-16,76,3,2016-02-16,,Marcelene,Baldwin Bikes,Rejected
+385,2016-02-16,77,4,2016-02-19,2016-02-19,Mireya,Santa Cruz Bikes,Completed
+1182,2016-02-16,78,4,2016-02-18,2016-02-19,Venita,Baldwin Bikes,Completed
+529,2016-02-17,79,4,2016-02-20,2016-02-20,Genna,Santa Cruz Bikes,Completed
+397,2016-02-17,80,4,2016-02-20,2016-02-19,Marcelene,Baldwin Bikes,Completed
+521,2016-02-17,81,4,2016-02-19,2016-02-18,Marcelene,Baldwin Bikes,Completed
+1223,2016-02-18,82,4,2016-02-21,2016-02-20,Marcelene,Baldwin Bikes,Completed
+393,2016-02-19,83,4,2016-02-20,2016-02-20,Genna,Santa Cruz Bikes,Completed
+317,2016-02-20,84,4,2016-02-22,2016-02-21,Venita,Baldwin Bikes,Completed
+1174,2016-02-20,85,4,2016-02-23,2016-02-21,Venita,Baldwin Bikes,Completed
+276,2016-02-21,86,4,2016-02-22,2016-02-23,Venita,Baldwin Bikes,Completed
+516,2016-02-21,87,4,2016-02-22,2016-02-23,Marcelene,Baldwin Bikes,Completed
+1069,2016-02-21,88,4,2016-02-22,2016-02-23,Marcelene,Baldwin Bikes,Completed
+668,2016-02-21,89,4,2016-02-24,2016-02-24,Kali,Rowlett Bikes,Completed
+414,2016-02-23,90,4,2016-02-25,2016-02-24,Venita,Baldwin Bikes,Completed
+648,2016-02-25,91,4,2016-02-27,2016-02-28,Mireya,Santa Cruz Bikes,Completed
+1309,2016-02-25,92,4,2016-02-28,2016-02-28,Venita,Baldwin Bikes,Completed
+1328,2016-02-26,93,4,2016-02-28,2016-02-27,Genna,Santa Cruz Bikes,Completed
+929,2016-02-27,94,4,2016-02-28,2016-02-29,Mireya,Santa Cruz Bikes,Completed
+218,2016-02-27,95,4,2016-02-29,2016-02-28,Venita,Baldwin Bikes,Completed
+1094,2016-02-27,96,4,2016-02-29,2016-02-28,Venita,Baldwin Bikes,Completed
+204,2016-02-28,97,4,2016-02-29,2016-03-01,Venita,Baldwin Bikes,Completed
+1194,2016-02-28,98,4,2016-02-29,2016-02-29,Marcelene,Baldwin Bikes,Completed
+1165,2016-02-29,99,4,2016-03-01,2016-03-03,Layla,Rowlett Bikes,Completed
+1237,2016-03-01,100,4,2016-03-04,2016-03-03,Venita,Baldwin Bikes,Completed
+271,2016-03-01,101,4,2016-03-04,2016-03-04,Kali,Rowlett Bikes,Completed
+336,2016-03-02,102,4,2016-03-05,2016-03-03,Venita,Baldwin Bikes,Completed
+991,2016-03-03,103,4,2016-03-06,2016-03-05,Mireya,Santa Cruz Bikes,Completed
+7,2016-03-03,104,4,2016-03-05,2016-03-05,Venita,Baldwin Bikes,Completed
+306,2016-03-03,105,4,2016-03-05,2016-03-04,Venita,Baldwin Bikes,Completed
+422,2016-03-04,106,4,2016-03-05,2016-03-05,Layla,Rowlett Bikes,Completed
+633,2016-03-06,107,4,2016-03-09,2016-03-09,Mireya,Santa Cruz Bikes,Completed
+12,2016-03-06,108,4,2016-03-09,2016-03-07,Marcelene,Baldwin Bikes,Completed
+1255,2016-03-06,109,4,2016-03-09,2016-03-09,Marcelene,Baldwin Bikes,Completed
+677,2016-03-06,110,4,2016-03-08,2016-03-09,Layla,Rowlett Bikes,Completed
+630,2016-03-07,111,4,2016-03-10,2016-03-10,Marcelene,Baldwin Bikes,Completed
+469,2016-03-08,112,4,2016-03-11,2016-03-10,Marcelene,Baldwin Bikes,Completed
+1078,2016-03-08,113,4,2016-03-11,2016-03-11,Marcelene,Baldwin Bikes,Completed
+1431,2016-03-08,114,4,2016-03-10,2016-03-11,Venita,Baldwin Bikes,Completed
+1369,2016-03-09,115,4,2016-03-11,2016-03-11,Venita,Baldwin Bikes,Completed
+471,2016-03-10,116,4,2016-03-11,2016-03-11,Venita,Baldwin Bikes,Completed
+740,2016-03-10,117,4,2016-03-13,2016-03-11,Marcelene,Baldwin Bikes,Completed
+577,2016-03-12,118,4,2016-03-14,2016-03-13,Mireya,Santa Cruz Bikes,Completed
+925,2016-03-12,119,4,2016-03-14,2016-03-14,Venita,Baldwin Bikes,Completed
+327,2016-03-14,120,4,2016-03-15,2016-03-17,Venita,Baldwin Bikes,Completed
+755,2016-03-14,121,4,2016-03-15,2016-03-16,Marcelene,Baldwin Bikes,Completed
+786,2016-03-14,122,4,2016-03-16,2016-03-15,Marcelene,Baldwin Bikes,Completed
+766,2016-03-15,123,4,2016-03-18,2016-03-17,Marcelene,Baldwin Bikes,Completed
+403,2016-03-16,124,4,2016-03-18,2016-03-17,Genna,Santa Cruz Bikes,Completed
+685,2016-03-16,125,4,2016-03-19,2016-03-17,Marcelene,Baldwin Bikes,Completed
+1365,2016-03-16,126,4,2016-03-18,2016-03-18,Venita,Baldwin Bikes,Completed
+484,2016-03-17,127,4,2016-03-18,2016-03-19,Kali,Rowlett Bikes,Completed
+86,2016-03-18,128,4,2016-03-20,2016-03-21,Marcelene,Baldwin Bikes,Completed
+84,2016-03-19,129,4,2016-03-21,2016-03-21,Venita,Baldwin Bikes,Completed
+1049,2016-03-19,130,4,2016-03-22,2016-03-20,Marcelene,Baldwin Bikes,Completed
+316,2016-03-19,131,4,2016-03-22,2016-03-20,Kali,Rowlett Bikes,Completed
+46,2016-03-20,132,4,2016-03-22,2016-03-23,Genna,Santa Cruz Bikes,Completed
+409,2016-03-20,133,4,2016-03-22,2016-03-21,Venita,Baldwin Bikes,Completed
+679,2016-03-20,134,4,2016-03-21,2016-03-21,Venita,Baldwin Bikes,Completed
+1354,2016-03-21,135,4,2016-03-23,2016-03-23,Venita,Baldwin Bikes,Completed
+1192,2016-03-21,136,4,2016-03-24,2016-03-23,Kali,Rowlett Bikes,Completed
+370,2016-03-23,137,4,2016-03-26,2016-03-25,Venita,Baldwin Bikes,Completed
+438,2016-03-23,138,4,2016-03-24,2016-03-25,Venita,Baldwin Bikes,Completed
+710,2016-03-23,139,4,2016-03-24,2016-03-26,Venita,Baldwin Bikes,Completed
+1264,2016-03-23,140,4,2016-03-26,2016-03-26,Venita,Baldwin Bikes,Completed
+557,2016-03-25,141,4,2016-03-27,2016-03-26,Venita,Baldwin Bikes,Completed
+170,2016-03-26,142,4,2016-03-27,2016-03-27,Genna,Santa Cruz Bikes,Completed
+693,2016-03-26,143,4,2016-03-28,2016-03-28,Venita,Baldwin Bikes,Completed
+1124,2016-03-26,144,4,2016-03-29,2016-03-29,Venita,Baldwin Bikes,Completed
+366,2016-03-27,145,4,2016-03-29,2016-03-30,Marcelene,Baldwin Bikes,Completed
+288,2016-03-28,146,4,2016-03-30,2016-03-30,Genna,Santa Cruz Bikes,Completed
+55,2016-03-28,147,4,2016-03-31,2016-03-31,Venita,Baldwin Bikes,Completed
+714,2016-03-28,148,4,2016-03-30,2016-03-30,Marcelene,Baldwin Bikes,Completed
+763,2016-03-28,149,4,2016-03-30,2016-03-29,Marcelene,Baldwin Bikes,Completed
+332,2016-03-29,150,4,2016-03-31,2016-04-01,Mireya,Santa Cruz Bikes,Completed
+926,2016-03-29,151,4,2016-04-01,2016-03-31,Mireya,Santa Cruz Bikes,Completed
+76,2016-03-29,152,4,2016-03-30,2016-03-30,Marcelene,Baldwin Bikes,Completed
+498,2016-03-30,153,4,2016-04-02,2016-04-01,Marcelene,Baldwin Bikes,Completed
+1286,2016-03-31,154,4,2016-04-01,2016-04-01,Mireya,Santa Cruz Bikes,Completed
+371,2016-04-02,155,4,2016-04-03,2016-04-04,Marcelene,Baldwin Bikes,Completed
+357,2016-04-03,156,4,2016-04-06,2016-04-05,Genna,Santa Cruz Bikes,Completed
+43,2016-04-03,157,4,2016-04-06,2016-04-06,Kali,Rowlett Bikes,Completed
+117,2016-04-04,158,3,2016-04-04,,Layla,Rowlett Bikes,Rejected
+32,2016-04-04,159,4,2016-04-06,2016-04-06,Mireya,Santa Cruz Bikes,Completed
+205,2016-04-04,160,4,2016-04-06,2016-04-06,Venita,Baldwin Bikes,Completed
+251,2016-04-04,161,4,2016-04-07,2016-04-05,Venita,Baldwin Bikes,Completed
+31,2016-04-06,162,4,2016-04-08,2016-04-07,Genna,Santa Cruz Bikes,Completed
+1325,2016-04-06,163,4,2016-04-07,2016-04-07,Venita,Baldwin Bikes,Completed
+610,2016-04-07,164,4,2016-04-08,2016-04-09,Venita,Baldwin Bikes,Completed
+574,2016-04-08,165,4,2016-04-10,2016-04-10,Genna,Santa Cruz Bikes,Completed
+338,2016-04-08,166,4,2016-04-11,2016-04-11,Marcelene,Baldwin Bikes,Completed
+1034,2016-04-08,167,4,2016-04-09,2016-04-11,Venita,Baldwin Bikes,Completed
+1147,2016-04-09,168,4,2016-04-12,2016-04-11,Genna,Santa Cruz Bikes,Completed
+99,2016-04-10,169,4,2016-04-11,2016-04-11,Venita,Baldwin Bikes,Completed
+1200,2016-04-10,170,4,2016-04-11,2016-04-13,Venita,Baldwin Bikes,Completed
+237,2016-04-11,171,4,2016-04-14,2016-04-14,Genna,Santa Cruz Bikes,Completed
+1079,2016-04-11,172,4,2016-04-12,2016-04-14,Venita,Baldwin Bikes,Completed
+117,2016-04-11,173,4,2016-04-14,2016-04-13,Kali,Rowlett Bikes,Completed
+1361,2016-04-12,174,4,2016-04-13,2016-04-15,Venita,Baldwin Bikes,Completed
+951,2016-04-13,175,4,2016-04-14,2016-04-14,Marcelene,Baldwin Bikes,Completed
+643,2016-04-15,176,4,2016-04-16,2016-04-17,Venita,Baldwin Bikes,Completed
+121,2016-04-16,177,4,2016-04-19,2016-04-19,Mireya,Santa Cruz Bikes,Completed
+756,2016-04-16,178,4,2016-04-17,2016-04-18,Marcelene,Baldwin Bikes,Completed
+616,2016-04-17,179,4,2016-04-19,2016-04-19,Marcelene,Baldwin Bikes,Completed
+918,2016-04-17,180,4,2016-04-20,2016-04-19,Venita,Baldwin Bikes,Completed
+459,2016-04-18,181,4,2016-04-20,2016-04-20,Genna,Santa Cruz Bikes,Completed
+854,2016-04-18,182,4,2016-04-19,2016-04-20,Marcelene,Baldwin Bikes,Completed
+22,2016-04-19,183,4,2016-04-20,2016-04-20,Venita,Baldwin Bikes,Completed
+134,2016-04-19,184,4,2016-04-21,2016-04-22,Venita,Baldwin Bikes,Completed
+24,2016-04-20,185,3,2016-04-20,,Mireya,Santa Cruz Bikes,Rejected
+1127,2016-04-21,186,4,2016-04-22,2016-04-24,Marcelene,Baldwin Bikes,Completed
+183,2016-04-22,187,4,2016-04-23,2016-04-24,Marcelene,Baldwin Bikes,Completed
+390,2016-04-22,188,4,2016-04-23,2016-04-25,Marcelene,Baldwin Bikes,Completed
+1288,2016-04-23,189,4,2016-04-24,2016-04-26,Mireya,Santa Cruz Bikes,Completed
+98,2016-04-23,190,4,2016-04-25,2016-04-25,Marcelene,Baldwin Bikes,Completed
+919,2016-04-27,191,4,2016-04-28,2016-04-28,Mireya,Santa Cruz Bikes,Completed
+728,2016-04-27,192,4,2016-04-28,2016-04-29,Venita,Baldwin Bikes,Completed
+1366,2016-04-28,193,4,2016-04-30,2016-04-30,Genna,Santa Cruz Bikes,Completed
+558,2016-04-28,194,4,2016-04-30,2016-05-01,Venita,Baldwin Bikes,Completed
+727,2016-04-28,195,4,2016-05-01,2016-05-01,Venita,Baldwin Bikes,Completed
+1247,2016-04-28,196,4,2016-04-30,2016-05-01,Marcelene,Baldwin Bikes,Completed
+127,2016-04-30,197,4,2016-05-03,2016-05-03,Venita,Baldwin Bikes,Completed
+640,2016-05-01,198,4,2016-05-04,2016-05-03,Marcelene,Baldwin Bikes,Completed
+760,2016-05-01,199,4,2016-05-04,2016-05-04,Venita,Baldwin Bikes,Completed
+1074,2016-05-01,200,4,2016-05-03,2016-05-03,Marcelene,Baldwin Bikes,Completed
+280,2016-05-01,201,4,2016-05-04,2016-05-02,Layla,Rowlett Bikes,Completed
+600,2016-05-03,202,4,2016-05-05,2016-05-04,Mireya,Santa Cruz Bikes,Completed
+1102,2016-05-03,203,4,2016-05-05,2016-05-06,Layla,Rowlett Bikes,Completed
+591,2016-05-04,204,4,2016-05-07,2016-05-06,Venita,Baldwin Bikes,Completed
+635,2016-05-04,205,4,2016-05-05,2016-05-06,Marcelene,Baldwin Bikes,Completed
+743,2016-05-04,206,4,2016-05-06,2016-05-05,Layla,Rowlett Bikes,Completed
+105,2016-05-05,207,4,2016-05-07,2016-05-07,Venita,Baldwin Bikes,Completed
+815,2016-05-06,208,4,2016-05-07,2016-05-09,Venita,Baldwin Bikes,Completed
+514,2016-05-07,209,4,2016-05-08,2016-05-08,Marcelene,Baldwin Bikes,Completed
+943,2016-05-07,210,4,2016-05-08,2016-05-09,Marcelene,Baldwin Bikes,Completed
+1140,2016-05-07,211,4,2016-05-09,2016-05-08,Marcelene,Baldwin Bikes,Completed
+1373,2016-05-08,212,4,2016-05-09,2016-05-11,Marcelene,Baldwin Bikes,Completed
+788,2016-05-08,213,4,2016-05-09,2016-05-09,Kali,Rowlett Bikes,Completed
+363,2016-05-10,214,4,2016-05-12,2016-05-11,Marcelene,Baldwin Bikes,Completed
+1420,2016-05-10,215,4,2016-05-13,2016-05-12,Venita,Baldwin Bikes,Completed
+267,2016-05-11,216,4,2016-05-14,2016-05-13,Genna,Santa Cruz Bikes,Completed
+716,2016-05-11,217,4,2016-05-12,2016-05-14,Venita,Baldwin Bikes,Completed
+1179,2016-05-12,218,4,2016-05-14,2016-05-14,Venita,Baldwin Bikes,Completed
+1338,2016-05-12,219,4,2016-05-15,2016-05-15,Marcelene,Baldwin Bikes,Completed
+1358,2016-05-12,220,4,2016-05-14,2016-05-15,Marcelene,Baldwin Bikes,Completed
+1218,2016-05-13,221,4,2016-05-16,2016-05-14,Mireya,Santa Cruz Bikes,Completed
+51,2016-05-13,222,4,2016-05-16,2016-05-14,Marcelene,Baldwin Bikes,Completed
+1368,2016-05-15,223,4,2016-05-16,2016-05-17,Venita,Baldwin Bikes,Completed
+157,2016-05-17,224,4,2016-05-18,2016-05-19,Genna,Santa Cruz Bikes,Completed
+307,2016-05-17,225,4,2016-05-20,2016-05-19,Genna,Santa Cruz Bikes,Completed
+501,2016-05-17,226,4,2016-05-19,2016-05-20,Mireya,Santa Cruz Bikes,Completed
+489,2016-05-17,227,4,2016-05-18,2016-05-20,Venita,Baldwin Bikes,Completed
+615,2016-05-17,228,4,2016-05-20,2016-05-20,Venita,Baldwin Bikes,Completed
+742,2016-05-19,229,4,2016-05-21,2016-05-20,Marcelene,Baldwin Bikes,Completed
+1167,2016-05-19,230,4,2016-05-20,2016-05-21,Marcelene,Baldwin Bikes,Completed
+1257,2016-05-19,231,4,2016-05-22,2016-05-21,Marcelene,Baldwin Bikes,Completed
+1360,2016-05-20,232,4,2016-05-23,2016-05-23,Genna,Santa Cruz Bikes,Completed
+737,2016-05-21,233,4,2016-05-22,2016-05-24,Marcelene,Baldwin Bikes,Completed
+1435,2016-05-22,234,4,2016-05-24,2016-05-24,Marcelene,Baldwin Bikes,Completed
+649,2016-05-24,235,4,2016-05-25,2016-05-25,Marcelene,Baldwin Bikes,Completed
+206,2016-05-25,236,4,2016-05-27,2016-05-26,Marcelene,Baldwin Bikes,Completed
+1351,2016-05-25,237,4,2016-05-26,2016-05-27,Venita,Baldwin Bikes,Completed
+1350,2016-05-26,238,4,2016-05-29,2016-05-29,Marcelene,Baldwin Bikes,Completed
+13,2016-05-27,239,3,2016-05-27,,Layla,Rowlett Bikes,Rejected
+65,2016-05-27,240,4,2016-05-29,2016-05-30,Marcelene,Baldwin Bikes,Completed
+1082,2016-05-27,241,4,2016-05-29,2016-05-29,Venita,Baldwin Bikes,Completed
+1168,2016-05-27,242,4,2016-05-30,2016-05-30,Venita,Baldwin Bikes,Completed
+802,2016-05-27,243,4,2016-05-30,2016-05-28,Kali,Rowlett Bikes,Completed
+956,2016-05-28,244,4,2016-05-29,2016-05-29,Marcelene,Baldwin Bikes,Completed
+223,2016-05-29,245,4,2016-05-31,2016-05-30,Venita,Baldwin Bikes,Completed
+17,2016-05-30,246,3,2016-05-30,,Marcelene,Baldwin Bikes,Rejected
+928,2016-05-30,247,4,2016-06-01,2016-06-01,Genna,Santa Cruz Bikes,Completed
+1376,2016-05-30,248,4,2016-06-01,2016-05-31,Venita,Baldwin Bikes,Completed
+145,2016-06-01,249,4,2016-06-04,2016-06-04,Marcelene,Baldwin Bikes,Completed
+150,2016-06-01,250,4,2016-06-02,2016-06-04,Venita,Baldwin Bikes,Completed
+851,2016-06-01,251,4,2016-06-04,2016-06-04,Venita,Baldwin Bikes,Completed
+66,2016-06-01,252,4,2016-06-04,2016-06-02,Kali,Rowlett Bikes,Completed
+1267,2016-06-02,253,4,2016-06-05,2016-06-05,Marcelene,Baldwin Bikes,Completed
+510,2016-06-03,254,4,2016-06-06,2016-06-05,Venita,Baldwin Bikes,Completed
+801,2016-06-03,255,4,2016-06-06,2016-06-05,Venita,Baldwin Bikes,Completed
+26,2016-06-04,256,4,2016-06-05,2016-06-07,Venita,Baldwin Bikes,Completed
+1314,2016-06-05,257,4,2016-06-06,2016-06-08,Genna,Santa Cruz Bikes,Completed
+107,2016-06-06,258,4,2016-06-07,2016-06-07,Venita,Baldwin Bikes,Completed
+413,2016-06-06,259,4,2016-06-09,2016-06-09,Venita,Baldwin Bikes,Completed
+632,2016-06-06,260,4,2016-06-08,2016-06-08,Marcelene,Baldwin Bikes,Completed
+1045,2016-06-08,261,4,2016-06-10,2016-06-09,Mireya,Santa Cruz Bikes,Completed
+579,2016-06-08,262,4,2016-06-11,2016-06-10,Layla,Rowlett Bikes,Completed
+1322,2016-06-09,263,4,2016-06-10,2016-06-12,Marcelene,Baldwin Bikes,Completed
+5,2016-06-10,264,3,2016-06-10,,Genna,Santa Cruz Bikes,Rejected
+682,2016-06-10,265,4,2016-06-12,2016-06-11,Venita,Baldwin Bikes,Completed
+933,2016-06-10,266,4,2016-06-13,2016-06-13,Venita,Baldwin Bikes,Completed
+282,2016-06-11,267,4,2016-06-14,2016-06-14,Genna,Santa Cruz Bikes,Completed
+540,2016-06-11,268,4,2016-06-14,2016-06-12,Genna,Santa Cruz Bikes,Completed
+764,2016-06-12,269,4,2016-06-13,2016-06-15,Marcelene,Baldwin Bikes,Completed
+879,2016-06-12,270,4,2016-06-15,2016-06-13,Venita,Baldwin Bikes,Completed
+350,2016-06-13,271,4,2016-06-16,2016-06-14,Venita,Baldwin Bikes,Completed
+497,2016-06-15,272,4,2016-06-18,2016-06-16,Venita,Baldwin Bikes,Completed
+1340,2016-06-16,273,4,2016-06-19,2016-06-17,Venita,Baldwin Bikes,Completed
+411,2016-06-17,274,4,2016-06-20,2016-06-18,Venita,Baldwin Bikes,Completed
+1341,2016-06-17,275,4,2016-06-19,2016-06-18,Venita,Baldwin Bikes,Completed
+1227,2016-06-18,276,4,2016-06-19,2016-06-19,Marcelene,Baldwin Bikes,Completed
+546,2016-06-19,277,4,2016-06-20,2016-06-20,Venita,Baldwin Bikes,Completed
+1301,2016-06-20,278,4,2016-06-23,2016-06-21,Genna,Santa Cruz Bikes,Completed
+378,2016-06-21,279,4,2016-06-22,2016-06-22,Marcelene,Baldwin Bikes,Completed
+638,2016-06-21,280,4,2016-06-22,2016-06-23,Venita,Baldwin Bikes,Completed
+800,2016-06-21,281,4,2016-06-22,2016-06-23,Venita,Baldwin Bikes,Completed
+159,2016-06-22,282,4,2016-06-25,2016-06-25,Layla,Rowlett Bikes,Completed
+181,2016-06-23,283,4,2016-06-26,2016-06-26,Mireya,Santa Cruz Bikes,Completed
+1356,2016-06-23,284,4,2016-06-25,2016-06-25,Venita,Baldwin Bikes,Completed
+319,2016-06-25,285,4,2016-06-26,2016-06-27,Mireya,Santa Cruz Bikes,Completed
+59,2016-06-25,286,4,2016-06-26,2016-06-26,Marcelene,Baldwin Bikes,Completed
+133,2016-06-25,287,4,2016-06-26,2016-06-27,Marcelene,Baldwin Bikes,Completed
+780,2016-06-25,288,4,2016-06-28,2016-06-28,Marcelene,Baldwin Bikes,Completed
+849,2016-06-27,289,4,2016-06-28,2016-06-30,Marcelene,Baldwin Bikes,Completed
+202,2016-06-28,290,4,2016-06-29,2016-06-30,Marcelene,Baldwin Bikes,Completed
+158,2016-06-29,291,4,2016-06-30,2016-07-01,Marcelene,Baldwin Bikes,Completed
+360,2016-06-29,292,4,2016-06-30,2016-07-02,Layla,Rowlett Bikes,Completed
+573,2016-06-30,293,4,2016-07-03,2016-07-02,Venita,Baldwin Bikes,Completed
+732,2016-07-01,294,4,2016-07-02,2016-07-02,Venita,Baldwin Bikes,Completed
+1130,2016-07-01,295,4,2016-07-04,2016-07-04,Venita,Baldwin Bikes,Completed
+1245,2016-07-04,296,4,2016-07-07,2016-07-06,Marcelene,Baldwin Bikes,Completed
+1425,2016-07-04,297,4,2016-07-05,2016-07-06,Venita,Baldwin Bikes,Completed
+885,2016-07-04,298,4,2016-07-07,2016-07-07,Layla,Rowlett Bikes,Completed
+281,2016-07-05,299,4,2016-07-06,2016-07-07,Marcelene,Baldwin Bikes,Completed
+1205,2016-07-05,300,4,2016-07-08,2016-07-08,Marcelene,Baldwin Bikes,Completed
+17,2016-07-06,301,4,2016-07-09,2016-07-08,Marcelene,Baldwin Bikes,Completed
+1375,2016-07-06,302,4,2016-07-07,2016-07-09,Marcelene,Baldwin Bikes,Completed
+36,2016-07-07,303,4,2016-07-08,2016-07-09,Venita,Baldwin Bikes,Completed
+230,2016-07-07,304,4,2016-07-08,2016-07-08,Marcelene,Baldwin Bikes,Completed
+705,2016-07-07,305,4,2016-07-08,2016-07-08,Venita,Baldwin Bikes,Completed
+424,2016-07-09,306,4,2016-07-10,2016-07-12,Venita,Baldwin Bikes,Completed
+695,2016-07-09,307,4,2016-07-11,2016-07-11,Marcelene,Baldwin Bikes,Completed
+156,2016-07-11,308,4,2016-07-12,2016-07-14,Marcelene,Baldwin Bikes,Completed
+211,2016-07-11,309,4,2016-07-13,2016-07-13,Marcelene,Baldwin Bikes,Completed
+627,2016-07-12,310,4,2016-07-13,2016-07-13,Mireya,Santa Cruz Bikes,Completed
+1400,2016-07-12,311,4,2016-07-14,2016-07-13,Marcelene,Baldwin Bikes,Completed
+299,2016-07-13,312,4,2016-07-15,2016-07-16,Marcelene,Baldwin Bikes,Completed
+565,2016-07-14,313,4,2016-07-15,2016-07-15,Layla,Rowlett Bikes,Completed
+1019,2016-07-15,314,4,2016-07-17,2016-07-17,Venita,Baldwin Bikes,Completed
+1263,2016-07-16,315,4,2016-07-19,2016-07-17,Marcelene,Baldwin Bikes,Completed
+670,2016-07-17,316,4,2016-07-20,2016-07-19,Venita,Baldwin Bikes,Completed
+795,2016-07-17,317,4,2016-07-20,2016-07-19,Venita,Baldwin Bikes,Completed
+1141,2016-07-17,318,4,2016-07-19,2016-07-20,Venita,Baldwin Bikes,Completed
+941,2016-07-18,319,4,2016-07-21,2016-07-21,Marcelene,Baldwin Bikes,Completed
+1428,2016-07-19,320,4,2016-07-20,2016-07-21,Mireya,Santa Cruz Bikes,Completed
+568,2016-07-19,321,4,2016-07-22,2016-07-21,Marcelene,Baldwin Bikes,Completed
+924,2016-07-19,322,4,2016-07-22,2016-07-20,Marcelene,Baldwin Bikes,Completed
+1243,2016-07-19,323,4,2016-07-22,2016-07-21,Marcelene,Baldwin Bikes,Completed
+480,2016-07-20,324,4,2016-07-22,2016-07-23,Marcelene,Baldwin Bikes,Completed
+848,2016-07-20,325,4,2016-07-21,2016-07-21,Marcelene,Baldwin Bikes,Completed
+1337,2016-07-20,326,4,2016-07-21,2016-07-22,Layla,Rowlett Bikes,Completed
+83,2016-07-21,327,4,2016-07-24,2016-07-22,Marcelene,Baldwin Bikes,Completed
+528,2016-07-23,328,4,2016-07-26,2016-07-25,Marcelene,Baldwin Bikes,Completed
+274,2016-07-24,329,4,2016-07-27,2016-07-26,Marcelene,Baldwin Bikes,Completed
+622,2016-07-24,330,4,2016-07-27,2016-07-27,Marcelene,Baldwin Bikes,Completed
+642,2016-07-24,331,4,2016-07-26,2016-07-25,Marcelene,Baldwin Bikes,Completed
+659,2016-07-24,332,4,2016-07-26,2016-07-26,Venita,Baldwin Bikes,Completed
+779,2016-07-25,333,4,2016-07-27,2016-07-26,Marcelene,Baldwin Bikes,Completed
+1112,2016-07-25,334,4,2016-07-28,2016-07-27,Venita,Baldwin Bikes,Completed
+1193,2016-07-25,335,4,2016-07-27,2016-07-26,Marcelene,Baldwin Bikes,Completed
+1030,2016-07-26,336,4,2016-07-29,2016-07-27,Venita,Baldwin Bikes,Completed
+1252,2016-07-26,337,4,2016-07-27,2016-07-28,Venita,Baldwin Bikes,Completed
+1333,2016-07-28,338,4,2016-07-29,2016-07-30,Genna,Santa Cruz Bikes,Completed
+1110,2016-07-28,339,4,2016-07-31,2016-07-29,Venita,Baldwin Bikes,Completed
+963,2016-07-29,340,4,2016-07-30,2016-07-31,Venita,Baldwin Bikes,Completed
+1357,2016-07-31,341,4,2016-08-03,2016-08-01,Genna,Santa Cruz Bikes,Completed
+806,2016-07-31,342,4,2016-08-01,2016-08-03,Venita,Baldwin Bikes,Completed
+961,2016-07-31,343,4,2016-08-02,2016-08-01,Venita,Baldwin Bikes,Completed
+750,2016-08-01,344,4,2016-08-03,2016-08-02,Marcelene,Baldwin Bikes,Completed
+1299,2016-08-01,345,4,2016-08-04,2016-08-03,Marcelene,Baldwin Bikes,Completed
+584,2016-08-01,346,4,2016-08-03,2016-08-02,Layla,Rowlett Bikes,Completed
+1004,2016-08-02,347,4,2016-08-03,2016-08-05,Marcelene,Baldwin Bikes,Completed
+907,2016-08-02,348,4,2016-08-05,2016-08-04,Layla,Rowlett Bikes,Completed
+30,2016-08-03,349,3,2016-08-03,,Genna,Santa Cruz Bikes,Rejected
+31,2016-08-03,350,3,2016-08-03,,Genna,Santa Cruz Bikes,Rejected
+1307,2016-08-03,351,4,2016-08-06,2016-08-04,Mireya,Santa Cruz Bikes,Completed
+16,2016-08-03,352,4,2016-08-04,2016-08-06,Venita,Baldwin Bikes,Completed
+1387,2016-08-03,353,4,2016-08-06,2016-08-06,Venita,Baldwin Bikes,Completed
+551,2016-08-03,354,4,2016-08-05,2016-08-06,Kali,Rowlett Bikes,Completed
+1011,2016-08-03,355,4,2016-08-05,2016-08-05,Kali,Rowlett Bikes,Completed
+1189,2016-08-04,356,4,2016-08-07,2016-08-06,Marcelene,Baldwin Bikes,Completed
+14,2016-08-05,357,3,2016-08-05,,Kali,Rowlett Bikes,Rejected
+1042,2016-08-05,358,4,2016-08-07,2016-08-07,Venita,Baldwin Bikes,Completed
+441,2016-08-07,359,4,2016-08-10,2016-08-10,Venita,Baldwin Bikes,Completed
+1300,2016-08-07,360,4,2016-08-09,2016-08-10,Marcelene,Baldwin Bikes,Completed
+994,2016-08-08,361,4,2016-08-09,2016-08-11,Marcelene,Baldwin Bikes,Completed
+187,2016-08-09,362,4,2016-08-11,2016-08-11,Mireya,Santa Cruz Bikes,Completed
+834,2016-08-11,363,4,2016-08-12,2016-08-13,Kali,Rowlett Bikes,Completed
+373,2016-08-12,364,4,2016-08-14,2016-08-13,Marcelene,Baldwin Bikes,Completed
+981,2016-08-13,365,4,2016-08-14,2016-08-15,Marcelene,Baldwin Bikes,Completed
+1054,2016-08-13,366,4,2016-08-14,2016-08-14,Layla,Rowlett Bikes,Completed
+527,2016-08-14,367,4,2016-08-15,2016-08-15,Venita,Baldwin Bikes,Completed
+995,2016-08-14,368,4,2016-08-15,2016-08-17,Venita,Baldwin Bikes,Completed
+1285,2016-08-15,369,4,2016-08-18,2016-08-18,Genna,Santa Cruz Bikes,Completed
+758,2016-08-15,370,4,2016-08-18,2016-08-18,Venita,Baldwin Bikes,Completed
+891,2016-08-15,371,4,2016-08-16,2016-08-18,Venita,Baldwin Bikes,Completed
+132,2016-08-16,372,4,2016-08-18,2016-08-18,Marcelene,Baldwin Bikes,Completed
+337,2016-08-16,373,4,2016-08-19,2016-08-17,Venita,Baldwin Bikes,Completed
+1313,2016-08-17,374,4,2016-08-19,2016-08-18,Mireya,Santa Cruz Bikes,Completed
+536,2016-08-17,375,4,2016-08-20,2016-08-20,Venita,Baldwin Bikes,Completed
+825,2016-08-17,376,4,2016-08-19,2016-08-18,Marcelene,Baldwin Bikes,Completed
+1355,2016-08-17,377,4,2016-08-19,2016-08-20,Marcelene,Baldwin Bikes,Completed
+475,2016-08-17,378,4,2016-08-20,2016-08-20,Layla,Rowlett Bikes,Completed
+954,2016-08-18,379,4,2016-08-21,2016-08-21,Venita,Baldwin Bikes,Completed
+1156,2016-08-19,380,4,2016-08-20,2016-08-21,Venita,Baldwin Bikes,Completed
+1297,2016-08-19,381,4,2016-08-21,2016-08-21,Venita,Baldwin Bikes,Completed
+199,2016-08-20,382,4,2016-08-23,2016-08-23,Marcelene,Baldwin Bikes,Completed
+331,2016-08-20,383,4,2016-08-23,2016-08-22,Venita,Baldwin Bikes,Completed
+410,2016-08-20,384,4,2016-08-22,2016-08-23,Venita,Baldwin Bikes,Completed
+1274,2016-08-20,385,4,2016-08-23,2016-08-22,Venita,Baldwin Bikes,Completed
+1362,2016-08-20,386,4,2016-08-23,2016-08-23,Marcelene,Baldwin Bikes,Completed
+451,2016-08-20,387,4,2016-08-21,2016-08-21,Kali,Rowlett Bikes,Completed
+1080,2016-08-21,388,4,2016-08-24,2016-08-23,Kali,Rowlett Bikes,Completed
+53,2016-08-22,389,4,2016-08-24,2016-08-25,Genna,Santa Cruz Bikes,Completed
+576,2016-08-22,390,4,2016-08-24,2016-08-25,Layla,Rowlett Bikes,Completed
+61,2016-08-23,391,3,2016-08-23,,Layla,Rowlett Bikes,Rejected
+176,2016-08-23,392,4,2016-08-26,2016-08-24,Genna,Santa Cruz Bikes,Completed
+368,2016-08-25,393,4,2016-08-26,2016-08-27,Marcelene,Baldwin Bikes,Completed
+522,2016-08-26,394,4,2016-08-28,2016-08-29,Genna,Santa Cruz Bikes,Completed
+144,2016-08-26,395,4,2016-08-27,2016-08-29,Marcelene,Baldwin Bikes,Completed
+542,2016-08-27,396,4,2016-08-30,2016-08-29,Marcelene,Baldwin Bikes,Completed
+1437,2016-08-28,397,4,2016-08-31,2016-08-29,Venita,Baldwin Bikes,Completed
+447,2016-08-29,398,4,2016-08-30,2016-09-01,Mireya,Santa Cruz Bikes,Completed
+1001,2016-08-29,399,4,2016-09-01,2016-09-01,Venita,Baldwin Bikes,Completed
+1295,2016-08-29,400,4,2016-08-30,2016-08-31,Marcelene,Baldwin Bikes,Completed
+103,2016-08-30,401,4,2016-09-02,2016-09-01,Marcelene,Baldwin Bikes,Completed
+1335,2016-08-30,402,4,2016-09-01,2016-08-31,Marcelene,Baldwin Bikes,Completed
+578,2016-08-31,403,4,2016-09-01,2016-09-02,Genna,Santa Cruz Bikes,Completed
+396,2016-08-31,404,4,2016-09-03,2016-09-01,Venita,Baldwin Bikes,Completed
+603,2016-08-31,405,4,2016-09-01,2016-09-01,Marcelene,Baldwin Bikes,Completed
+1380,2016-08-31,406,4,2016-09-02,2016-09-01,Venita,Baldwin Bikes,Completed
+77,2016-09-01,407,3,2016-09-01,,Kali,Rowlett Bikes,Rejected
+1071,2016-09-01,408,4,2016-09-02,2016-09-02,Mireya,Santa Cruz Bikes,Completed
+416,2016-09-01,409,4,2016-09-04,2016-09-04,Venita,Baldwin Bikes,Completed
+1151,2016-09-01,410,4,2016-09-03,2016-09-02,Marcelene,Baldwin Bikes,Completed
+261,2016-09-02,411,4,2016-09-04,2016-09-04,Genna,Santa Cruz Bikes,Completed
+1202,2016-09-02,412,4,2016-09-04,2016-09-04,Genna,Santa Cruz Bikes,Completed
+717,2016-09-02,413,4,2016-09-05,2016-09-03,Marcelene,Baldwin Bikes,Completed
+917,2016-09-03,414,4,2016-09-06,2016-09-06,Venita,Baldwin Bikes,Completed
+1265,2016-09-03,415,4,2016-09-06,2016-09-06,Venita,Baldwin Bikes,Completed
+1377,2016-09-03,416,4,2016-09-04,2016-09-06,Venita,Baldwin Bikes,Completed
+359,2016-09-04,417,4,2016-09-05,2016-09-06,Genna,Santa Cruz Bikes,Completed
+88,2016-09-04,418,4,2016-09-05,2016-09-05,Marcelene,Baldwin Bikes,Completed
+14,2016-09-04,419,4,2016-09-07,2016-09-06,Kali,Rowlett Bikes,Completed
+72,2016-09-05,420,4,2016-09-06,2016-09-07,Genna,Santa Cruz Bikes,Completed
+240,2016-09-05,421,4,2016-09-06,2016-09-08,Genna,Santa Cruz Bikes,Completed
+398,2016-09-06,422,4,2016-09-07,2016-09-09,Marcelene,Baldwin Bikes,Completed
+1397,2016-09-06,423,4,2016-09-09,2016-09-09,Venita,Baldwin Bikes,Completed
+67,2016-09-08,424,4,2016-09-11,2016-09-11,Genna,Santa Cruz Bikes,Completed
+843,2016-09-08,425,4,2016-09-11,2016-09-11,Marcelene,Baldwin Bikes,Completed
+944,2016-09-08,426,4,2016-09-10,2016-09-10,Marcelene,Baldwin Bikes,Completed
+434,2016-09-09,427,4,2016-09-10,2016-09-11,Mireya,Santa Cruz Bikes,Completed
+1039,2016-09-09,428,4,2016-09-12,2016-09-10,Marcelene,Baldwin Bikes,Completed
+153,2016-09-10,429,4,2016-09-12,2016-09-12,Kali,Rowlett Bikes,Completed
+272,2016-09-11,430,4,2016-09-13,2016-09-12,Marcelene,Baldwin Bikes,Completed
+1217,2016-09-11,431,4,2016-09-12,2016-09-12,Marcelene,Baldwin Bikes,Completed
+169,2016-09-12,432,4,2016-09-15,2016-09-14,Mireya,Santa Cruz Bikes,Completed
+1062,2016-09-12,433,4,2016-09-15,2016-09-13,Marcelene,Baldwin Bikes,Completed
+726,2016-09-13,434,4,2016-09-15,2016-09-14,Marcelene,Baldwin Bikes,Completed
+77,2016-09-14,435,4,2016-09-15,2016-09-16,Layla,Rowlett Bikes,Completed
+791,2016-09-16,436,4,2016-09-19,2016-09-19,Venita,Baldwin Bikes,Completed
+1085,2016-09-16,437,4,2016-09-18,2016-09-18,Venita,Baldwin Bikes,Completed
+314,2016-09-16,438,4,2016-09-19,2016-09-18,Kali,Rowlett Bikes,Completed
+149,2016-09-17,439,4,2016-09-20,2016-09-18,Marcelene,Baldwin Bikes,Completed
+882,2016-09-17,440,4,2016-09-18,2016-09-19,Venita,Baldwin Bikes,Completed
+704,2016-09-18,441,4,2016-09-19,2016-09-19,Mireya,Santa Cruz Bikes,Completed
+667,2016-09-18,442,4,2016-09-21,2016-09-21,Venita,Baldwin Bikes,Completed
+1371,2016-09-18,443,4,2016-09-19,2016-09-20,Marcelene,Baldwin Bikes,Completed
+30,2016-09-19,444,4,2016-09-20,2016-09-21,Mireya,Santa Cruz Bikes,Completed
+362,2016-09-19,445,4,2016-09-22,2016-09-22,Marcelene,Baldwin Bikes,Completed
+399,2016-09-19,446,4,2016-09-21,2016-09-20,Venita,Baldwin Bikes,Completed
+808,2016-09-20,447,4,2016-09-23,2016-09-22,Kali,Rowlett Bikes,Completed
+101,2016-09-21,448,4,2016-09-22,2016-09-24,Marcelene,Baldwin Bikes,Completed
+492,2016-09-21,449,4,2016-09-24,2016-09-22,Venita,Baldwin Bikes,Completed
+575,2016-09-21,450,4,2016-09-24,2016-09-23,Venita,Baldwin Bikes,Completed
+1146,2016-09-21,451,4,2016-09-23,2016-09-22,Venita,Baldwin Bikes,Completed
+997,2016-09-22,452,4,2016-09-23,2016-09-24,Venita,Baldwin Bikes,Completed
+1028,2016-09-22,453,4,2016-09-24,2016-09-25,Venita,Baldwin Bikes,Completed
+988,2016-09-23,454,4,2016-09-25,2016-09-26,Marcelene,Baldwin Bikes,Completed
+1055,2016-09-23,455,4,2016-09-24,2016-09-24,Venita,Baldwin Bikes,Completed
+1061,2016-09-23,456,4,2016-09-26,2016-09-25,Layla,Rowlett Bikes,Completed
+1349,2016-09-24,457,4,2016-09-27,2016-09-27,Genna,Santa Cruz Bikes,Completed
+197,2016-09-25,458,4,2016-09-28,2016-09-26,Marcelene,Baldwin Bikes,Completed
+874,2016-09-25,459,4,2016-09-28,2016-09-26,Marcelene,Baldwin Bikes,Completed
+691,2016-09-25,460,4,2016-09-27,2016-09-26,Kali,Rowlett Bikes,Completed
+853,2016-09-26,461,4,2016-09-27,2016-09-27,Venita,Baldwin Bikes,Completed
+852,2016-09-27,462,4,2016-09-28,2016-09-29,Marcelene,Baldwin Bikes,Completed
+964,2016-09-27,463,4,2016-09-28,2016-09-28,Kali,Rowlett Bikes,Completed
+74,2016-09-28,464,4,2016-09-30,2016-09-29,Venita,Baldwin Bikes,Completed
+1198,2016-09-28,465,4,2016-10-01,2016-10-01,Marcelene,Baldwin Bikes,Completed
+1440,2016-09-28,466,4,2016-09-29,2016-10-01,Venita,Baldwin Bikes,Completed
+555,2016-09-28,467,4,2016-09-30,2016-09-30,Kali,Rowlett Bikes,Completed
+1261,2016-09-29,468,4,2016-10-02,2016-09-30,Genna,Santa Cruz Bikes,Completed
+1089,2016-09-29,469,4,2016-10-02,2016-10-02,Venita,Baldwin Bikes,Completed
+641,2016-09-30,470,4,2016-10-02,2016-10-02,Genna,Santa Cruz Bikes,Completed
+697,2016-09-30,471,4,2016-10-02,2016-10-01,Genna,Santa Cruz Bikes,Completed
+468,2016-09-30,472,4,2016-10-01,2016-10-01,Venita,Baldwin Bikes,Completed
+549,2016-09-30,473,4,2016-10-02,2016-10-03,Venita,Baldwin Bikes,Completed
+553,2016-10-01,474,4,2016-10-04,2016-10-04,Genna,Santa Cruz Bikes,Completed
+241,2016-10-01,475,4,2016-10-04,2016-10-03,Venita,Baldwin Bikes,Completed
+559,2016-10-01,476,4,2016-10-04,2016-10-02,Marcelene,Baldwin Bikes,Completed
+449,2016-10-02,477,4,2016-10-05,2016-10-04,Mireya,Santa Cruz Bikes,Completed
+304,2016-10-02,478,4,2016-10-05,2016-10-03,Venita,Baldwin Bikes,Completed
+984,2016-10-03,479,4,2016-10-04,2016-10-04,Marcelene,Baldwin Bikes,Completed
+686,2016-10-04,480,4,2016-10-07,2016-10-05,Genna,Santa Cruz Bikes,Completed
+481,2016-10-04,481,4,2016-10-07,2016-10-06,Layla,Rowlett Bikes,Completed
+513,2016-10-05,482,4,2016-10-06,2016-10-06,Marcelene,Baldwin Bikes,Completed
+703,2016-10-06,483,4,2016-10-07,2016-10-09,Mireya,Santa Cruz Bikes,Completed
+421,2016-10-06,484,4,2016-10-09,2016-10-07,Venita,Baldwin Bikes,Completed
+465,2016-10-06,485,4,2016-10-08,2016-10-07,Venita,Baldwin Bikes,Completed
+709,2016-10-06,486,4,2016-10-08,2016-10-09,Venita,Baldwin Bikes,Completed
+827,2016-10-06,487,4,2016-10-09,2016-10-09,Marcelene,Baldwin Bikes,Completed
+921,2016-10-06,488,4,2016-10-09,2016-10-08,Marcelene,Baldwin Bikes,Completed
+899,2016-10-06,489,4,2016-10-08,2016-10-08,Kali,Rowlett Bikes,Completed
+876,2016-10-07,490,4,2016-10-10,2016-10-09,Marcelene,Baldwin Bikes,Completed
+1048,2016-10-08,491,4,2016-10-10,2016-10-11,Mireya,Santa Cruz Bikes,Completed
+191,2016-10-09,492,4,2016-10-10,2016-10-12,Mireya,Santa Cruz Bikes,Completed
+796,2016-10-09,493,4,2016-10-12,2016-10-11,Genna,Santa Cruz Bikes,Completed
+875,2016-10-09,494,4,2016-10-10,2016-10-11,Marcelene,Baldwin Bikes,Completed
+712,2016-10-10,495,4,2016-10-12,2016-10-13,Genna,Santa Cruz Bikes,Completed
+193,2016-10-10,496,4,2016-10-12,2016-10-11,Marcelene,Baldwin Bikes,Completed
+785,2016-10-10,497,4,2016-10-11,2016-10-11,Marcelene,Baldwin Bikes,Completed
+1331,2016-10-10,498,4,2016-10-12,2016-10-11,Marcelene,Baldwin Bikes,Completed
+260,2016-10-11,499,4,2016-10-14,2016-10-13,Mireya,Santa Cruz Bikes,Completed
+148,2016-10-11,500,4,2016-10-12,2016-10-13,Marcelene,Baldwin Bikes,Completed
+977,2016-10-11,501,4,2016-10-12,2016-10-13,Venita,Baldwin Bikes,Completed
+401,2016-10-12,502,4,2016-10-13,2016-10-13,Layla,Rowlett Bikes,Completed
+932,2016-10-13,503,4,2016-10-16,2016-10-14,Marcelene,Baldwin Bikes,Completed
+1381,2016-10-14,504,4,2016-10-15,2016-10-15,Mireya,Santa Cruz Bikes,Completed
+721,2016-10-14,505,4,2016-10-16,2016-10-17,Marcelene,Baldwin Bikes,Completed
+831,2016-10-14,506,4,2016-10-16,2016-10-16,Marcelene,Baldwin Bikes,Completed
+1378,2016-10-15,507,4,2016-10-17,2016-10-17,Genna,Santa Cruz Bikes,Completed
+1359,2016-10-15,508,4,2016-10-18,2016-10-18,Marcelene,Baldwin Bikes,Completed
+235,2016-10-16,509,4,2016-10-17,2016-10-17,Venita,Baldwin Bikes,Completed
+586,2016-10-17,510,4,2016-10-18,2016-10-18,Venita,Baldwin Bikes,Completed
+377,2016-10-18,511,4,2016-10-20,2016-10-19,Venita,Baldwin Bikes,Completed
+8,2016-10-19,512,4,2016-10-22,2016-10-20,Venita,Baldwin Bikes,Completed
+155,2016-10-19,513,4,2016-10-21,2016-10-21,Marcelene,Baldwin Bikes,Completed
+927,2016-10-19,514,4,2016-10-21,2016-10-20,Venita,Baldwin Bikes,Completed
+986,2016-10-19,515,4,2016-10-20,2016-10-22,Marcelene,Baldwin Bikes,Completed
+111,2016-10-21,516,4,2016-10-23,2016-10-24,Marcelene,Baldwin Bikes,Completed
+613,2016-10-21,517,4,2016-10-22,2016-10-24,Marcelene,Baldwin Bikes,Completed
+1374,2016-10-22,518,4,2016-10-24,2016-10-25,Mireya,Santa Cruz Bikes,Completed
+54,2016-10-22,519,4,2016-10-23,2016-10-24,Venita,Baldwin Bikes,Completed
+639,2016-10-23,520,4,2016-10-26,2016-10-24,Venita,Baldwin Bikes,Completed
+664,2016-10-23,521,4,2016-10-25,2016-10-25,Marcelene,Baldwin Bikes,Completed
+724,2016-10-23,522,4,2016-10-24,2016-10-24,Venita,Baldwin Bikes,Completed
+1056,2016-10-24,523,4,2016-10-26,2016-10-27,Marcelene,Baldwin Bikes,Completed
+569,2016-10-25,524,4,2016-10-26,2016-10-27,Mireya,Santa Cruz Bikes,Completed
+1315,2016-10-26,525,4,2016-10-28,2016-10-29,Genna,Santa Cruz Bikes,Completed
+1096,2016-10-26,526,4,2016-10-28,2016-10-28,Marcelene,Baldwin Bikes,Completed
+506,2016-10-27,527,4,2016-10-29,2016-10-28,Mireya,Santa Cruz Bikes,Completed
+676,2016-10-28,528,4,2016-10-31,2016-10-31,Venita,Baldwin Bikes,Completed
+753,2016-10-28,529,4,2016-10-30,2016-10-31,Venita,Baldwin Bikes,Completed
+773,2016-10-28,530,4,2016-10-31,2016-10-31,Marcelene,Baldwin Bikes,Completed
+116,2016-10-28,531,4,2016-10-29,2016-10-30,Kali,Rowlett Bikes,Completed
+817,2016-10-29,532,4,2016-10-31,2016-10-30,Venita,Baldwin Bikes,Completed
+1334,2016-10-29,533,4,2016-11-01,2016-11-01,Marcelene,Baldwin Bikes,Completed
+1406,2016-10-29,534,4,2016-10-30,2016-10-31,Venita,Baldwin Bikes,Completed
+835,2016-10-29,535,4,2016-10-31,2016-11-01,Layla,Rowlett Bikes,Completed
+759,2016-10-31,536,4,2016-11-02,2016-11-01,Genna,Santa Cruz Bikes,Completed
+1353,2016-10-31,537,4,2016-11-01,2016-11-03,Mireya,Santa Cruz Bikes,Completed
+341,2016-11-02,538,4,2016-11-05,2016-11-05,Marcelene,Baldwin Bikes,Completed
+1144,2016-11-02,539,4,2016-11-04,2016-11-03,Venita,Baldwin Bikes,Completed
+1429,2016-11-03,540,4,2016-11-05,2016-11-06,Genna,Santa Cruz Bikes,Completed
+1228,2016-11-04,541,4,2016-11-07,2016-11-07,Genna,Santa Cruz Bikes,Completed
+313,2016-11-04,542,4,2016-11-06,2016-11-05,Venita,Baldwin Bikes,Completed
+62,2016-11-06,543,4,2016-11-09,2016-11-08,Marcelene,Baldwin Bikes,Completed
+321,2016-11-06,544,4,2016-11-07,2016-11-08,Venita,Baldwin Bikes,Completed
+1108,2016-11-08,545,4,2016-11-10,2016-11-09,Layla,Rowlett Bikes,Completed
+470,2016-11-09,546,4,2016-11-12,2016-11-10,Venita,Baldwin Bikes,Completed
+20,2016-11-09,547,4,2016-11-11,2016-11-10,Kali,Rowlett Bikes,Completed
+739,2016-11-11,548,4,2016-11-13,2016-11-13,Venita,Baldwin Bikes,Completed
+64,2016-11-12,549,3,2016-11-12,,Layla,Rowlett Bikes,Rejected
+892,2016-11-12,550,4,2016-11-14,2016-11-15,Venita,Baldwin Bikes,Completed
+1169,2016-11-12,551,4,2016-11-13,2016-11-13,Marcelene,Baldwin Bikes,Completed
+1282,2016-11-12,552,4,2016-11-15,2016-11-13,Venita,Baldwin Bikes,Completed
+913,2016-11-12,553,4,2016-11-13,2016-11-15,Layla,Rowlett Bikes,Completed
+104,2016-11-13,554,4,2016-11-14,2016-11-16,Genna,Santa Cruz Bikes,Completed
+212,2016-11-13,555,4,2016-11-14,2016-11-16,Venita,Baldwin Bikes,Completed
+61,2016-11-13,556,4,2016-11-14,2016-11-15,Layla,Rowlett Bikes,Completed
+1248,2016-11-14,557,4,2016-11-17,2016-11-15,Marcelene,Baldwin Bikes,Completed
+1443,2016-11-15,558,4,2016-11-16,2016-11-17,Venita,Baldwin Bikes,Completed
+959,2016-11-16,559,4,2016-11-17,2016-11-17,Mireya,Santa Cruz Bikes,Completed
+1405,2016-11-18,560,4,2016-11-19,2016-11-21,Marcelene,Baldwin Bikes,Completed
+90,2016-11-19,561,4,2016-11-22,2016-11-22,Marcelene,Baldwin Bikes,Completed
+942,2016-11-19,562,4,2016-11-20,2016-11-22,Venita,Baldwin Bikes,Completed
+365,2016-11-20,563,4,2016-11-22,2016-11-21,Marcelene,Baldwin Bikes,Completed
+1058,2016-11-20,564,4,2016-11-23,2016-11-22,Venita,Baldwin Bikes,Completed
+894,2016-11-21,565,4,2016-11-22,2016-11-22,Venita,Baldwin Bikes,Completed
+298,2016-11-22,566,4,2016-11-25,2016-11-23,Genna,Santa Cruz Bikes,Completed
+1430,2016-11-22,567,4,2016-11-23,2016-11-23,Mireya,Santa Cruz Bikes,Completed
+1275,2016-11-23,568,4,2016-11-25,2016-11-24,Genna,Santa Cruz Bikes,Completed
+707,2016-11-23,569,4,2016-11-24,2016-11-25,Marcelene,Baldwin Bikes,Completed
+989,2016-11-23,570,4,2016-11-24,2016-11-25,Marcelene,Baldwin Bikes,Completed
+5,2016-11-24,571,4,2016-11-25,2016-11-27,Mireya,Santa Cruz Bikes,Completed
+178,2016-11-24,572,4,2016-11-26,2016-11-26,Marcelene,Baldwin Bikes,Completed
+423,2016-11-24,573,4,2016-11-26,2016-11-27,Marcelene,Baldwin Bikes,Completed
+833,2016-11-26,574,4,2016-11-27,2016-11-29,Venita,Baldwin Bikes,Completed
+33,2016-11-27,575,4,2016-11-28,2016-11-30,Genna,Santa Cruz Bikes,Completed
+1272,2016-11-27,576,4,2016-11-30,2016-11-28,Genna,Santa Cruz Bikes,Completed
+445,2016-11-27,577,4,2016-11-30,2016-11-29,Marcelene,Baldwin Bikes,Completed
+819,2016-11-27,578,4,2016-11-28,2016-11-29,Venita,Baldwin Bikes,Completed
+160,2016-11-27,579,4,2016-11-30,2016-11-29,Kali,Rowlett Bikes,Completed
+581,2016-11-30,580,4,2016-12-02,2016-12-02,Genna,Santa Cruz Bikes,Completed
+688,2016-12-03,581,4,2016-12-05,2016-12-06,Genna,Santa Cruz Bikes,Completed
+32,2016-12-04,582,3,2016-12-04,,Mireya,Santa Cruz Bikes,Rejected
+792,2016-12-04,583,4,2016-12-05,2016-12-07,Venita,Baldwin Bikes,Completed
+1209,2016-12-04,584,4,2016-12-05,2016-12-05,Venita,Baldwin Bikes,Completed
+1219,2016-12-04,585,4,2016-12-05,2016-12-05,Venita,Baldwin Bikes,Completed
+1306,2016-12-04,586,4,2016-12-06,2016-12-05,Marcelene,Baldwin Bikes,Completed
+487,2016-12-06,587,4,2016-12-08,2016-12-08,Mireya,Santa Cruz Bikes,Completed
+102,2016-12-06,588,4,2016-12-07,2016-12-07,Venita,Baldwin Bikes,Completed
+719,2016-12-06,589,4,2016-12-07,2016-12-07,Venita,Baldwin Bikes,Completed
+990,2016-12-06,590,4,2016-12-09,2016-12-07,Venita,Baldwin Bikes,Completed
+1211,2016-12-06,591,4,2016-12-09,2016-12-09,Venita,Baldwin Bikes,Completed
+1232,2016-12-06,592,4,2016-12-08,2016-12-08,Venita,Baldwin Bikes,Completed
+50,2016-12-07,593,4,2016-12-10,2016-12-08,Kali,Rowlett Bikes,Completed
+1318,2016-12-07,594,4,2016-12-08,2016-12-08,Kali,Rowlett Bikes,Completed
+538,2016-12-08,595,4,2016-12-09,2016-12-11,Mireya,Santa Cruz Bikes,Completed
+952,2016-12-08,596,4,2016-12-09,2016-12-09,Genna,Santa Cruz Bikes,Completed
+1121,2016-12-08,597,4,2016-12-09,2016-12-10,Marcelene,Baldwin Bikes,Completed
+40,2016-12-09,598,3,2016-12-09,,Genna,Santa Cruz Bikes,Rejected
+1,2016-12-09,599,4,2016-12-10,2016-12-12,Marcelene,Baldwin Bikes,Completed
+624,2016-12-09,600,4,2016-12-12,2016-12-11,Venita,Baldwin Bikes,Completed
+683,2016-12-09,601,4,2016-12-10,2016-12-10,Marcelene,Baldwin Bikes,Completed
+823,2016-12-09,602,4,2016-12-10,2016-12-11,Marcelene,Baldwin Bikes,Completed
+1032,2016-12-09,603,4,2016-12-10,2016-12-10,Venita,Baldwin Bikes,Completed
+96,2016-12-10,604,4,2016-12-13,2016-12-12,Venita,Baldwin Bikes,Completed
+1208,2016-12-10,605,4,2016-12-11,2016-12-12,Marcelene,Baldwin Bikes,Completed
+18,2016-12-11,606,4,2016-12-12,2016-12-13,Venita,Baldwin Bikes,Completed
+309,2016-12-11,607,4,2016-12-14,2016-12-13,Marcelene,Baldwin Bikes,Completed
+1103,2016-12-12,608,4,2016-12-15,2016-12-14,Genna,Santa Cruz Bikes,Completed
+896,2016-12-12,609,4,2016-12-13,2016-12-14,Venita,Baldwin Bikes,Completed
+711,2016-12-13,610,4,2016-12-15,2016-12-14,Marcelene,Baldwin Bikes,Completed
+1073,2016-12-15,611,4,2016-12-17,2016-12-18,Venita,Baldwin Bikes,Completed
+634,2016-12-16,612,4,2016-12-17,2016-12-17,Venita,Baldwin Bikes,Completed
+1159,2016-12-17,613,4,2016-12-19,2016-12-19,Venita,Baldwin Bikes,Completed
+654,2016-12-18,614,4,2016-12-21,2016-12-21,Mireya,Santa Cruz Bikes,Completed
+560,2016-12-19,615,4,2016-12-22,2016-12-21,Layla,Rowlett Bikes,Completed
+1444,2016-12-20,616,4,2016-12-23,2016-12-23,Marcelene,Baldwin Bikes,Completed
+118,2016-12-21,617,4,2016-12-23,2016-12-23,Venita,Baldwin Bikes,Completed
+131,2016-12-21,618,4,2016-12-22,2016-12-22,Marcelene,Baldwin Bikes,Completed
+454,2016-12-22,619,4,2016-12-25,2016-12-25,Venita,Baldwin Bikes,Completed
+466,2016-12-22,620,4,2016-12-24,2016-12-24,Marcelene,Baldwin Bikes,Completed
+1157,2016-12-23,621,4,2016-12-25,2016-12-24,Marcelene,Baldwin Bikes,Completed
+1398,2016-12-23,622,4,2016-12-26,2016-12-25,Venita,Baldwin Bikes,Completed
+678,2016-12-24,623,4,2016-12-26,2016-12-27,Marcelene,Baldwin Bikes,Completed
+814,2016-12-24,624,4,2016-12-25,2016-12-27,Marcelene,Baldwin Bikes,Completed
+1163,2016-12-25,625,4,2016-12-28,2016-12-26,Mireya,Santa Cruz Bikes,Completed
+130,2016-12-25,626,4,2016-12-28,2016-12-27,Venita,Baldwin Bikes,Completed
+1119,2016-12-25,627,4,2016-12-26,2016-12-28,Marcelene,Baldwin Bikes,Completed
+561,2016-12-26,628,4,2016-12-29,2016-12-27,Genna,Santa Cruz Bikes,Completed
+973,2016-12-26,629,4,2016-12-27,2016-12-29,Mireya,Santa Cruz Bikes,Completed
+1404,2016-12-26,630,4,2016-12-27,2016-12-28,Marcelene,Baldwin Bikes,Completed
+855,2016-12-27,631,4,2016-12-29,2016-12-29,Genna,Santa Cruz Bikes,Completed
+163,2016-12-27,632,4,2016-12-29,2016-12-29,Venita,Baldwin Bikes,Completed
+1040,2016-12-28,633,4,2016-12-31,2016-12-30,Kali,Rowlett Bikes,Completed
+27,2016-12-29,634,4,2017-01-01,2016-12-30,Marcelene,Baldwin Bikes,Completed
+520,2016-12-30,635,4,2017-01-02,2016-12-31,Marcelene,Baldwin Bikes,Completed
+532,2017-01-03,636,4,2017-01-04,2017-01-05,Mireya,Santa Cruz Bikes,Completed
+512,2017-01-03,637,4,2017-01-05,2017-01-05,Marcelene,Baldwin Bikes,Completed
+1302,2017-01-04,638,4,2017-01-05,2017-01-06,Venita,Baldwin Bikes,Completed
+550,2017-01-06,639,4,2017-01-07,2017-01-07,Marcelene,Baldwin Bikes,Completed
+1093,2017-01-06,640,4,2017-01-08,2017-01-07,Marcelene,Baldwin Bikes,Completed
+673,2017-01-07,641,4,2017-01-10,2017-01-08,Genna,Santa Cruz Bikes,Completed
+847,2017-01-07,642,4,2017-01-09,2017-01-10,Venita,Baldwin Bikes,Completed
+901,2017-01-08,643,4,2017-01-09,2017-01-11,Genna,Santa Cruz Bikes,Completed
+439,2017-01-08,644,4,2017-01-11,2017-01-10,Marcelene,Baldwin Bikes,Completed
+1199,2017-01-08,645,4,2017-01-11,2017-01-10,Marcelene,Baldwin Bikes,Completed
+975,2017-01-09,646,4,2017-01-12,2017-01-11,Mireya,Santa Cruz Bikes,Completed
+283,2017-01-09,647,4,2017-01-10,2017-01-11,Venita,Baldwin Bikes,Completed
+684,2017-01-09,648,4,2017-01-11,2017-01-11,Marcelene,Baldwin Bikes,Completed
+1153,2017-01-10,649,4,2017-01-11,2017-01-13,Genna,Santa Cruz Bikes,Completed
+729,2017-01-11,650,4,2017-01-14,2017-01-12,Mireya,Santa Cruz Bikes,Completed
+190,2017-01-11,651,4,2017-01-13,2017-01-13,Venita,Baldwin Bikes,Completed
+985,2017-01-12,652,4,2017-01-15,2017-01-13,Layla,Rowlett Bikes,Completed
+1249,2017-01-14,653,4,2017-01-17,2017-01-15,Mireya,Santa Cruz Bikes,Completed
+1129,2017-01-14,654,4,2017-01-15,2017-01-17,Venita,Baldwin Bikes,Completed
+347,2017-01-16,655,4,2017-01-17,2017-01-18,Genna,Santa Cruz Bikes,Completed
+949,2017-01-16,656,4,2017-01-17,2017-01-18,Venita,Baldwin Bikes,Completed
+349,2017-01-17,657,4,2017-01-19,2017-01-20,Mireya,Santa Cruz Bikes,Completed
+1051,2017-01-17,658,4,2017-01-18,2017-01-18,Venita,Baldwin Bikes,Completed
+1391,2017-01-17,659,4,2017-01-19,2017-01-18,Venita,Baldwin Bikes,Completed
+383,2017-01-18,660,4,2017-01-19,2017-01-19,Venita,Baldwin Bikes,Completed
+626,2017-01-18,661,4,2017-01-19,2017-01-20,Marcelene,Baldwin Bikes,Completed
+1125,2017-01-19,662,4,2017-01-20,2017-01-20,Genna,Santa Cruz Bikes,Completed
+344,2017-01-20,663,4,2017-01-22,2017-01-23,Genna,Santa Cruz Bikes,Completed
+681,2017-01-20,664,4,2017-01-23,2017-01-22,Venita,Baldwin Bikes,Completed
+29,2017-01-21,665,4,2017-01-22,2017-01-23,Marcelene,Baldwin Bikes,Completed
+770,2017-01-21,666,4,2017-01-22,2017-01-24,Venita,Baldwin Bikes,Completed
+858,2017-01-22,667,4,2017-01-24,2017-01-25,Venita,Baldwin Bikes,Completed
+297,2017-01-22,668,4,2017-01-23,2017-01-24,Kali,Rowlett Bikes,Completed
+745,2017-01-23,669,4,2017-01-24,2017-01-26,Venita,Baldwin Bikes,Completed
+361,2017-01-24,670,4,2017-01-25,2017-01-25,Marcelene,Baldwin Bikes,Completed
+922,2017-01-25,671,4,2017-01-28,2017-01-26,Venita,Baldwin Bikes,Completed
+908,2017-01-26,672,4,2017-01-29,2017-01-29,Marcelene,Baldwin Bikes,Completed
+64,2017-01-26,673,4,2017-01-28,2017-01-27,Layla,Rowlett Bikes,Completed
+733,2017-01-27,674,4,2017-01-28,2017-01-29,Marcelene,Baldwin Bikes,Completed
+291,2017-01-28,675,4,2017-01-31,2017-01-30,Venita,Baldwin Bikes,Completed
+790,2017-01-28,676,4,2017-01-30,2017-01-31,Venita,Baldwin Bikes,Completed
+809,2017-01-28,677,4,2017-01-31,2017-01-30,Venita,Baldwin Bikes,Completed
+250,2017-01-28,678,4,2017-01-29,2017-01-31,Layla,Rowlett Bikes,Completed
+81,2017-01-29,679,4,2017-01-30,2017-01-30,Genna,Santa Cruz Bikes,Completed
+245,2017-01-29,680,4,2017-02-01,2017-01-30,Genna,Santa Cruz Bikes,Completed
+499,2017-01-29,681,4,2017-02-01,2017-01-31,Venita,Baldwin Bikes,Completed
+614,2017-01-29,682,4,2017-01-30,2017-01-30,Marcelene,Baldwin Bikes,Completed
+741,2017-01-29,683,4,2017-01-31,2017-02-01,Marcelene,Baldwin Bikes,Completed
+762,2017-01-31,684,4,2017-02-01,2017-02-02,Marcelene,Baldwin Bikes,Completed
+976,2017-01-31,685,4,2017-02-03,2017-02-02,Venita,Baldwin Bikes,Completed
+380,2017-02-01,686,4,2017-02-03,2017-02-04,Venita,Baldwin Bikes,Completed
+530,2017-02-02,687,4,2017-02-05,2017-02-04,Genna,Santa Cruz Bikes,Completed
+343,2017-02-02,688,4,2017-02-03,2017-02-05,Venita,Baldwin Bikes,Completed
+884,2017-02-02,689,4,2017-02-03,2017-02-05,Venita,Baldwin Bikes,Completed
+1097,2017-02-03,690,4,2017-02-04,2017-02-06,Mireya,Santa Cruz Bikes,Completed
+1081,2017-02-04,691,4,2017-02-06,2017-02-06,Venita,Baldwin Bikes,Completed
+2,2017-02-05,692,3,2017-02-05,,Genna,Santa Cruz Bikes,Rejected
+1233,2017-02-05,693,4,2017-02-07,2017-02-06,Genna,Santa Cruz Bikes,Completed
+58,2017-02-05,694,4,2017-02-06,2017-02-08,Venita,Baldwin Bikes,Completed
+606,2017-02-05,695,4,2017-02-08,2017-02-07,Venita,Baldwin Bikes,Completed
+1242,2017-02-05,696,4,2017-02-08,2017-02-08,Venita,Baldwin Bikes,Completed
+562,2017-02-06,697,4,2017-02-08,2017-02-09,Mireya,Santa Cruz Bikes,Completed
+543,2017-02-06,698,4,2017-02-08,2017-02-09,Kali,Rowlett Bikes,Completed
+958,2017-02-06,699,4,2017-02-08,2017-02-09,Layla,Rowlett Bikes,Completed
+4,2017-02-07,700,4,2017-02-10,2017-02-08,Marcelene,Baldwin Bikes,Completed
+850,2017-02-07,701,4,2017-02-08,2017-02-09,Layla,Rowlett Bikes,Completed
+1352,2017-02-08,702,4,2017-02-09,2017-02-11,Genna,Santa Cruz Bikes,Completed
+417,2017-02-08,703,4,2017-02-09,2017-02-09,Venita,Baldwin Bikes,Completed
+1137,2017-02-08,704,4,2017-02-09,2017-02-11,Marcelene,Baldwin Bikes,Completed
+1196,2017-02-08,705,4,2017-02-11,2017-02-11,Venita,Baldwin Bikes,Completed
+1271,2017-02-09,706,4,2017-02-12,2017-02-10,Mireya,Santa Cruz Bikes,Completed
+79,2017-02-09,707,4,2017-02-11,2017-02-11,Venita,Baldwin Bikes,Completed
+660,2017-02-10,708,4,2017-02-12,2017-02-11,Mireya,Santa Cruz Bikes,Completed
+1162,2017-02-11,709,4,2017-02-13,2017-02-12,Marcelene,Baldwin Bikes,Completed
+295,2017-02-13,710,4,2017-02-15,2017-02-16,Marcelene,Baldwin Bikes,Completed
+1246,2017-02-13,711,4,2017-02-16,2017-02-14,Marcelene,Baldwin Bikes,Completed
+173,2017-02-13,712,4,2017-02-14,2017-02-16,Layla,Rowlett Bikes,Completed
+207,2017-02-13,713,4,2017-02-14,2017-02-15,Kali,Rowlett Bikes,Completed
+805,2017-02-14,714,4,2017-02-17,2017-02-15,Venita,Baldwin Bikes,Completed
+12,2017-02-15,715,3,2017-02-15,,Marcelene,Baldwin Bikes,Rejected
+672,2017-02-15,716,4,2017-02-17,2017-02-18,Marcelene,Baldwin Bikes,Completed
+1312,2017-02-15,717,4,2017-02-18,2017-02-17,Marcelene,Baldwin Bikes,Completed
+38,2017-02-16,718,4,2017-02-17,2017-02-17,Venita,Baldwin Bikes,Completed
+200,2017-02-16,719,4,2017-02-19,2017-02-18,Marcelene,Baldwin Bikes,Completed
+382,2017-02-16,720,4,2017-02-19,2017-02-19,Marcelene,Baldwin Bikes,Completed
+625,2017-02-16,721,4,2017-02-19,2017-02-17,Venita,Baldwin Bikes,Completed
+1399,2017-02-18,722,4,2017-02-20,2017-02-21,Venita,Baldwin Bikes,Completed
+845,2017-02-19,723,4,2017-02-21,2017-02-22,Marcelene,Baldwin Bikes,Completed
+864,2017-02-19,724,4,2017-02-22,2017-02-21,Marcelene,Baldwin Bikes,Completed
+870,2017-02-19,725,4,2017-02-22,2017-02-22,Venita,Baldwin Bikes,Completed
+969,2017-02-19,726,4,2017-02-22,2017-02-20,Marcelene,Baldwin Bikes,Completed
+962,2017-02-19,727,4,2017-02-22,2017-02-21,Layla,Rowlett Bikes,Completed
+1138,2017-02-20,728,4,2017-02-21,2017-02-23,Genna,Santa Cruz Bikes,Completed
+897,2017-02-20,729,4,2017-02-22,2017-02-21,Venita,Baldwin Bikes,Completed
+500,2017-02-21,730,4,2017-02-24,2017-02-22,Marcelene,Baldwin Bikes,Completed
+910,2017-02-25,731,4,2017-02-27,2017-02-27,Layla,Rowlett Bikes,Completed
+147,2017-02-26,732,4,2017-02-27,2017-03-01,Venita,Baldwin Bikes,Completed
+832,2017-02-26,733,4,2017-03-01,2017-02-27,Venita,Baldwin Bikes,Completed
+939,2017-02-26,734,4,2017-02-28,2017-03-01,Layla,Rowlett Bikes,Completed
+20,2017-02-27,735,3,2017-02-27,,Layla,Rowlett Bikes,Rejected
+184,2017-02-27,736,4,2017-02-28,2017-02-28,Venita,Baldwin Bikes,Completed
+694,2017-02-27,737,4,2017-03-01,2017-02-28,Marcelene,Baldwin Bikes,Completed
+124,2017-02-28,738,4,2017-03-01,2017-03-03,Mireya,Santa Cruz Bikes,Completed
+49,2017-02-28,739,4,2017-03-01,2017-03-02,Marcelene,Baldwin Bikes,Completed
+1113,2017-02-28,740,4,2017-03-01,2017-03-02,Marcelene,Baldwin Bikes,Completed
+119,2017-02-28,741,4,2017-03-01,2017-03-01,Kali,Rowlett Bikes,Completed
+433,2017-02-28,742,4,2017-03-01,2017-03-01,Layla,Rowlett Bikes,Completed
+137,2017-03-01,743,4,2017-03-04,2017-03-04,Marcelene,Baldwin Bikes,Completed
+166,2017-03-01,744,4,2017-03-02,2017-03-02,Venita,Baldwin Bikes,Completed
+698,2017-03-01,745,4,2017-03-03,2017-03-03,Venita,Baldwin Bikes,Completed
+391,2017-03-02,746,4,2017-03-04,2017-03-05,Genna,Santa Cruz Bikes,Completed
+87,2017-03-03,747,4,2017-03-04,2017-03-05,Genna,Santa Cruz Bikes,Completed
+1072,2017-03-03,748,4,2017-03-05,2017-03-04,Kali,Rowlett Bikes,Completed
+255,2017-03-04,749,4,2017-03-07,2017-03-05,Venita,Baldwin Bikes,Completed
+232,2017-03-04,750,4,2017-03-07,2017-03-05,Kali,Rowlett Bikes,Completed
+731,2017-03-05,751,4,2017-03-08,2017-03-07,Genna,Santa Cruz Bikes,Completed
+335,2017-03-05,752,4,2017-03-06,2017-03-07,Marcelene,Baldwin Bikes,Completed
+1201,2017-03-05,753,4,2017-03-08,2017-03-08,Venita,Baldwin Bikes,Completed
+646,2017-03-06,754,4,2017-03-07,2017-03-08,Mireya,Santa Cruz Bikes,Completed
+531,2017-03-06,755,4,2017-03-07,2017-03-07,Marcelene,Baldwin Bikes,Completed
+1143,2017-03-06,756,4,2017-03-07,2017-03-09,Marcelene,Baldwin Bikes,Completed
+1336,2017-03-06,757,4,2017-03-08,2017-03-09,Venita,Baldwin Bikes,Completed
+953,2017-03-06,758,4,2017-03-08,2017-03-07,Layla,Rowlett Bikes,Completed
+284,2017-03-07,759,4,2017-03-09,2017-03-08,Venita,Baldwin Bikes,Completed
+1104,2017-03-07,760,4,2017-03-10,2017-03-10,Marcelene,Baldwin Bikes,Completed
+1291,2017-03-07,761,4,2017-03-08,2017-03-10,Venita,Baldwin Bikes,Completed
+572,2017-03-08,762,4,2017-03-09,2017-03-09,Marcelene,Baldwin Bikes,Completed
+842,2017-03-08,763,4,2017-03-10,2017-03-09,Layla,Rowlett Bikes,Completed
+701,2017-03-09,764,4,2017-03-10,2017-03-12,Mireya,Santa Cruz Bikes,Completed
+1152,2017-03-09,765,4,2017-03-11,2017-03-12,Mireya,Santa Cruz Bikes,Completed
+141,2017-03-09,766,4,2017-03-11,2017-03-12,Marcelene,Baldwin Bikes,Completed
+564,2017-03-09,767,4,2017-03-10,2017-03-11,Venita,Baldwin Bikes,Completed
+841,2017-03-09,768,4,2017-03-12,2017-03-10,Venita,Baldwin Bikes,Completed
+946,2017-03-09,769,4,2017-03-11,2017-03-11,Marcelene,Baldwin Bikes,Completed
+135,2017-03-09,770,4,2017-03-11,2017-03-11,Layla,Rowlett Bikes,Completed
+671,2017-03-11,771,4,2017-03-14,2017-03-12,Genna,Santa Cruz Bikes,Completed
+448,2017-03-11,772,4,2017-03-12,2017-03-13,Venita,Baldwin Bikes,Completed
+1385,2017-03-11,773,4,2017-03-12,2017-03-12,Marcelene,Baldwin Bikes,Completed
+690,2017-03-12,774,4,2017-03-14,2017-03-14,Marcelene,Baldwin Bikes,Completed
+968,2017-03-12,775,4,2017-03-13,2017-03-13,Marcelene,Baldwin Bikes,Completed
+490,2017-03-13,776,4,2017-03-15,2017-03-16,Marcelene,Baldwin Bikes,Completed
+496,2017-03-13,777,4,2017-03-16,2017-03-16,Marcelene,Baldwin Bikes,Completed
+56,2017-03-15,778,3,2017-03-15,,Layla,Rowlett Bikes,Rejected
+367,2017-03-15,779,4,2017-03-16,2017-03-18,Marcelene,Baldwin Bikes,Completed
+592,2017-03-15,780,4,2017-03-17,2017-03-17,Marcelene,Baldwin Bikes,Completed
+1018,2017-03-15,781,4,2017-03-16,2017-03-17,Marcelene,Baldwin Bikes,Completed
+1298,2017-03-15,782,4,2017-03-16,2017-03-18,Venita,Baldwin Bikes,Completed
+1343,2017-03-16,783,4,2017-03-19,2017-03-17,Mireya,Santa Cruz Bikes,Completed
+430,2017-03-16,784,4,2017-03-19,2017-03-19,Venita,Baldwin Bikes,Completed
+794,2017-03-18,785,4,2017-03-19,2017-03-20,Mireya,Santa Cruz Bikes,Completed
+249,2017-03-18,786,4,2017-03-20,2017-03-19,Marcelene,Baldwin Bikes,Completed
+700,2017-03-18,787,4,2017-03-20,2017-03-19,Layla,Rowlett Bikes,Completed
+1363,2017-03-18,788,4,2017-03-20,2017-03-20,Layla,Rowlett Bikes,Completed
+772,2017-03-19,789,4,2017-03-20,2017-03-20,Marcelene,Baldwin Bikes,Completed
+1015,2017-03-19,790,4,2017-03-21,2017-03-22,Venita,Baldwin Bikes,Completed
+432,2017-03-20,791,4,2017-03-22,2017-03-23,Marcelene,Baldwin Bikes,Completed
+479,2017-03-22,792,4,2017-03-23,2017-03-24,Marcelene,Baldwin Bikes,Completed
+653,2017-03-23,793,4,2017-03-24,2017-03-24,Marcelene,Baldwin Bikes,Completed
+863,2017-03-23,794,4,2017-03-25,2017-03-24,Venita,Baldwin Bikes,Completed
+992,2017-03-23,795,4,2017-03-25,2017-03-26,Venita,Baldwin Bikes,Completed
+154,2017-03-23,796,4,2017-03-26,2017-03-25,Layla,Rowlett Bikes,Completed
+374,2017-03-24,797,4,2017-03-26,2017-03-26,Venita,Baldwin Bikes,Completed
+619,2017-03-26,798,4,2017-03-28,2017-03-29,Genna,Santa Cruz Bikes,Completed
+607,2017-03-27,799,4,2017-03-28,2017-03-29,Genna,Santa Cruz Bikes,Completed
+1057,2017-03-27,800,4,2017-03-29,2017-03-28,Marcelene,Baldwin Bikes,Completed
+78,2017-03-28,801,4,2017-03-29,2017-03-30,Mireya,Santa Cruz Bikes,Completed
+340,2017-03-28,802,4,2017-03-29,2017-03-30,Marcelene,Baldwin Bikes,Completed
+1105,2017-03-28,803,4,2017-03-31,2017-03-30,Kali,Rowlett Bikes,Completed
+95,2017-03-29,804,4,2017-03-31,2017-03-30,Marcelene,Baldwin Bikes,Completed
+420,2017-03-29,805,4,2017-03-30,2017-04-01,Marcelene,Baldwin Bikes,Completed
+234,2017-03-30,806,4,2017-03-31,2017-03-31,Venita,Baldwin Bikes,Completed
+1148,2017-03-30,807,4,2017-04-01,2017-04-02,Marcelene,Baldwin Bikes,Completed
+315,2017-03-31,808,4,2017-04-02,2017-04-02,Marcelene,Baldwin Bikes,Completed
+1222,2017-03-31,809,4,2017-04-03,2017-04-03,Venita,Baldwin Bikes,Completed
+153,2017-04-01,810,3,2017-04-01,,Kali,Rowlett Bikes,Rejected
+524,2017-04-01,811,4,2017-04-04,2017-04-04,Venita,Baldwin Bikes,Completed
+1164,2017-04-01,812,4,2017-04-02,2017-04-03,Venita,Baldwin Bikes,Completed
+1203,2017-04-01,813,4,2017-04-03,2017-04-02,Layla,Rowlett Bikes,Completed
+629,2017-04-02,814,4,2017-04-05,2017-04-03,Venita,Baldwin Bikes,Completed
+1251,2017-04-03,815,4,2017-04-05,2017-04-04,Genna,Santa Cruz Bikes,Completed
+811,2017-04-03,816,4,2017-04-05,2017-04-05,Marcelene,Baldwin Bikes,Completed
+301,2017-04-04,817,4,2017-04-05,2017-04-07,Venita,Baldwin Bikes,Completed
+1319,2017-04-04,818,4,2017-04-07,2017-04-07,Marcelene,Baldwin Bikes,Completed
+221,2017-04-04,819,4,2017-04-07,2017-04-05,Layla,Rowlett Bikes,Completed
+725,2017-04-05,820,4,2017-04-08,2017-04-07,Venita,Baldwin Bikes,Completed
+1181,2017-04-05,821,4,2017-04-07,2017-04-08,Venita,Baldwin Bikes,Completed
+294,2017-04-06,822,4,2017-04-08,2017-04-09,Venita,Baldwin Bikes,Completed
+415,2017-04-06,823,4,2017-04-07,2017-04-08,Kali,Rowlett Bikes,Completed
+993,2017-04-07,824,4,2017-04-09,2017-04-10,Mireya,Santa Cruz Bikes,Completed
+10,2017-04-07,825,4,2017-04-08,2017-04-09,Venita,Baldwin Bikes,Completed
+45,2017-04-07,826,4,2017-04-10,2017-04-10,Marcelene,Baldwin Bikes,Completed
+666,2017-04-07,827,4,2017-04-10,2017-04-10,Venita,Baldwin Bikes,Completed
+246,2017-04-09,828,4,2017-04-10,2017-04-12,Marcelene,Baldwin Bikes,Completed
+674,2017-04-09,829,4,2017-04-10,2017-04-10,Venita,Baldwin Bikes,Completed
+431,2017-04-11,830,4,2017-04-14,2017-04-12,Marcelene,Baldwin Bikes,Completed
+1000,2017-04-11,831,4,2017-04-12,2017-04-12,Venita,Baldwin Bikes,Completed
+1215,2017-04-11,832,4,2017-04-12,2017-04-12,Venita,Baldwin Bikes,Completed
+406,2017-04-12,833,4,2017-04-14,2017-04-15,Venita,Baldwin Bikes,Completed
+890,2017-04-12,834,4,2017-04-13,2017-04-15,Marcelene,Baldwin Bikes,Completed
+940,2017-04-13,835,4,2017-04-15,2017-04-14,Mireya,Santa Cruz Bikes,Completed
+455,2017-04-13,836,4,2017-04-16,2017-04-14,Marcelene,Baldwin Bikes,Completed
+948,2017-04-13,837,4,2017-04-16,2017-04-14,Venita,Baldwin Bikes,Completed
+1395,2017-04-14,838,4,2017-04-17,2017-04-15,Venita,Baldwin Bikes,Completed
+1332,2017-04-15,839,4,2017-04-18,2017-04-16,Genna,Santa Cruz Bikes,Completed
+372,2017-04-15,840,4,2017-04-16,2017-04-16,Marcelene,Baldwin Bikes,Completed
+428,2017-04-15,841,4,2017-04-18,2017-04-17,Venita,Baldwin Bikes,Completed
+1133,2017-04-15,842,4,2017-04-18,2017-04-16,Marcelene,Baldwin Bikes,Completed
+1059,2017-04-16,843,4,2017-04-17,2017-04-19,Venita,Baldwin Bikes,Completed
+1436,2017-04-16,844,4,2017-04-17,2017-04-18,Marcelene,Baldwin Bikes,Completed
+662,2017-04-17,845,4,2017-04-18,2017-04-18,Venita,Baldwin Bikes,Completed
+715,2017-04-17,846,4,2017-04-19,2017-04-19,Marcelene,Baldwin Bikes,Completed
+329,2017-04-18,847,4,2017-04-19,2017-04-19,Venita,Baldwin Bikes,Completed
+597,2017-04-18,848,4,2017-04-20,2017-04-20,Venita,Baldwin Bikes,Completed
+776,2017-04-19,849,4,2017-04-20,2017-04-21,Mireya,Santa Cruz Bikes,Completed
+1346,2017-04-19,850,4,2017-04-22,2017-04-22,Genna,Santa Cruz Bikes,Completed
+1139,2017-04-20,851,4,2017-04-21,2017-04-22,Marcelene,Baldwin Bikes,Completed
+13,2017-04-21,852,4,2017-04-23,2017-04-22,Layla,Rowlett Bikes,Completed
+883,2017-04-21,853,4,2017-04-24,2017-04-24,Kali,Rowlett Bikes,Completed
+177,2017-04-22,854,4,2017-04-25,2017-04-23,Marcelene,Baldwin Bikes,Completed
+775,2017-04-22,855,4,2017-04-23,2017-04-25,Marcelene,Baldwin Bikes,Completed
+477,2017-04-23,856,4,2017-04-25,2017-04-26,Marcelene,Baldwin Bikes,Completed
+1402,2017-04-24,857,4,2017-04-25,2017-04-26,Venita,Baldwin Bikes,Completed
+162,2017-04-25,858,4,2017-04-27,2017-04-28,Marcelene,Baldwin Bikes,Completed
+644,2017-04-25,859,4,2017-04-26,2017-04-26,Marcelene,Baldwin Bikes,Completed
+473,2017-04-27,860,4,2017-04-29,2017-04-28,Venita,Baldwin Bikes,Completed
+1177,2017-04-27,861,4,2017-04-29,2017-04-30,Venita,Baldwin Bikes,Completed
+1230,2017-04-27,862,4,2017-04-30,2017-04-29,Kali,Rowlett Bikes,Completed
+446,2017-04-28,863,4,2017-04-30,2017-05-01,Venita,Baldwin Bikes,Completed
+902,2017-04-28,864,4,2017-04-30,2017-04-29,Marcelene,Baldwin Bikes,Completed
+974,2017-04-29,865,4,2017-05-02,2017-05-01,Marcelene,Baldwin Bikes,Completed
+1410,2017-04-29,866,4,2017-04-30,2017-05-01,Marcelene,Baldwin Bikes,Completed
+97,2017-05-01,867,4,2017-05-03,2017-05-02,Genna,Santa Cruz Bikes,Completed
+868,2017-05-01,868,4,2017-05-04,2017-05-02,Genna,Santa Cruz Bikes,Completed
+844,2017-05-01,869,4,2017-05-04,2017-05-02,Venita,Baldwin Bikes,Completed
+1416,2017-05-01,870,4,2017-05-04,2017-05-02,Marcelene,Baldwin Bikes,Completed
+358,2017-05-02,871,4,2017-05-04,2017-05-03,Venita,Baldwin Bikes,Completed
+394,2017-05-03,872,4,2017-05-06,2017-05-06,Genna,Santa Cruz Bikes,Completed
+829,2017-05-03,873,4,2017-05-05,2017-05-05,Venita,Baldwin Bikes,Completed
+661,2017-05-04,874,4,2017-05-05,2017-05-06,Venita,Baldwin Bikes,Completed
+386,2017-05-05,875,4,2017-05-06,2017-05-08,Genna,Santa Cruz Bikes,Completed
+1046,2017-05-05,876,4,2017-05-08,2017-05-06,Venita,Baldwin Bikes,Completed
+784,2017-05-06,877,4,2017-05-07,2017-05-08,Marcelene,Baldwin Bikes,Completed
+224,2017-05-07,878,4,2017-05-10,2017-05-09,Genna,Santa Cruz Bikes,Completed
+214,2017-05-08,879,4,2017-05-09,2017-05-09,Venita,Baldwin Bikes,Completed
+1206,2017-05-08,880,4,2017-05-11,2017-05-10,Marcelene,Baldwin Bikes,Completed
+1024,2017-05-08,881,4,2017-05-11,2017-05-11,Layla,Rowlett Bikes,Completed
+196,2017-05-09,882,4,2017-05-12,2017-05-10,Marcelene,Baldwin Bikes,Completed
+507,2017-05-11,883,4,2017-05-13,2017-05-14,Marcelene,Baldwin Bikes,Completed
+871,2017-05-11,884,4,2017-05-13,2017-05-12,Venita,Baldwin Bikes,Completed
+66,2017-05-13,885,3,2017-05-13,,Kali,Rowlett Bikes,Rejected
+1396,2017-05-13,886,4,2017-05-14,2017-05-15,Mireya,Santa Cruz Bikes,Completed
+1195,2017-05-13,887,4,2017-05-15,2017-05-15,Marcelene,Baldwin Bikes,Completed
+1038,2017-05-14,888,4,2017-05-16,2017-05-16,Venita,Baldwin Bikes,Completed
+830,2017-05-14,889,4,2017-05-17,2017-05-15,Kali,Rowlett Bikes,Completed
+171,2017-05-15,890,4,2017-05-18,2017-05-18,Marcelene,Baldwin Bikes,Completed
+384,2017-05-15,891,4,2017-05-18,2017-05-16,Marcelene,Baldwin Bikes,Completed
+651,2017-05-15,892,4,2017-05-18,2017-05-17,Venita,Baldwin Bikes,Completed
+1293,2017-05-16,893,4,2017-05-19,2017-05-19,Venita,Baldwin Bikes,Completed
+1320,2017-05-16,894,4,2017-05-19,2017-05-19,Marcelene,Baldwin Bikes,Completed
+857,2017-05-18,895,4,2017-05-21,2017-05-19,Marcelene,Baldwin Bikes,Completed
+376,2017-05-19,896,4,2017-05-22,2017-05-21,Layla,Rowlett Bikes,Completed
+47,2017-05-20,897,4,2017-05-21,2017-05-21,Mireya,Santa Cruz Bikes,Completed
+352,2017-05-20,898,4,2017-05-21,2017-05-22,Marcelene,Baldwin Bikes,Completed
+605,2017-05-20,899,4,2017-05-21,2017-05-21,Venita,Baldwin Bikes,Completed
+971,2017-05-20,900,4,2017-05-21,2017-05-22,Marcelene,Baldwin Bikes,Completed
+345,2017-05-21,901,4,2017-05-22,2017-05-24,Venita,Baldwin Bikes,Completed
+1278,2017-05-21,902,4,2017-05-24,2017-05-22,Marcelene,Baldwin Bikes,Completed
+179,2017-05-22,903,4,2017-05-23,2017-05-24,Venita,Baldwin Bikes,Completed
+1020,2017-05-23,904,4,2017-05-26,2017-05-24,Mireya,Santa Cruz Bikes,Completed
+609,2017-05-23,905,4,2017-05-26,2017-05-24,Marcelene,Baldwin Bikes,Completed
+877,2017-05-23,906,4,2017-05-26,2017-05-26,Venita,Baldwin Bikes,Completed
+120,2017-05-24,907,4,2017-05-26,2017-05-27,Mireya,Santa Cruz Bikes,Completed
+402,2017-05-25,908,4,2017-05-28,2017-05-27,Venita,Baldwin Bikes,Completed
+188,2017-05-26,909,4,2017-05-27,2017-05-28,Mireya,Santa Cruz Bikes,Completed
+342,2017-05-26,910,4,2017-05-28,2017-05-28,Venita,Baldwin Bikes,Completed
+887,2017-05-26,911,4,2017-05-29,2017-05-29,Marcelene,Baldwin Bikes,Completed
+519,2017-05-27,912,4,2017-05-29,2017-05-29,Mireya,Santa Cruz Bikes,Completed
+699,2017-05-27,913,4,2017-05-29,2017-05-29,Marcelene,Baldwin Bikes,Completed
+1068,2017-05-28,914,4,2017-05-31,2017-05-31,Mireya,Santa Cruz Bikes,Completed
+215,2017-05-28,915,4,2017-05-30,2017-05-30,Marcelene,Baldwin Bikes,Completed
+718,2017-05-28,916,4,2017-05-29,2017-05-29,Marcelene,Baldwin Bikes,Completed
+881,2017-05-29,917,4,2017-05-31,2017-06-01,Mireya,Santa Cruz Bikes,Completed
+242,2017-05-30,918,4,2017-05-31,2017-05-31,Genna,Santa Cruz Bikes,Completed
+781,2017-05-30,919,4,2017-05-31,2017-05-31,Venita,Baldwin Bikes,Completed
+966,2017-05-30,920,4,2017-06-01,2017-06-02,Venita,Baldwin Bikes,Completed
+628,2017-05-31,921,4,2017-06-02,2017-06-02,Marcelene,Baldwin Bikes,Completed
+656,2017-05-31,922,4,2017-06-01,2017-06-03,Marcelene,Baldwin Bikes,Completed
+769,2017-05-31,923,4,2017-06-03,2017-06-02,Venita,Baldwin Bikes,Completed
+68,2017-06-02,924,3,2017-06-02,,Kali,Rowlett Bikes,Rejected
+1316,2017-06-02,925,4,2017-06-05,2017-06-03,Venita,Baldwin Bikes,Completed
+233,2017-06-03,926,4,2017-06-05,2017-06-06,Mireya,Santa Cruz Bikes,Completed
+1438,2017-06-03,927,4,2017-06-05,2017-06-06,Mireya,Santa Cruz Bikes,Completed
+957,2017-06-05,928,4,2017-06-06,2017-06-06,Genna,Santa Cruz Bikes,Completed
+472,2017-06-05,929,4,2017-06-06,2017-06-08,Marcelene,Baldwin Bikes,Completed
+1224,2017-06-05,930,4,2017-06-06,2017-06-06,Layla,Rowlett Bikes,Completed
+631,2017-06-07,931,4,2017-06-08,2017-06-08,Marcelene,Baldwin Bikes,Completed
+804,2017-06-07,932,4,2017-06-08,2017-06-09,Marcelene,Baldwin Bikes,Completed
+909,2017-06-07,933,4,2017-06-10,2017-06-08,Marcelene,Baldwin Bikes,Completed
+93,2017-06-09,934,4,2017-06-10,2017-06-12,Venita,Baldwin Bikes,Completed
+43,2017-06-10,935,3,2017-06-10,,Kali,Rowlett Bikes,Rejected
+265,2017-06-10,936,4,2017-06-13,2017-06-12,Marcelene,Baldwin Bikes,Completed
+73,2017-06-11,937,4,2017-06-14,2017-06-13,Venita,Baldwin Bikes,Completed
+129,2017-06-11,938,4,2017-06-12,2017-06-12,Marcelene,Baldwin Bikes,Completed
+1407,2017-06-11,939,4,2017-06-12,2017-06-14,Marcelene,Baldwin Bikes,Completed
+585,2017-06-12,940,4,2017-06-14,2017-06-13,Mireya,Santa Cruz Bikes,Completed
+736,2017-06-12,941,4,2017-06-14,2017-06-14,Mireya,Santa Cruz Bikes,Completed
+537,2017-06-13,942,4,2017-06-16,2017-06-15,Marcelene,Baldwin Bikes,Completed
+1025,2017-06-13,943,4,2017-06-15,2017-06-15,Marcelene,Baldwin Bikes,Completed
+138,2017-06-14,944,4,2017-06-15,2017-06-17,Genna,Santa Cruz Bikes,Completed
+167,2017-06-14,945,4,2017-06-15,2017-06-16,Venita,Baldwin Bikes,Completed
+525,2017-06-14,946,4,2017-06-16,2017-06-15,Marcelene,Baldwin Bikes,Completed
+278,2017-06-15,947,4,2017-06-18,2017-06-17,Genna,Santa Cruz Bikes,Completed
+618,2017-06-15,948,4,2017-06-17,2017-06-17,Marcelene,Baldwin Bikes,Completed
+867,2017-06-16,949,4,2017-06-18,2017-06-17,Genna,Santa Cruz Bikes,Completed
+142,2017-06-16,950,4,2017-06-19,2017-06-18,Marcelene,Baldwin Bikes,Completed
+339,2017-06-16,951,4,2017-06-19,2017-06-19,Venita,Baldwin Bikes,Completed
+355,2017-06-16,952,4,2017-06-18,2017-06-18,Venita,Baldwin Bikes,Completed
+658,2017-06-16,953,4,2017-06-18,2017-06-17,Venita,Baldwin Bikes,Completed
+611,2017-06-17,954,4,2017-06-20,2017-06-20,Marcelene,Baldwin Bikes,Completed
+880,2017-06-17,955,4,2017-06-19,2017-06-18,Marcelene,Baldwin Bikes,Completed
+1184,2017-06-17,956,4,2017-06-19,2017-06-20,Marcelene,Baldwin Bikes,Completed
+722,2017-06-17,957,4,2017-06-20,2017-06-20,Layla,Rowlett Bikes,Completed
+1276,2017-06-18,958,4,2017-06-20,2017-06-19,Mireya,Santa Cruz Bikes,Completed
+650,2017-06-18,959,4,2017-06-21,2017-06-21,Venita,Baldwin Bikes,Completed
+1390,2017-06-18,960,4,2017-06-19,2017-06-19,Venita,Baldwin Bikes,Completed
+82,2017-06-19,961,4,2017-06-21,2017-06-22,Mireya,Santa Cruz Bikes,Completed
+570,2017-06-19,962,4,2017-06-22,2017-06-20,Venita,Baldwin Bikes,Completed
+1432,2017-06-19,963,4,2017-06-21,2017-06-21,Marcelene,Baldwin Bikes,Completed
+404,2017-06-20,964,4,2017-06-22,2017-06-22,Venita,Baldwin Bikes,Completed
+457,2017-06-20,965,4,2017-06-22,2017-06-23,Marcelene,Baldwin Bikes,Completed
+389,2017-06-20,966,4,2017-06-22,2017-06-22,Kali,Rowlett Bikes,Completed
+1323,2017-06-21,967,4,2017-06-24,2017-06-24,Marcelene,Baldwin Bikes,Completed
+1403,2017-06-21,968,4,2017-06-23,2017-06-23,Marcelene,Baldwin Bikes,Completed
+248,2017-06-21,969,4,2017-06-24,2017-06-22,Layla,Rowlett Bikes,Completed
+836,2017-06-22,970,4,2017-06-25,2017-06-23,Venita,Baldwin Bikes,Completed
+1426,2017-06-22,971,4,2017-06-23,2017-06-24,Kali,Rowlett Bikes,Completed
+270,2017-06-23,972,4,2017-06-24,2017-06-25,Venita,Baldwin Bikes,Completed
+238,2017-06-24,973,4,2017-06-27,2017-06-27,Marcelene,Baldwin Bikes,Completed
+511,2017-06-24,974,4,2017-06-27,2017-06-27,Kali,Rowlett Bikes,Completed
+1092,2017-06-25,975,4,2017-06-27,2017-06-28,Marcelene,Baldwin Bikes,Completed
+1266,2017-06-25,976,4,2017-06-28,2017-06-27,Layla,Rowlett Bikes,Completed
+400,2017-06-26,977,4,2017-06-28,2017-06-27,Venita,Baldwin Bikes,Completed
+1123,2017-06-26,978,4,2017-06-28,2017-06-27,Marcelene,Baldwin Bikes,Completed
+1190,2017-06-26,979,4,2017-06-29,2017-06-27,Marcelene,Baldwin Bikes,Completed
+328,2017-06-26,980,4,2017-06-28,2017-06-27,Layla,Rowlett Bikes,Completed
+687,2017-06-26,981,4,2017-06-29,2017-06-28,Kali,Rowlett Bikes,Completed
+1423,2017-06-26,982,4,2017-06-29,2017-06-28,Layla,Rowlett Bikes,Completed
+1158,2017-06-27,983,4,2017-06-28,2017-06-29,Marcelene,Baldwin Bikes,Completed
+1287,2017-06-27,984,4,2017-06-28,2017-06-29,Venita,Baldwin Bikes,Completed
+461,2017-06-30,985,4,2017-07-02,2017-07-01,Marcelene,Baldwin Bikes,Completed
+556,2017-06-30,986,4,2017-07-03,2017-07-01,Venita,Baldwin Bikes,Completed
+172,2017-07-02,987,4,2017-07-04,2017-07-04,Mireya,Santa Cruz Bikes,Completed
+436,2017-07-02,988,4,2017-07-04,2017-07-05,Marcelene,Baldwin Bikes,Completed
+1145,2017-07-02,989,4,2017-07-04,2017-07-03,Marcelene,Baldwin Bikes,Completed
+706,2017-07-04,990,4,2017-07-07,2017-07-07,Venita,Baldwin Bikes,Completed
+751,2017-07-06,991,4,2017-07-07,2017-07-09,Mireya,Santa Cruz Bikes,Completed
+723,2017-07-07,992,4,2017-07-10,2017-07-09,Venita,Baldwin Bikes,Completed
+1415,2017-07-09,993,4,2017-07-11,2017-07-11,Genna,Santa Cruz Bikes,Completed
+419,2017-07-09,994,4,2017-07-11,2017-07-11,Venita,Baldwin Bikes,Completed
+621,2017-07-11,995,4,2017-07-13,2017-07-14,Mireya,Santa Cruz Bikes,Completed
+915,2017-07-11,996,4,2017-07-12,2017-07-12,Mireya,Santa Cruz Bikes,Completed
+485,2017-07-11,997,4,2017-07-13,2017-07-14,Venita,Baldwin Bikes,Completed
+219,2017-07-12,998,4,2017-07-13,2017-07-14,Venita,Baldwin Bikes,Completed
+590,2017-07-12,999,4,2017-07-13,2017-07-14,Marcelene,Baldwin Bikes,Completed
+645,2017-07-12,1000,4,2017-07-14,2017-07-15,Venita,Baldwin Bikes,Completed
+354,2017-07-13,1001,4,2017-07-16,2017-07-15,Marcelene,Baldwin Bikes,Completed
+1418,2017-07-14,1002,4,2017-07-16,2017-07-16,Genna,Santa Cruz Bikes,Completed
+503,2017-07-14,1003,4,2017-07-16,2017-07-16,Venita,Baldwin Bikes,Completed
+1389,2017-07-14,1004,4,2017-07-17,2017-07-16,Marcelene,Baldwin Bikes,Completed
+266,2017-07-15,1005,4,2017-07-17,2017-07-16,Venita,Baldwin Bikes,Completed
+1070,2017-07-15,1006,4,2017-07-18,2017-07-17,Venita,Baldwin Bikes,Completed
+1115,2017-07-16,1007,4,2017-07-17,2017-07-17,Marcelene,Baldwin Bikes,Completed
+1345,2017-07-16,1008,4,2017-07-18,2017-07-18,Marcelene,Baldwin Bikes,Completed
+1064,2017-07-16,1009,4,2017-07-19,2017-07-19,Kali,Rowlett Bikes,Completed
+8,2017-07-18,1010,3,2017-07-18,,Venita,Baldwin Bikes,Rejected
+495,2017-07-18,1011,4,2017-07-21,2017-07-21,Genna,Santa Cruz Bikes,Completed
+620,2017-07-18,1012,4,2017-07-20,2017-07-20,Venita,Baldwin Bikes,Completed
+174,2017-07-19,1013,4,2017-07-22,2017-07-21,Marcelene,Baldwin Bikes,Completed
+748,2017-07-19,1014,4,2017-07-21,2017-07-21,Marcelene,Baldwin Bikes,Completed
+799,2017-07-19,1015,4,2017-07-22,2017-07-21,Venita,Baldwin Bikes,Completed
+1417,2017-07-19,1016,4,2017-07-20,2017-07-21,Layla,Rowlett Bikes,Completed
+168,2017-07-20,1017,4,2017-07-21,2017-07-23,Marcelene,Baldwin Bikes,Completed
+290,2017-07-22,1018,4,2017-07-23,2017-07-23,Marcelene,Baldwin Bikes,Completed
+408,2017-07-22,1019,4,2017-07-23,2017-07-24,Venita,Baldwin Bikes,Completed
+16,2017-07-23,1020,3,2017-07-23,,Marcelene,Baldwin Bikes,Rejected
+125,2017-07-23,1021,4,2017-07-24,2017-07-26,Marcelene,Baldwin Bikes,Completed
+353,2017-07-23,1022,4,2017-07-26,2017-07-24,Venita,Baldwin Bikes,Completed
+356,2017-07-23,1023,4,2017-07-26,2017-07-25,Marcelene,Baldwin Bikes,Completed
+837,2017-07-23,1024,4,2017-07-25,2017-07-26,Venita,Baldwin Bikes,Completed
+1304,2017-07-23,1025,4,2017-07-26,2017-07-26,Marcelene,Baldwin Bikes,Completed
+1370,2017-07-26,1026,4,2017-07-28,2017-07-29,Mireya,Santa Cruz Bikes,Completed
+588,2017-07-26,1027,4,2017-07-28,2017-07-28,Marcelene,Baldwin Bikes,Completed
+1273,2017-07-27,1028,4,2017-07-28,2017-07-30,Venita,Baldwin Bikes,Completed
+407,2017-07-29,1029,4,2017-07-30,2017-08-01,Genna,Santa Cruz Bikes,Completed
+161,2017-07-29,1030,4,2017-07-30,2017-07-31,Marcelene,Baldwin Bikes,Completed
+1308,2017-07-30,1031,4,2017-08-01,2017-08-02,Mireya,Santa Cruz Bikes,Completed
+429,2017-07-30,1032,4,2017-08-02,2017-08-01,Marcelene,Baldwin Bikes,Completed
+582,2017-07-30,1033,4,2017-07-31,2017-08-02,Venita,Baldwin Bikes,Completed
+895,2017-07-30,1034,4,2017-07-31,2017-07-31,Venita,Baldwin Bikes,Completed
+1283,2017-07-30,1035,4,2017-08-02,2017-08-02,Marcelene,Baldwin Bikes,Completed
+1442,2017-07-30,1036,4,2017-08-01,2017-07-31,Marcelene,Baldwin Bikes,Completed
+1229,2017-07-31,1037,4,2017-08-02,2017-08-03,Marcelene,Baldwin Bikes,Completed
+1281,2017-07-31,1038,4,2017-08-01,2017-08-03,Venita,Baldwin Bikes,Completed
+1077,2017-08-02,1039,4,2017-08-04,2017-08-03,Venita,Baldwin Bikes,Completed
+1225,2017-08-04,1040,4,2017-08-07,2017-08-05,Mireya,Santa Cruz Bikes,Completed
+70,2017-08-04,1041,4,2017-08-06,2017-08-05,Venita,Baldwin Bikes,Completed
+539,2017-08-06,1042,4,2017-08-07,2017-08-07,Venita,Baldwin Bikes,Completed
+1235,2017-08-06,1043,4,2017-08-09,2017-08-08,Marcelene,Baldwin Bikes,Completed
+1270,2017-08-07,1044,4,2017-08-10,2017-08-08,Venita,Baldwin Bikes,Completed
+185,2017-08-07,1045,4,2017-08-09,2017-08-10,Layla,Rowlett Bikes,Completed
+1134,2017-08-07,1046,4,2017-08-09,2017-08-08,Kali,Rowlett Bikes,Completed
+116,2017-08-08,1047,3,2017-08-08,,Kali,Rowlett Bikes,Rejected
+777,2017-08-08,1048,4,2017-08-10,2017-08-09,Venita,Baldwin Bikes,Completed
+194,2017-08-09,1049,4,2017-08-11,2017-08-10,Mireya,Santa Cruz Bikes,Completed
+239,2017-08-09,1050,4,2017-08-12,2017-08-12,Genna,Santa Cruz Bikes,Completed
+209,2017-08-10,1051,4,2017-08-11,2017-08-11,Venita,Baldwin Bikes,Completed
+460,2017-08-10,1052,4,2017-08-12,2017-08-13,Marcelene,Baldwin Bikes,Completed
+1439,2017-08-10,1053,4,2017-08-11,2017-08-12,Marcelene,Baldwin Bikes,Completed
+189,2017-08-11,1054,4,2017-08-12,2017-08-12,Venita,Baldwin Bikes,Completed
+140,2017-08-12,1055,4,2017-08-15,2017-08-15,Marcelene,Baldwin Bikes,Completed
+325,2017-08-12,1056,4,2017-08-15,2017-08-13,Venita,Baldwin Bikes,Completed
+456,2017-08-12,1057,4,2017-08-15,2017-08-13,Venita,Baldwin Bikes,Completed
+782,2017-08-13,1058,4,2017-08-16,2017-08-14,Marcelene,Baldwin Bikes,Completed
+6,2017-08-14,1059,4,2017-08-17,2017-08-17,Venita,Baldwin Bikes,Completed
+182,2017-08-15,1060,4,2017-08-18,2017-08-17,Marcelene,Baldwin Bikes,Completed
+655,2017-08-15,1061,4,2017-08-18,2017-08-18,Venita,Baldwin Bikes,Completed
+1210,2017-08-15,1062,4,2017-08-17,2017-08-18,Marcelene,Baldwin Bikes,Completed
+198,2017-08-16,1063,4,2017-08-19,2017-08-19,Kali,Rowlett Bikes,Completed
+898,2017-08-16,1064,4,2017-08-18,2017-08-19,Layla,Rowlett Bikes,Completed
+25,2017-08-17,1065,4,2017-08-19,2017-08-19,Venita,Baldwin Bikes,Completed
+106,2017-08-17,1066,4,2017-08-20,2017-08-19,Venita,Baldwin Bikes,Completed
+225,2017-08-17,1067,4,2017-08-19,2017-08-19,Venita,Baldwin Bikes,Completed
+453,2017-08-17,1068,4,2017-08-20,2017-08-19,Venita,Baldwin Bikes,Completed
+493,2017-08-17,1069,4,2017-08-19,2017-08-18,Marcelene,Baldwin Bikes,Completed
+596,2017-08-17,1070,4,2017-08-20,2017-08-18,Venita,Baldwin Bikes,Completed
+602,2017-08-17,1071,4,2017-08-20,2017-08-18,Kali,Rowlett Bikes,Completed
+47,2017-08-18,1072,3,2017-08-18,,Genna,Santa Cruz Bikes,Rejected
+911,2017-08-18,1073,4,2017-08-19,2017-08-21,Venita,Baldwin Bikes,Completed
+11,2017-08-19,1074,3,2017-08-19,,Marcelene,Baldwin Bikes,Rejected
+1003,2017-08-19,1075,4,2017-08-21,2017-08-22,Genna,Santa Cruz Bikes,Completed
+42,2017-08-19,1076,4,2017-08-22,2017-08-22,Marcelene,Baldwin Bikes,Completed
+412,2017-08-19,1077,4,2017-08-20,2017-08-21,Marcelene,Baldwin Bikes,Completed
+793,2017-08-19,1078,4,2017-08-21,2017-08-20,Marcelene,Baldwin Bikes,Completed
+812,2017-08-19,1079,4,2017-08-20,2017-08-20,Venita,Baldwin Bikes,Completed
+1086,2017-08-19,1080,4,2017-08-20,2017-08-20,Venita,Baldwin Bikes,Completed
+1106,2017-08-19,1081,4,2017-08-22,2017-08-22,Marcelene,Baldwin Bikes,Completed
+1327,2017-08-20,1082,4,2017-08-22,2017-08-21,Marcelene,Baldwin Bikes,Completed
+1372,2017-08-20,1083,4,2017-08-23,2017-08-23,Marcelene,Baldwin Bikes,Completed
+2,2017-08-21,1084,4,2017-08-24,2017-08-23,Mireya,Santa Cruz Bikes,Completed
+305,2017-08-21,1085,4,2017-08-23,2017-08-23,Genna,Santa Cruz Bikes,Completed
+220,2017-08-21,1086,4,2017-08-23,2017-08-24,Venita,Baldwin Bikes,Completed
+675,2017-08-22,1087,4,2017-08-23,2017-08-25,Kali,Rowlett Bikes,Completed
+1160,2017-08-22,1088,4,2017-08-23,2017-08-23,Kali,Rowlett Bikes,Completed
+46,2017-08-23,1089,3,2017-08-23,,Mireya,Santa Cruz Bikes,Rejected
+1427,2017-08-24,1090,4,2017-08-26,2017-08-26,Mireya,Santa Cruz Bikes,Completed
+1260,2017-08-24,1091,4,2017-08-25,2017-08-25,Venita,Baldwin Bikes,Completed
+40,2017-08-25,1092,4,2017-08-28,2017-08-27,Mireya,Santa Cruz Bikes,Completed
+326,2017-08-25,1093,4,2017-08-28,2017-08-26,Genna,Santa Cruz Bikes,Completed
+828,2017-08-25,1094,4,2017-08-27,2017-08-28,Marcelene,Baldwin Bikes,Completed
+1382,2017-08-26,1095,4,2017-08-28,2017-08-27,Layla,Rowlett Bikes,Completed
+589,2017-08-27,1096,4,2017-08-29,2017-08-29,Mireya,Santa Cruz Bikes,Completed
+1311,2017-08-27,1097,4,2017-08-30,2017-08-28,Marcelene,Baldwin Bikes,Completed
+752,2017-08-28,1098,4,2017-08-30,2017-08-30,Mireya,Santa Cruz Bikes,Completed
+1128,2017-08-28,1099,4,2017-08-29,2017-08-30,Marcelene,Baldwin Bikes,Completed
+1392,2017-08-28,1100,4,2017-08-29,2017-08-29,Venita,Baldwin Bikes,Completed
+379,2017-08-29,1101,4,2017-08-30,2017-08-30,Venita,Baldwin Bikes,Completed
+1317,2017-08-29,1102,4,2017-08-31,2017-08-31,Marcelene,Baldwin Bikes,Completed
+1394,2017-08-31,1103,4,2017-09-02,2017-09-02,Venita,Baldwin Bikes,Completed
+268,2017-09-01,1104,4,2017-09-04,2017-09-03,Marcelene,Baldwin Bikes,Completed
+747,2017-09-01,1105,4,2017-09-04,2017-09-03,Kali,Rowlett Bikes,Completed
+1009,2017-09-02,1106,4,2017-09-04,2017-09-04,Marcelene,Baldwin Bikes,Completed
+1424,2017-09-02,1107,4,2017-09-05,2017-09-05,Venita,Baldwin Bikes,Completed
+735,2017-09-03,1108,4,2017-09-05,2017-09-04,Genna,Santa Cruz Bikes,Completed
+23,2017-09-03,1109,4,2017-09-04,2017-09-04,Marcelene,Baldwin Bikes,Completed
+912,2017-09-04,1110,4,2017-09-07,2017-09-07,Marcelene,Baldwin Bikes,Completed
+930,2017-09-04,1111,4,2017-09-06,2017-09-05,Marcelene,Baldwin Bikes,Completed
+798,2017-09-05,1112,4,2017-09-08,2017-09-07,Venita,Baldwin Bikes,Completed
+388,2017-09-06,1113,4,2017-09-08,2017-09-07,Venita,Baldwin Bikes,Completed
+1036,2017-09-06,1114,4,2017-09-08,2017-09-08,Marcelene,Baldwin Bikes,Completed
+1100,2017-09-07,1115,4,2017-09-09,2017-09-09,Marcelene,Baldwin Bikes,Completed
+52,2017-09-08,1116,4,2017-09-10,2017-09-10,Venita,Baldwin Bikes,Completed
+334,2017-09-08,1117,4,2017-09-10,2017-09-10,Marcelene,Baldwin Bikes,Completed
+1023,2017-09-08,1118,4,2017-09-11,2017-09-11,Marcelene,Baldwin Bikes,Completed
+749,2017-09-10,1119,4,2017-09-12,2017-09-13,Mireya,Santa Cruz Bikes,Completed
+1269,2017-09-10,1120,4,2017-09-12,2017-09-13,Venita,Baldwin Bikes,Completed
+143,2017-09-11,1121,4,2017-09-13,2017-09-12,Venita,Baldwin Bikes,Completed
+1132,2017-09-12,1122,4,2017-09-14,2017-09-14,Marcelene,Baldwin Bikes,Completed
+598,2017-09-13,1123,4,2017-09-14,2017-09-14,Venita,Baldwin Bikes,Completed
+275,2017-09-13,1124,4,2017-09-14,2017-09-16,Layla,Rowlett Bikes,Completed
+945,2017-09-14,1125,4,2017-09-15,2017-09-15,Venita,Baldwin Bikes,Completed
+1213,2017-09-14,1126,4,2017-09-16,2017-09-15,Kali,Rowlett Bikes,Completed
+494,2017-09-15,1127,4,2017-09-16,2017-09-16,Venita,Baldwin Bikes,Completed
+936,2017-09-15,1128,4,2017-09-17,2017-09-16,Marcelene,Baldwin Bikes,Completed
+663,2017-09-17,1129,4,2017-09-18,2017-09-20,Marcelene,Baldwin Bikes,Completed
+69,2017-09-18,1130,4,2017-09-20,2017-09-20,Genna,Santa Cruz Bikes,Completed
+1178,2017-09-18,1131,4,2017-09-20,2017-09-19,Genna,Santa Cruz Bikes,Completed
+351,2017-09-19,1132,4,2017-09-20,2017-09-20,Marcelene,Baldwin Bikes,Completed
+517,2017-09-19,1133,4,2017-09-21,2017-09-21,Venita,Baldwin Bikes,Completed
+978,2017-09-19,1134,4,2017-09-22,2017-09-20,Marcelene,Baldwin Bikes,Completed
+1347,2017-09-19,1135,4,2017-09-21,2017-09-20,Marcelene,Baldwin Bikes,Completed
+1050,2017-09-20,1136,4,2017-09-21,2017-09-21,Marcelene,Baldwin Bikes,Completed
+810,2017-09-20,1137,4,2017-09-23,2017-09-23,Kali,Rowlett Bikes,Completed
+254,2017-09-21,1138,4,2017-09-23,2017-09-22,Mireya,Santa Cruz Bikes,Completed
+1006,2017-09-21,1139,4,2017-09-22,2017-09-23,Mireya,Santa Cruz Bikes,Completed
+1063,2017-09-21,1140,4,2017-09-22,2017-09-22,Kali,Rowlett Bikes,Completed
+1076,2017-09-22,1141,4,2017-09-23,2017-09-24,Mireya,Santa Cruz Bikes,Completed
+554,2017-09-23,1142,4,2017-09-26,2017-09-26,Genna,Santa Cruz Bikes,Completed
+1087,2017-09-24,1143,4,2017-09-26,2017-09-27,Mireya,Santa Cruz Bikes,Completed
+1414,2017-09-24,1144,4,2017-09-27,2017-09-27,Venita,Baldwin Bikes,Completed
+617,2017-09-25,1145,4,2017-09-27,2017-09-26,Marcelene,Baldwin Bikes,Completed
+757,2017-09-25,1146,4,2017-09-26,2017-09-28,Venita,Baldwin Bikes,Completed
+1344,2017-09-25,1147,4,2017-09-26,2017-09-27,Marcelene,Baldwin Bikes,Completed
+1379,2017-09-25,1148,4,2017-09-26,2017-09-27,Venita,Baldwin Bikes,Completed
+787,2017-09-27,1149,4,2017-09-30,2017-09-30,Venita,Baldwin Bikes,Completed
+1183,2017-09-28,1150,4,2017-10-01,2017-09-30,Venita,Baldwin Bikes,Completed
+708,2017-09-29,1151,4,2017-09-30,2017-09-30,Genna,Santa Cruz Bikes,Completed
+1244,2017-09-29,1152,4,2017-10-02,2017-10-01,Marcelene,Baldwin Bikes,Completed
+720,2017-09-30,1153,4,2017-10-03,2017-10-03,Venita,Baldwin Bikes,Completed
+789,2017-09-30,1154,4,2017-10-03,2017-10-03,Venita,Baldwin Bikes,Completed
+865,2017-09-30,1155,4,2017-10-01,2017-10-01,Venita,Baldwin Bikes,Completed
+869,2017-09-30,1156,4,2017-10-03,2017-10-03,Venita,Baldwin Bikes,Completed
+24,2017-10-01,1157,4,2017-10-03,2017-10-04,Genna,Santa Cruz Bikes,Completed
+889,2017-10-01,1158,4,2017-10-03,2017-10-02,Mireya,Santa Cruz Bikes,Completed
+1221,2017-10-01,1159,4,2017-10-02,2017-10-03,Genna,Santa Cruz Bikes,Completed
+1262,2017-10-01,1160,4,2017-10-02,2017-10-04,Mireya,Santa Cruz Bikes,Completed
+41,2017-10-01,1161,4,2017-10-04,2017-10-02,Venita,Baldwin Bikes,Completed
+888,2017-10-01,1162,4,2017-10-03,2017-10-03,Marcelene,Baldwin Bikes,Completed
+934,2017-10-01,1163,4,2017-10-02,2017-10-02,Marcelene,Baldwin Bikes,Completed
+1067,2017-10-01,1164,4,2017-10-02,2017-10-03,Marcelene,Baldwin Bikes,Completed
+652,2017-10-02,1165,4,2017-10-03,2017-10-05,Venita,Baldwin Bikes,Completed
+286,2017-10-03,1166,4,2017-10-04,2017-10-04,Venita,Baldwin Bikes,Completed
+900,2017-10-04,1167,4,2017-10-07,2017-10-06,Mireya,Santa Cruz Bikes,Completed
+1031,2017-10-04,1168,4,2017-10-05,2017-10-06,Marcelene,Baldwin Bikes,Completed
+1421,2017-10-04,1169,4,2017-10-06,2017-10-07,Venita,Baldwin Bikes,Completed
+534,2017-10-05,1170,4,2017-10-07,2017-10-06,Marcelene,Baldwin Bikes,Completed
+826,2017-10-05,1171,4,2017-10-06,2017-10-08,Marcelene,Baldwin Bikes,Completed
+1339,2017-10-07,1172,4,2017-10-10,2017-10-09,Venita,Baldwin Bikes,Completed
+548,2017-10-08,1173,4,2017-10-10,2017-10-09,Venita,Baldwin Bikes,Completed
+1109,2017-10-08,1174,4,2017-10-10,2017-10-11,Marcelene,Baldwin Bikes,Completed
+292,2017-10-09,1175,4,2017-10-11,2017-10-12,Marcelene,Baldwin Bikes,Completed
+1111,2017-10-10,1176,4,2017-10-13,2017-10-11,Layla,Rowlett Bikes,Completed
+21,2017-10-12,1177,3,2017-10-12,,Layla,Rowlett Bikes,Rejected
+771,2017-10-12,1178,4,2017-10-15,2017-10-13,Marcelene,Baldwin Bikes,Completed
+1150,2017-10-12,1179,4,2017-10-15,2017-10-15,Layla,Rowlett Bikes,Completed
+1065,2017-10-13,1180,4,2017-10-16,2017-10-16,Genna,Santa Cruz Bikes,Completed
+1022,2017-10-13,1181,4,2017-10-16,2017-10-15,Venita,Baldwin Bikes,Completed
+1422,2017-10-13,1182,4,2017-10-14,2017-10-16,Venita,Baldwin Bikes,Completed
+216,2017-10-14,1183,4,2017-10-17,2017-10-17,Marcelene,Baldwin Bikes,Completed
+369,2017-10-14,1184,4,2017-10-15,2017-10-16,Marcelene,Baldwin Bikes,Completed
+960,2017-10-14,1185,4,2017-10-16,2017-10-17,Marcelene,Baldwin Bikes,Completed
+1120,2017-10-14,1186,4,2017-10-16,2017-10-15,Marcelene,Baldwin Bikes,Completed
+486,2017-10-15,1187,4,2017-10-18,2017-10-16,Marcelene,Baldwin Bikes,Completed
+647,2017-10-15,1188,4,2017-10-18,2017-10-17,Venita,Baldwin Bikes,Completed
+1090,2017-10-15,1189,4,2017-10-17,2017-10-18,Marcelene,Baldwin Bikes,Completed
+34,2017-10-16,1190,4,2017-10-19,2017-10-17,Marcelene,Baldwin Bikes,Completed
+186,2017-10-17,1191,4,2017-10-18,2017-10-18,Marcelene,Baldwin Bikes,Completed
+1114,2017-10-17,1192,4,2017-10-19,2017-10-18,Marcelene,Baldwin Bikes,Completed
+1412,2017-10-17,1193,4,2017-10-19,2017-10-19,Venita,Baldwin Bikes,Completed
+192,2017-10-19,1194,4,2017-10-22,2017-10-22,Mireya,Santa Cruz Bikes,Completed
+229,2017-10-19,1195,4,2017-10-21,2017-10-21,Venita,Baldwin Bikes,Completed
+508,2017-10-19,1196,4,2017-10-21,2017-10-20,Marcelene,Baldwin Bikes,Completed
+269,2017-10-21,1197,4,2017-10-23,2017-10-23,Marcelene,Baldwin Bikes,Completed
+1289,2017-10-22,1198,4,2017-10-24,2017-10-24,Venita,Baldwin Bikes,Completed
+318,2017-10-23,1199,4,2017-10-24,2017-10-26,Mireya,Santa Cruz Bikes,Completed
+48,2017-10-23,1200,4,2017-10-25,2017-10-26,Marcelene,Baldwin Bikes,Completed
+201,2017-10-23,1201,4,2017-10-24,2017-10-24,Marcelene,Baldwin Bikes,Completed
+593,2017-10-24,1202,4,2017-10-25,2017-10-25,Marcelene,Baldwin Bikes,Completed
+1191,2017-10-25,1203,4,2017-10-27,2017-10-26,Venita,Baldwin Bikes,Completed
+1277,2017-10-25,1204,4,2017-10-28,2017-10-28,Marcelene,Baldwin Bikes,Completed
+1091,2017-10-26,1205,4,2017-10-28,2017-10-28,Mireya,Santa Cruz Bikes,Completed
+222,2017-10-26,1206,4,2017-10-29,2017-10-29,Marcelene,Baldwin Bikes,Completed
+1002,2017-10-26,1207,4,2017-10-28,2017-10-27,Marcelene,Baldwin Bikes,Completed
+1226,2017-10-26,1208,4,2017-10-28,2017-10-27,Venita,Baldwin Bikes,Completed
+1342,2017-10-26,1209,4,2017-10-27,2017-10-29,Venita,Baldwin Bikes,Completed
+730,2017-10-26,1210,4,2017-10-27,2017-10-29,Kali,Rowlett Bikes,Completed
+19,2017-10-27,1211,4,2017-10-28,2017-10-29,Venita,Baldwin Bikes,Completed
+213,2017-10-27,1212,4,2017-10-30,2017-10-29,Marcelene,Baldwin Bikes,Completed
+669,2017-10-27,1213,4,2017-10-29,2017-10-29,Layla,Rowlett Bikes,Completed
+783,2017-10-28,1214,4,2017-10-29,2017-10-29,Marcelene,Baldwin Bikes,Completed
+807,2017-10-28,1215,4,2017-10-31,2017-10-30,Venita,Baldwin Bikes,Completed
+886,2017-10-28,1216,4,2017-10-30,2017-10-29,Venita,Baldwin Bikes,Completed
+1155,2017-10-28,1217,4,2017-10-31,2017-10-30,Venita,Baldwin Bikes,Completed
+1017,2017-10-30,1218,4,2017-11-01,2017-10-31,Mireya,Santa Cruz Bikes,Completed
+840,2017-10-30,1219,4,2017-11-02,2017-11-02,Venita,Baldwin Bikes,Completed
+803,2017-10-31,1220,4,2017-11-03,2017-11-03,Marcelene,Baldwin Bikes,Completed
+1290,2017-10-31,1221,4,2017-11-02,2017-11-01,Venita,Baldwin Bikes,Completed
+482,2017-11-01,1222,4,2017-11-04,2017-11-03,Layla,Rowlett Bikes,Completed
+1207,2017-11-02,1223,4,2017-11-03,2017-11-03,Marcelene,Baldwin Bikes,Completed
+544,2017-11-03,1224,4,2017-11-04,2017-11-04,Marcelene,Baldwin Bikes,Completed
+768,2017-11-04,1225,4,2017-11-05,2017-11-07,Mireya,Santa Cruz Bikes,Completed
+226,2017-11-04,1226,4,2017-11-07,2017-11-06,Venita,Baldwin Bikes,Completed
+702,2017-11-04,1227,4,2017-11-07,2017-11-06,Marcelene,Baldwin Bikes,Completed
+1041,2017-11-04,1228,4,2017-11-06,2017-11-06,Marcelene,Baldwin Bikes,Completed
+89,2017-11-05,1229,4,2017-11-08,2017-11-06,Genna,Santa Cruz Bikes,Completed
+1107,2017-11-05,1230,4,2017-11-06,2017-11-07,Marcelene,Baldwin Bikes,Completed
+1180,2017-11-05,1231,4,2017-11-07,2017-11-06,Marcelene,Baldwin Bikes,Completed
+665,2017-11-06,1232,4,2017-11-07,2017-11-09,Genna,Santa Cruz Bikes,Completed
+462,2017-11-06,1233,4,2017-11-07,2017-11-08,Marcelene,Baldwin Bikes,Completed
+19,2017-11-07,1234,3,2017-11-07,,Marcelene,Baldwin Bikes,Rejected
+210,2017-11-07,1235,4,2017-11-08,2017-11-09,Marcelene,Baldwin Bikes,Completed
+243,2017-11-08,1236,4,2017-11-11,2017-11-09,Venita,Baldwin Bikes,Completed
+571,2017-11-09,1237,4,2017-11-12,2017-11-11,Mireya,Santa Cruz Bikes,Completed
+998,2017-11-09,1238,4,2017-11-10,2017-11-11,Marcelene,Baldwin Bikes,Completed
+1197,2017-11-09,1239,4,2017-11-10,2017-11-11,Venita,Baldwin Bikes,Completed
+903,2017-11-10,1240,4,2017-11-11,2017-11-11,Venita,Baldwin Bikes,Completed
+1170,2017-11-10,1241,4,2017-11-12,2017-11-11,Venita,Baldwin Bikes,Completed
+303,2017-11-11,1242,4,2017-11-12,2017-11-12,Marcelene,Baldwin Bikes,Completed
+346,2017-11-11,1243,4,2017-11-13,2017-11-14,Marcelene,Baldwin Bikes,Completed
+333,2017-11-12,1244,4,2017-11-14,2017-11-13,Marcelene,Baldwin Bikes,Completed
+1166,2017-11-13,1245,4,2017-11-16,2017-11-14,Venita,Baldwin Bikes,Completed
+1329,2017-11-13,1246,4,2017-11-16,2017-11-16,Venita,Baldwin Bikes,Completed
+426,2017-11-16,1247,4,2017-11-18,2017-11-17,Mireya,Santa Cruz Bikes,Completed
+1367,2017-11-16,1248,4,2017-11-17,2017-11-18,Genna,Santa Cruz Bikes,Completed
+545,2017-11-17,1249,4,2017-11-18,2017-11-20,Marcelene,Baldwin Bikes,Completed
+1188,2017-11-17,1250,4,2017-11-19,2017-11-18,Marcelene,Baldwin Bikes,Completed
+289,2017-11-17,1251,4,2017-11-19,2017-11-19,Layla,Rowlett Bikes,Completed
+110,2017-11-18,1252,4,2017-11-20,2017-11-21,Genna,Santa Cruz Bikes,Completed
+44,2017-11-18,1253,4,2017-11-21,2017-11-21,Marcelene,Baldwin Bikes,Completed
+1098,2017-11-18,1254,4,2017-11-19,2017-11-19,Venita,Baldwin Bikes,Completed
+375,2017-11-19,1255,4,2017-11-20,2017-11-21,Marcelene,Baldwin Bikes,Completed
+458,2017-11-19,1256,4,2017-11-20,2017-11-22,Marcelene,Baldwin Bikes,Completed
+1136,2017-11-19,1257,4,2017-11-22,2017-11-20,Venita,Baldwin Bikes,Completed
+1099,2017-11-20,1258,4,2017-11-21,2017-11-22,Venita,Baldwin Bikes,Completed
+4,2017-11-21,1259,3,2017-11-21,,Venita,Baldwin Bikes,Rejected
+1117,2017-11-22,1260,4,2017-11-23,2017-11-24,Marcelene,Baldwin Bikes,Completed
+435,2017-11-23,1261,4,2017-11-25,2017-11-24,Venita,Baldwin Bikes,Completed
+509,2017-11-23,1262,4,2017-11-26,2017-11-26,Marcelene,Baldwin Bikes,Completed
+1408,2017-11-23,1263,4,2017-11-26,2017-11-26,Marcelene,Baldwin Bikes,Completed
+113,2017-11-24,1264,4,2017-11-27,2017-11-25,Marcelene,Baldwin Bikes,Completed
+950,2017-11-24,1265,4,2017-11-27,2017-11-27,Venita,Baldwin Bikes,Completed
+387,2017-11-25,1266,4,2017-11-28,2017-11-27,Marcelene,Baldwin Bikes,Completed
+467,2017-11-25,1267,4,2017-11-26,2017-11-26,Marcelene,Baldwin Bikes,Completed
+774,2017-11-26,1268,4,2017-11-28,2017-11-29,Genna,Santa Cruz Bikes,Completed
+1236,2017-11-26,1269,4,2017-11-29,2017-11-29,Marcelene,Baldwin Bikes,Completed
+1388,2017-11-26,1270,4,2017-11-29,2017-11-29,Marcelene,Baldwin Bikes,Completed
+734,2017-11-27,1271,4,2017-11-30,2017-11-30,Marcelene,Baldwin Bikes,Completed
+935,2017-11-27,1272,4,2017-11-29,2017-11-30,Marcelene,Baldwin Bikes,Completed
+1268,2017-11-27,1273,4,2017-11-29,2017-11-29,Marcelene,Baldwin Bikes,Completed
+1364,2017-11-28,1274,4,2017-11-29,2017-12-01,Venita,Baldwin Bikes,Completed
+165,2017-11-29,1275,4,2017-12-01,2017-11-30,Mireya,Santa Cruz Bikes,Completed
+893,2017-11-30,1276,4,2017-12-03,2017-12-02,Marcelene,Baldwin Bikes,Completed
+227,2017-12-01,1277,4,2017-12-04,2017-12-02,Marcelene,Baldwin Bikes,Completed
+980,2017-12-01,1278,4,2017-12-02,2017-12-04,Venita,Baldwin Bikes,Completed
+1014,2017-12-01,1279,4,2017-12-04,2017-12-03,Marcelene,Baldwin Bikes,Completed
+123,2017-12-01,1280,4,2017-12-03,2017-12-03,Layla,Rowlett Bikes,Completed
+1060,2017-12-02,1281,4,2017-12-05,2017-12-05,Marcelene,Baldwin Bikes,Completed
+320,2017-12-03,1282,4,2017-12-05,2017-12-05,Marcelene,Baldwin Bikes,Completed
+85,2017-12-04,1283,4,2017-12-07,2017-12-07,Venita,Baldwin Bikes,Completed
+128,2017-12-04,1284,4,2017-12-06,2017-12-07,Venita,Baldwin Bikes,Completed
+262,2017-12-04,1285,4,2017-12-07,2017-12-07,Venita,Baldwin Bikes,Completed
+1033,2017-12-04,1286,4,2017-12-07,2017-12-06,Venita,Baldwin Bikes,Completed
+279,2017-12-07,1287,4,2017-12-10,2017-12-09,Genna,Santa Cruz Bikes,Completed
+778,2017-12-07,1288,4,2017-12-10,2017-12-09,Layla,Rowlett Bikes,Completed
+1292,2017-12-08,1289,4,2017-12-11,2017-12-10,Genna,Santa Cruz Bikes,Completed
+967,2017-12-08,1290,4,2017-12-10,2017-12-10,Marcelene,Baldwin Bikes,Completed
+1284,2017-12-09,1291,4,2017-12-11,2017-12-12,Marcelene,Baldwin Bikes,Completed
+285,2017-12-10,1292,4,2017-12-13,2017-12-11,Marcelene,Baldwin Bikes,Completed
+1401,2017-12-10,1293,4,2017-12-12,2017-12-11,Venita,Baldwin Bikes,Completed
+947,2017-12-11,1294,4,2017-12-13,2017-12-14,Mireya,Santa Cruz Bikes,Completed
+37,2017-12-11,1295,4,2017-12-12,2017-12-14,Venita,Baldwin Bikes,Completed
+231,2017-12-14,1296,4,2017-12-17,2017-12-15,Genna,Santa Cruz Bikes,Completed
+108,2017-12-14,1297,4,2017-12-17,2017-12-16,Marcelene,Baldwin Bikes,Completed
+533,2017-12-14,1298,4,2017-12-17,2017-12-16,Layla,Rowlett Bikes,Completed
+1216,2017-12-15,1299,4,2017-12-18,2017-12-16,Mireya,Santa Cruz Bikes,Completed
+824,2017-12-15,1300,4,2017-12-17,2017-12-17,Marcelene,Baldwin Bikes,Completed
+1088,2017-12-16,1301,4,2017-12-19,2017-12-19,Genna,Santa Cruz Bikes,Completed
+322,2017-12-16,1302,4,2017-12-18,2017-12-19,Venita,Baldwin Bikes,Completed
+878,2017-12-16,1303,4,2017-12-19,2017-12-18,Venita,Baldwin Bikes,Completed
+1409,2017-12-16,1304,4,2017-12-17,2017-12-17,Marcelene,Baldwin Bikes,Completed
+257,2017-12-17,1305,4,2017-12-19,2017-12-18,Venita,Baldwin Bikes,Completed
+28,2017-12-20,1306,4,2017-12-21,2017-12-22,Marcelene,Baldwin Bikes,Completed
+1384,2017-12-22,1307,4,2017-12-23,2017-12-25,Mireya,Santa Cruz Bikes,Completed
+713,2017-12-22,1308,4,2017-12-24,2017-12-24,Venita,Baldwin Bikes,Completed
+821,2017-12-22,1309,4,2017-12-25,2017-12-24,Marcelene,Baldwin Bikes,Completed
+444,2017-12-24,1310,4,2017-12-25,2017-12-26,Genna,Santa Cruz Bikes,Completed
+1021,2017-12-24,1311,4,2017-12-26,2017-12-27,Marcelene,Baldwin Bikes,Completed
+311,2017-12-25,1312,4,2017-12-28,2017-12-26,Genna,Santa Cruz Bikes,Completed
+1294,2017-12-25,1313,4,2017-12-27,2017-12-27,Genna,Santa Cruz Bikes,Completed
+1027,2017-12-25,1314,4,2017-12-26,2017-12-28,Venita,Baldwin Bikes,Completed
+931,2017-12-25,1315,4,2017-12-27,2017-12-28,Layla,Rowlett Bikes,Completed
+846,2017-12-26,1316,4,2017-12-29,2017-12-27,Genna,Santa Cruz Bikes,Completed
+418,2017-12-27,1317,4,2017-12-28,2017-12-29,Genna,Santa Cruz Bikes,Completed
+75,2017-12-27,1318,4,2017-12-30,2017-12-29,Marcelene,Baldwin Bikes,Completed
+604,2017-12-27,1319,4,2017-12-30,2017-12-30,Marcelene,Baldwin Bikes,Completed
+244,2017-12-28,1320,4,2017-12-30,2017-12-29,Genna,Santa Cruz Bikes,Completed
+217,2017-12-30,1321,4,2017-12-31,2017-12-31,Genna,Santa Cruz Bikes,Completed
+39,2017-12-31,1322,4,2018-01-03,2018-01-02,Venita,Baldwin Bikes,Completed
+273,2017-12-31,1323,4,2018-01-01,2018-01-01,Marcelene,Baldwin Bikes,Completed
+862,2018-01-01,1324,4,2018-01-04,2018-01-03,Marcelene,Baldwin Bikes,Completed
+68,2018-01-01,1325,4,2018-01-02,2018-01-03,Kali,Rowlett Bikes,Completed
+567,2018-01-01,1326,4,2018-01-03,2018-01-02,Layla,Rowlett Bikes,Completed
+1026,2018-01-02,1327,4,2018-01-03,2018-01-05,Marcelene,Baldwin Bikes,Completed
+1083,2018-01-02,1328,4,2018-01-03,2018-01-03,Marcelene,Baldwin Bikes,Completed
+443,2018-01-04,1329,4,2018-01-05,2018-01-06,Genna,Santa Cruz Bikes,Completed
+761,2018-01-04,1330,4,2018-01-05,2018-01-07,Venita,Baldwin Bikes,Completed
+1122,2018-01-05,1331,4,2018-01-06,2018-01-08,Marcelene,Baldwin Bikes,Completed
+256,2018-01-06,1332,4,2018-01-07,2018-01-09,Venita,Baldwin Bikes,Completed
+203,2018-01-06,1333,4,2018-01-07,2018-01-07,Kali,Rowlett Bikes,Completed
+425,2018-01-07,1334,4,2018-01-09,2018-01-10,Marcelene,Baldwin Bikes,Completed
+955,2018-01-07,1335,4,2018-01-08,2018-01-08,Venita,Baldwin Bikes,Completed
+904,2018-01-09,1336,4,2018-01-10,2018-01-12,Mireya,Santa Cruz Bikes,Completed
+970,2018-01-09,1337,4,2018-01-12,2018-01-12,Venita,Baldwin Bikes,Completed
+905,2018-01-10,1338,4,2018-01-11,2018-01-13,Marcelene,Baldwin Bikes,Completed
+580,2018-01-11,1339,4,2018-01-14,2018-01-13,Genna,Santa Cruz Bikes,Completed
+1066,2018-01-12,1340,4,2018-01-13,2018-01-13,Genna,Santa Cruz Bikes,Completed
+1258,2018-01-12,1341,4,2018-01-13,2018-01-14,Venita,Baldwin Bikes,Completed
+1393,2018-01-12,1342,4,2018-01-13,2018-01-15,Venita,Baldwin Bikes,Completed
+594,2018-01-13,1343,4,2018-01-15,2018-01-14,Marcelene,Baldwin Bikes,Completed
+916,2018-01-13,1344,4,2018-01-16,2018-01-15,Marcelene,Baldwin Bikes,Completed
+1037,2018-01-14,1345,4,2018-01-15,2018-01-15,Marcelene,Baldwin Bikes,Completed
+136,2018-01-14,1346,4,2018-01-15,2018-01-15,Kali,Rowlett Bikes,Completed
+247,2018-01-15,1347,4,2018-01-18,2018-01-18,Mireya,Santa Cruz Bikes,Completed
+1214,2018-01-15,1348,4,2018-01-17,2018-01-17,Mireya,Santa Cruz Bikes,Completed
+464,2018-01-15,1349,4,2018-01-17,2018-01-16,Marcelene,Baldwin Bikes,Completed
+637,2018-01-15,1350,4,2018-01-18,2018-01-17,Venita,Baldwin Bikes,Completed
+1016,2018-01-16,1351,4,2018-01-19,2018-01-19,Venita,Baldwin Bikes,Completed
+1433,2018-01-16,1352,4,2018-01-18,2018-01-18,Marcelene,Baldwin Bikes,Completed
+502,2018-01-17,1353,4,2018-01-19,2018-01-18,Marcelene,Baldwin Bikes,Completed
+476,2018-01-19,1354,4,2018-01-20,2018-01-21,Genna,Santa Cruz Bikes,Completed
+1010,2018-01-19,1355,4,2018-01-21,2018-01-20,Venita,Baldwin Bikes,Completed
+1161,2018-01-19,1356,4,2018-01-21,2018-01-22,Marcelene,Baldwin Bikes,Completed
+440,2018-01-20,1357,4,2018-01-23,2018-01-21,Marcelene,Baldwin Bikes,Completed
+253,2018-01-21,1358,4,2018-01-23,2018-01-24,Mireya,Santa Cruz Bikes,Completed
+1008,2018-01-21,1359,4,2018-01-22,2018-01-22,Layla,Rowlett Bikes,Completed
+71,2018-01-22,1360,4,2018-01-25,2018-01-24,Marcelene,Baldwin Bikes,Completed
+1084,2018-01-22,1361,4,2018-01-24,2018-01-23,Venita,Baldwin Bikes,Completed
+310,2018-01-23,1362,4,2018-01-24,2018-01-25,Marcelene,Baldwin Bikes,Completed
+860,2018-01-24,1363,4,2018-01-25,2018-01-25,Marcelene,Baldwin Bikes,Completed
+122,2018-01-25,1364,4,2018-01-28,2018-01-28,Marcelene,Baldwin Bikes,Completed
+689,2018-01-25,1365,4,2018-01-28,2018-01-27,Venita,Baldwin Bikes,Completed
+1441,2018-01-26,1366,4,2018-01-27,2018-01-28,Marcelene,Baldwin Bikes,Completed
+1118,2018-01-27,1367,4,2018-01-28,2018-01-28,Genna,Santa Cruz Bikes,Completed
+765,2018-01-27,1368,4,2018-01-28,2018-01-29,Marcelene,Baldwin Bikes,Completed
+92,2018-01-28,1369,4,2018-01-30,2018-01-30,Marcelene,Baldwin Bikes,Completed
+115,2018-01-28,1370,4,2018-01-29,2018-01-29,Venita,Baldwin Bikes,Completed
+937,2018-01-29,1371,4,2018-01-30,2018-02-01,Venita,Baldwin Bikes,Completed
+1013,2018-01-29,1372,4,2018-02-01,2018-01-30,Marcelene,Baldwin Bikes,Completed
+427,2018-01-29,1373,4,2018-01-31,2018-01-31,Layla,Rowlett Bikes,Completed
+1330,2018-01-30,1374,4,2018-02-01,2018-02-01,Genna,Santa Cruz Bikes,Completed
+312,2018-01-30,1375,4,2018-02-01,2018-02-01,Kali,Rowlett Bikes,Completed
+1186,2018-02-01,1376,4,2018-02-02,2018-02-03,Mireya,Santa Cruz Bikes,Completed
+1007,2018-02-01,1377,4,2018-02-03,2018-02-03,Venita,Baldwin Bikes,Completed
+983,2018-02-02,1378,4,2018-02-05,2018-02-04,Mireya,Santa Cruz Bikes,Completed
+1256,2018-02-02,1379,4,2018-02-05,2018-02-05,Marcelene,Baldwin Bikes,Completed
+818,2018-02-05,1380,4,2018-02-08,2018-02-08,Genna,Santa Cruz Bikes,Completed
+680,2018-02-05,1381,4,2018-02-06,2018-02-08,Venita,Baldwin Bikes,Completed
+1303,2018-02-06,1382,4,2018-02-09,2018-02-08,Marcelene,Baldwin Bikes,Completed
+488,2018-02-07,1383,4,2018-02-08,2018-02-08,Genna,Santa Cruz Bikes,Completed
+1126,2018-02-08,1384,4,2018-02-10,2018-02-09,Venita,Baldwin Bikes,Completed
+866,2018-02-08,1385,4,2018-02-11,2018-02-09,Layla,Rowlett Bikes,Completed
+1254,2018-02-09,1386,4,2018-02-10,2018-02-11,Mireya,Santa Cruz Bikes,Completed
+11,2018-02-09,1387,4,2018-02-11,2018-02-11,Venita,Baldwin Bikes,Completed
+323,2018-02-09,1388,4,2018-02-12,2018-02-12,Venita,Baldwin Bikes,Completed
+491,2018-02-11,1389,4,2018-02-12,2018-02-14,Venita,Baldwin Bikes,Completed
+63,2018-02-12,1390,4,2018-02-13,2018-02-13,Venita,Baldwin Bikes,Completed
+914,2018-02-13,1391,4,2018-02-14,2018-02-14,Venita,Baldwin Bikes,Completed
+1187,2018-02-13,1392,4,2018-02-14,2018-02-14,Marcelene,Baldwin Bikes,Completed
+547,2018-02-14,1393,4,2018-02-15,2018-02-15,Venita,Baldwin Bikes,Completed
+906,2018-02-14,1394,4,2018-02-16,2018-02-16,Kali,Rowlett Bikes,Completed
+1052,2018-02-15,1395,4,2018-02-18,2018-02-16,Genna,Santa Cruz Bikes,Completed
+856,2018-02-15,1396,4,2018-02-18,2018-02-16,Venita,Baldwin Bikes,Completed
+920,2018-02-15,1397,4,2018-02-17,2018-02-16,Marcelene,Baldwin Bikes,Completed
+1383,2018-02-16,1398,4,2018-02-19,2018-02-19,Genna,Santa Cruz Bikes,Completed
+146,2018-02-16,1399,4,2018-02-18,2018-02-18,Marcelene,Baldwin Bikes,Completed
+987,2018-02-17,1400,4,2018-02-18,2018-02-18,Marcelene,Baldwin Bikes,Completed
+15,2018-02-18,1401,4,2018-02-19,2018-02-20,Venita,Baldwin Bikes,Completed
+1171,2018-02-19,1402,4,2018-02-21,2018-02-21,Marcelene,Baldwin Bikes,Completed
+452,2018-02-21,1403,4,2018-02-22,2018-02-22,Venita,Baldwin Bikes,Completed
+1240,2018-02-23,1404,4,2018-02-26,2018-02-24,Genna,Santa Cruz Bikes,Completed
+100,2018-02-25,1405,4,2018-02-28,2018-02-27,Marcelene,Baldwin Bikes,Completed
+1053,2018-02-25,1406,4,2018-02-27,2018-02-27,Venita,Baldwin Bikes,Completed
+18,2018-02-26,1407,3,2018-02-26,,Marcelene,Baldwin Bikes,Rejected
+1172,2018-02-26,1408,4,2018-02-27,2018-03-01,Marcelene,Baldwin Bikes,Completed
+21,2018-02-26,1409,4,2018-02-28,2018-02-28,Kali,Rowlett Bikes,Completed
+1005,2018-02-27,1410,4,2018-02-28,2018-02-28,Venita,Baldwin Bikes,Completed
+109,2018-03-01,1411,4,2018-03-02,2018-03-02,Mireya,Santa Cruz Bikes,Completed
+1043,2018-03-01,1412,4,2018-03-02,2018-03-04,Venita,Baldwin Bikes,Completed
+56,2018-03-01,1413,4,2018-03-03,2018-03-04,Kali,Rowlett Bikes,Completed
+293,2018-03-03,1414,4,2018-03-05,2018-03-06,Venita,Baldwin Bikes,Completed
+839,2018-03-03,1415,4,2018-03-04,2018-03-05,Venita,Baldwin Bikes,Completed
+566,2018-03-03,1416,4,2018-03-04,2018-03-06,Kali,Rowlett Bikes,Completed
+300,2018-03-04,1417,4,2018-03-06,2018-03-07,Mireya,Santa Cruz Bikes,Completed
+364,2018-03-04,1418,4,2018-03-05,2018-03-07,Marcelene,Baldwin Bikes,Completed
+474,2018-03-04,1419,4,2018-03-07,2018-03-07,Marcelene,Baldwin Bikes,Completed
+838,2018-03-04,1420,4,2018-03-05,2018-03-07,Venita,Baldwin Bikes,Completed
+1176,2018-03-05,1421,4,2018-03-07,2018-03-07,Venita,Baldwin Bikes,Completed
+599,2018-03-05,1422,4,2018-03-06,2018-03-08,Kali,Rowlett Bikes,Completed
+1231,2018-03-06,1423,4,2018-03-07,2018-03-07,Mireya,Santa Cruz Bikes,Completed
+1445,2018-03-07,1424,4,2018-03-10,2018-03-10,Mireya,Santa Cruz Bikes,Completed
+126,2018-03-07,1425,4,2018-03-09,2018-03-09,Marcelene,Baldwin Bikes,Completed
+938,2018-03-07,1426,4,2018-03-08,2018-03-10,Marcelene,Baldwin Bikes,Completed
+999,2018-03-07,1427,4,2018-03-08,2018-03-08,Marcelene,Baldwin Bikes,Completed
+195,2018-03-08,1428,4,2018-03-10,2018-03-11,Venita,Baldwin Bikes,Completed
+1116,2018-03-08,1429,4,2018-03-09,2018-03-09,Marcelene,Baldwin Bikes,Completed
+1239,2018-03-10,1430,4,2018-03-13,2018-03-11,Venita,Baldwin Bikes,Completed
+308,2018-03-11,1431,4,2018-03-12,2018-03-14,Marcelene,Baldwin Bikes,Completed
+483,2018-03-11,1432,4,2018-03-12,2018-03-14,Marcelene,Baldwin Bikes,Completed
+1142,2018-03-11,1433,4,2018-03-13,2018-03-12,Venita,Baldwin Bikes,Completed
+595,2018-03-14,1434,4,2018-03-16,2018-03-16,Marcelene,Baldwin Bikes,Completed
+744,2018-03-14,1435,4,2018-03-15,2018-03-16,Marcelene,Baldwin Bikes,Completed
+1044,2018-03-14,1436,4,2018-03-17,2018-03-16,Marcelene,Baldwin Bikes,Completed
+518,2018-03-15,1437,4,2018-03-16,2018-03-16,Mireya,Santa Cruz Bikes,Completed
+263,2018-03-15,1438,4,2018-03-17,2018-03-16,Marcelene,Baldwin Bikes,Completed
+463,2018-03-15,1439,4,2018-03-16,2018-03-17,Venita,Baldwin Bikes,Completed
+859,2018-03-15,1440,4,2018-03-18,2018-03-16,Kali,Rowlett Bikes,Completed
+982,2018-03-15,1441,4,2018-03-16,2018-03-18,Kali,Rowlett Bikes,Completed
+478,2018-03-16,1442,4,2018-03-17,2018-03-17,Venita,Baldwin Bikes,Completed
+972,2018-03-16,1443,4,2018-03-17,2018-03-17,Venita,Baldwin Bikes,Completed
+1154,2018-03-16,1444,4,2018-03-17,2018-03-19,Marcelene,Baldwin Bikes,Completed
+515,2018-03-17,1445,4,2018-03-18,2018-03-20,Venita,Baldwin Bikes,Completed
+820,2018-03-17,1446,4,2018-03-18,2018-03-18,Marcelene,Baldwin Bikes,Completed
+1419,2018-03-18,1447,4,2018-03-20,2018-03-20,Genna,Santa Cruz Bikes,Completed
+228,2018-03-18,1448,4,2018-03-19,2018-03-21,Marcelene,Baldwin Bikes,Completed
+330,2018-03-18,1449,4,2018-03-19,2018-03-20,Venita,Baldwin Bikes,Completed
+296,2018-03-19,1450,4,2018-03-20,2018-03-22,Venita,Baldwin Bikes,Completed
+822,2018-03-19,1451,4,2018-03-22,2018-03-20,Marcelene,Baldwin Bikes,Completed
+287,2018-03-20,1452,4,2018-03-23,2018-03-23,Genna,Santa Cruz Bikes,Completed
+601,2018-03-20,1453,4,2018-03-23,2018-03-22,Genna,Santa Cruz Bikes,Completed
+395,2018-03-20,1454,4,2018-03-21,2018-03-22,Marcelene,Baldwin Bikes,Completed
+405,2018-03-20,1455,4,2018-03-22,2018-03-21,Marcelene,Baldwin Bikes,Completed
+754,2018-03-20,1456,4,2018-03-21,2018-03-23,Venita,Baldwin Bikes,Completed
+1411,2018-03-20,1457,4,2018-03-23,2018-03-23,Marcelene,Baldwin Bikes,Completed
+1029,2018-03-20,1458,4,2018-03-22,2018-03-21,Kali,Rowlett Bikes,Completed
+9,2018-03-21,1459,4,2018-03-22,2018-03-22,Venita,Baldwin Bikes,Completed
+1131,2018-03-21,1460,4,2018-03-23,2018-03-23,Venita,Baldwin Bikes,Completed
+139,2018-03-22,1461,4,2018-03-25,2018-03-23,Marcelene,Baldwin Bikes,Completed
+1101,2018-03-22,1462,4,2018-03-24,2018-03-24,Marcelene,Baldwin Bikes,Completed
+692,2018-03-23,1463,4,2018-03-24,2018-03-24,Venita,Baldwin Bikes,Completed
+1279,2018-03-24,1464,4,2018-03-25,2018-03-25,Venita,Baldwin Bikes,Completed
+623,2018-03-25,1465,4,2018-03-28,2018-03-28,Venita,Baldwin Bikes,Completed
+738,2018-03-26,1466,4,2018-03-29,2018-03-28,Genna,Santa Cruz Bikes,Completed
+152,2018-03-26,1467,4,2018-03-27,2018-03-29,Venita,Baldwin Bikes,Completed
+3,2018-03-27,1468,4,2018-03-30,2018-03-29,Mireya,Santa Cruz Bikes,Completed
+1135,2018-03-27,1469,4,2018-03-28,2018-03-30,Kali,Rowlett Bikes,Completed
+505,2018-03-28,1470,4,2018-03-31,2018-03-31,Venita,Baldwin Bikes,Completed
+1310,2018-03-28,1471,4,2018-03-30,2018-03-29,Venita,Baldwin Bikes,Completed
+114,2018-03-29,1472,4,2018-03-30,2018-03-31,Marcelene,Baldwin Bikes,Completed
+302,2018-03-30,1473,4,2018-04-01,2018-04-02,Mireya,Santa Cruz Bikes,Completed
+816,2018-03-30,1474,4,2018-04-01,2018-04-02,Genna,Santa Cruz Bikes,Completed
+112,2018-03-30,1475,4,2018-04-01,2018-03-31,Marcelene,Baldwin Bikes,Completed
+35,2018-03-31,1476,4,2018-04-01,2018-04-01,Venita,Baldwin Bikes,Completed
+180,2018-03-31,1477,4,2018-04-03,2018-04-01,Marcelene,Baldwin Bikes,Completed
+392,2018-03-31,1478,4,2018-04-02,2018-04-02,Marcelene,Baldwin Bikes,Completed
+23,2018-04-01,1479,2,2018-04-01,,Venita,Baldwin Bikes,Processing
+27,2018-04-01,1480,2,2018-04-01,,Venita,Baldwin Bikes,Processing
+62,2018-04-01,1481,1,2018-04-01,,Marcelene,Baldwin Bikes,Pending
+94,2018-04-01,1482,1,2018-04-01,,Venita,Baldwin Bikes,Pending
+15,2018-04-02,1483,1,2018-04-02,,Venita,Baldwin Bikes,Pending
+35,2018-04-02,1484,2,2018-04-02,,Marcelene,Baldwin Bikes,Processing
+51,2018-04-02,1485,2,2018-04-02,,Venita,Baldwin Bikes,Processing
+84,2018-04-02,1486,2,2018-04-02,,Venita,Baldwin Bikes,Processing
+33,2018-04-03,1487,1,2018-04-03,,Genna,Santa Cruz Bikes,Pending
+181,2018-04-03,1488,2,2018-04-03,,Genna,Santa Cruz Bikes,Processing
+194,2018-04-03,1489,1,2018-04-03,,Genna,Santa Cruz Bikes,Pending
+217,2018-04-03,1490,2,2018-04-03,,Genna,Santa Cruz Bikes,Processing
+82,2018-04-04,1491,1,2018-04-04,,Genna,Santa Cruz Bikes,Pending
+41,2018-04-04,1492,1,2018-04-04,,Venita,Baldwin Bikes,Pending
+64,2018-04-04,1493,2,2018-04-04,,Kali,Rowlett Bikes,Processing
+69,2018-04-05,1494,2,2018-04-05,,Genna,Santa Cruz Bikes,Processing
+86,2018-04-05,1495,2,2018-04-05,,Venita,Baldwin Bikes,Processing
+3,2018-04-06,1496,1,2018-04-06,,Genna,Santa Cruz Bikes,Pending
+31,2018-04-06,1497,2,2018-04-06,,Mireya,Santa Cruz Bikes,Processing
+81,2018-04-06,1498,1,2018-04-06,,Mireya,Santa Cruz Bikes,Pending
+120,2018-04-06,1499,2,2018-04-06,,Mireya,Santa Cruz Bikes,Processing
+151,2018-04-06,1500,2,2018-04-06,,Genna,Santa Cruz Bikes,Processing
+52,2018-04-06,1501,1,2018-04-06,,Marcelene,Baldwin Bikes,Pending
+83,2018-04-06,1502,2,2018-04-06,,Marcelene,Baldwin Bikes,Processing
+208,2018-04-07,1503,2,2018-04-07,,Genna,Santa Cruz Bikes,Processing
+237,2018-04-08,1504,2,2018-04-08,,Mireya,Santa Cruz Bikes,Processing
+22,2018-04-08,1505,1,2018-04-08,,Venita,Baldwin Bikes,Pending
+75,2018-04-08,1506,1,2018-04-08,,Venita,Baldwin Bikes,Pending
+85,2018-04-08,1507,2,2018-04-08,,Marcelene,Baldwin Bikes,Processing
+92,2018-04-08,1508,2,2018-04-08,,Marcelene,Baldwin Bikes,Processing
+2,2018-04-09,1509,1,2018-04-09,,Genna,Santa Cruz Bikes,Pending
+16,2018-04-09,1510,2,2018-04-09,,Marcelene,Baldwin Bikes,Processing
+25,2018-04-09,1511,1,2018-04-09,,Marcelene,Baldwin Bikes,Pending
+68,2018-04-09,1512,1,2018-04-09,,Layla,Rowlett Bikes,Pending
+32,2018-04-10,1513,2,2018-04-10,,Mireya,Santa Cruz Bikes,Processing
+87,2018-04-10,1514,2,2018-04-10,,Genna,Santa Cruz Bikes,Processing
+61,2018-04-10,1515,1,2018-04-10,,Layla,Rowlett Bikes,Pending
+47,2018-04-11,1516,2,2018-04-11,,Genna,Santa Cruz Bikes,Processing
+97,2018-04-11,1517,1,2018-04-11,,Mireya,Santa Cruz Bikes,Pending
+175,2018-04-11,1518,1,2018-04-11,,Mireya,Santa Cruz Bikes,Pending
+26,2018-04-11,1519,2,2018-04-11,,Venita,Baldwin Bikes,Processing
+66,2018-04-11,1520,2,2018-04-11,,Kali,Rowlett Bikes,Processing
+53,2018-04-12,1521,1,2018-04-12,,Genna,Santa Cruz Bikes,Pending
+78,2018-04-12,1522,1,2018-04-12,,Genna,Santa Cruz Bikes,Pending
+8,2018-04-12,1523,1,2018-04-12,,Venita,Baldwin Bikes,Pending
+37,2018-04-12,1524,1,2018-04-12,,Marcelene,Baldwin Bikes,Pending
+38,2018-04-12,1525,2,2018-04-12,,Venita,Baldwin Bikes,Processing
+59,2018-04-12,1526,2,2018-04-12,,Venita,Baldwin Bikes,Processing
+13,2018-04-12,1527,2,2018-04-12,,Layla,Rowlett Bikes,Processing
+20,2018-04-12,1528,1,2018-04-12,,Kali,Rowlett Bikes,Pending
+50,2018-04-12,1529,1,2018-04-12,,Kali,Rowlett Bikes,Pending
+110,2018-04-13,1530,1,2018-04-13,,Mireya,Santa Cruz Bikes,Pending
+233,2018-04-13,1531,1,2018-04-13,,Mireya,Santa Cruz Bikes,Pending
+7,2018-04-13,1532,2,2018-04-13,,Venita,Baldwin Bikes,Processing
+28,2018-04-13,1533,2,2018-04-13,,Marcelene,Baldwin Bikes,Processing
+18,2018-04-14,1534,2,2018-04-14,,Venita,Baldwin Bikes,Processing
+19,2018-04-14,1535,2,2018-04-14,,Venita,Baldwin Bikes,Processing
+34,2018-04-14,1536,2,2018-04-14,,Venita,Baldwin Bikes,Processing
+36,2018-04-15,1537,1,2018-04-15,,Marcelene,Baldwin Bikes,Pending
+79,2018-04-15,1538,2,2018-04-15,,Marcelene,Baldwin Bikes,Processing
+116,2018-04-15,1539,1,2018-04-15,,Layla,Rowlett Bikes,Pending
+187,2018-04-16,1540,1,2018-04-16,,Mireya,Santa Cruz Bikes,Pending
+10,2018-04-16,1541,2,2018-04-16,,Venita,Baldwin Bikes,Processing
+58,2018-04-16,1542,2,2018-04-16,,Marcelene,Baldwin Bikes,Processing
+76,2018-04-16,1543,1,2018-04-16,,Marcelene,Baldwin Bikes,Pending
+5,2018-04-17,1544,1,2018-04-17,,Mireya,Santa Cruz Bikes,Pending
+67,2018-04-17,1545,1,2018-04-17,,Genna,Santa Cruz Bikes,Pending
+91,2018-04-17,1546,2,2018-04-17,,Genna,Santa Cruz Bikes,Processing
+169,2018-04-17,1547,1,2018-04-17,,Genna,Santa Cruz Bikes,Pending
+170,2018-04-17,1548,1,2018-04-17,,Mireya,Santa Cruz Bikes,Pending
+17,2018-04-17,1549,1,2018-04-17,,Venita,Baldwin Bikes,Pending
+39,2018-04-17,1550,1,2018-04-17,,Marcelene,Baldwin Bikes,Pending
+70,2018-04-17,1551,1,2018-04-17,,Venita,Baldwin Bikes,Pending
+73,2018-04-17,1552,1,2018-04-17,,Venita,Baldwin Bikes,Pending
+30,2018-04-18,1553,2,2018-04-18,,Genna,Santa Cruz Bikes,Processing
+172,2018-04-18,1554,1,2018-04-18,,Genna,Santa Cruz Bikes,Pending
+1,2018-04-18,1555,1,2018-04-18,,Venita,Baldwin Bikes,Pending
+4,2018-04-18,1556,2,2018-04-18,,Marcelene,Baldwin Bikes,Processing
+121,2018-04-19,1557,2,2018-04-19,,Genna,Santa Cruz Bikes,Processing
+63,2018-04-19,1558,1,2018-04-19,,Marcelene,Baldwin Bikes,Pending
+42,2018-04-20,1559,2,2018-04-20,,Marcelene,Baldwin Bikes,Processing
+57,2018-04-20,1560,1,2018-04-20,,Venita,Baldwin Bikes,Pending
+65,2018-04-20,1561,2,2018-04-20,,Venita,Baldwin Bikes,Processing
+88,2018-04-20,1562,1,2018-04-20,,Venita,Baldwin Bikes,Pending
+77,2018-04-20,1563,2,2018-04-20,,Layla,Rowlett Bikes,Processing
+46,2018-04-21,1564,1,2018-04-21,,Genna,Santa Cruz Bikes,Pending
+60,2018-04-21,1565,2,2018-04-21,,Mireya,Santa Cruz Bikes,Processing
+72,2018-04-21,1566,1,2018-04-21,,Genna,Santa Cruz Bikes,Pending
+89,2018-04-21,1567,2,2018-04-21,,Mireya,Santa Cruz Bikes,Processing
+192,2018-04-21,1568,2,2018-04-21,,Genna,Santa Cruz Bikes,Processing
+29,2018-04-22,1569,2,2018-04-22,,Venita,Baldwin Bikes,Processing
+54,2018-04-22,1570,2,2018-04-22,,Venita,Baldwin Bikes,Processing
+80,2018-04-22,1571,1,2018-04-22,,Venita,Baldwin Bikes,Pending
+14,2018-04-22,1572,1,2018-04-22,,Layla,Rowlett Bikes,Pending
+24,2018-04-23,1573,2,2018-04-23,,Mireya,Santa Cruz Bikes,Processing
+124,2018-04-23,1574,1,2018-04-23,,Mireya,Santa Cruz Bikes,Pending
+224,2018-04-23,1575,2,2018-04-23,,Genna,Santa Cruz Bikes,Processing
+12,2018-04-23,1576,2,2018-04-23,,Venita,Baldwin Bikes,Processing
+48,2018-04-23,1577,1,2018-04-23,,Venita,Baldwin Bikes,Pending
+93,2018-04-23,1578,2,2018-04-23,,Venita,Baldwin Bikes,Processing
+104,2018-04-24,1579,2,2018-04-24,,Mireya,Santa Cruz Bikes,Processing
+191,2018-04-24,1580,2,2018-04-24,,Mireya,Santa Cruz Bikes,Processing
+188,2018-04-25,1581,2,2018-04-25,,Mireya,Santa Cruz Bikes,Processing
+240,2018-04-25,1582,1,2018-04-25,,Genna,Santa Cruz Bikes,Pending
+44,2018-04-25,1583,1,2018-04-25,,Marcelene,Baldwin Bikes,Pending
+109,2018-04-26,1584,2,2018-04-26,,Genna,Santa Cruz Bikes,Processing
+157,2018-04-26,1585,1,2018-04-26,,Genna,Santa Cruz Bikes,Pending
+176,2018-04-26,1586,1,2018-04-26,,Mireya,Santa Cruz Bikes,Pending
+231,2018-04-26,1587,2,2018-04-26,,Mireya,Santa Cruz Bikes,Processing
+11,2018-04-26,1588,1,2018-04-26,,Marcelene,Baldwin Bikes,Pending
+40,2018-04-27,1589,2,2018-04-27,,Genna,Santa Cruz Bikes,Processing
+138,2018-04-27,1590,1,2018-04-27,,Genna,Santa Cruz Bikes,Pending
+165,2018-04-27,1591,2,2018-04-27,,Mireya,Santa Cruz Bikes,Processing
+6,2018-04-27,1592,2,2018-04-27,,Venita,Baldwin Bikes,Processing
+9,2018-04-27,1593,1,2018-04-27,,Marcelene,Baldwin Bikes,Pending
+45,2018-04-28,1594,1,2018-04-28,,Venita,Baldwin Bikes,Pending
+71,2018-04-28,1595,2,2018-04-28,,Venita,Baldwin Bikes,Processing
+21,2018-04-28,1596,2,2018-04-28,,Kali,Rowlett Bikes,Processing
+56,2018-04-28,1597,1,2018-04-28,,Layla,Rowlett Bikes,Pending
+239,2018-04-29,1598,2,2018-04-29,,Genna,Santa Cruz Bikes,Processing
+49,2018-04-29,1599,1,2018-04-29,,Venita,Baldwin Bikes,Pending
+90,2018-04-29,1600,1,2018-04-29,,Marcelene,Baldwin Bikes,Pending
+43,2018-04-29,1601,1,2018-04-29,,Kali,Rowlett Bikes,Pending
+55,2018-04-30,1602,1,2018-04-30,,Marcelene,Baldwin Bikes,Pending
+74,2018-04-30,1603,2,2018-04-30,,Marcelene,Baldwin Bikes,Processing
+7,2018-06-17,1604,3,2018-06-17,,Venita,Baldwin Bikes,Rejected
+123,2018-07-01,1605,3,2018-07-01,,Kali,Rowlett Bikes,Rejected
+119,2018-07-10,1606,3,2018-07-10,,Kali,Rowlett Bikes,Rejected
+33,2018-07-11,1607,3,2018-07-11,,Mireya,Santa Cruz Bikes,Rejected
+53,2018-07-12,1608,3,2018-07-12,,Mireya,Santa Cruz Bikes,Rejected
+10,2018-08-23,1609,3,2018-08-23,,Venita,Baldwin Bikes,Rejected
+15,2018-08-25,1610,3,2018-08-25,,Venita,Baldwin Bikes,Rejected
+6,2018-09-06,1611,3,2018-09-06,,Venita,Baldwin Bikes,Rejected
+3,2018-10-21,1612,3,2018-10-21,,Genna,Santa Cruz Bikes,Rejected
+1,2018-11-18,1613,3,2018-11-18,,Marcelene,Baldwin Bikes,Rejected
+135,2018-11-28,1614,3,2018-11-28,,Kali,Rowlett Bikes,Rejected
+136,2018-12-28,1615,3,2018-12-28,,Kali,Rowlett Bikes,Rejected
