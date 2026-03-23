@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\auth\user_repository.py
 User data access and CRUD operations.
 """
 

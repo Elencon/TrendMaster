@@ -5,15 +5,14 @@ from typing import Any, Dict
 
 @dataclass
 class BaseDbConfig:
-    """Shared DB identity fields with environment-based defaults."""
+    """Shared DB identity fields with simple built‑in defaults."""
 
-    user:     str = field(default_factory=lambda: _env("DB_USER", "root"))
-    password: str = field(default_factory=lambda: _env("DB_PASSWORD", ""))
-    host:     str = field(default_factory=lambda: _env("DB_HOST", "127.0.0.1"))
-    port:     int = field(default_factory=lambda: _env_int("DB_PORT", 3306))
-    database: str = field(default_factory=lambda: _env("DB_NAME", "trend_master"))
+    user: str = "root"
+    password: str = ""
+    host: str = "127.0.0.1"
+    port: int = 3306
+    database: str = "trend_master"
 
     def get_connection_string(self) -> str:
         """Safe connection string for logging."""
         return f"mysql://{self.user}@{self.host}:{self.port}/{self.database}"
-

@@ -1,4 +1,5 @@
-"""
+r"""
+C:\\Economy\Invest\TrendMaster\rc\auth\user_manager.py
 User management for authentication system.
 Facade that coordinates authentication, password, and repository operations.
 """
