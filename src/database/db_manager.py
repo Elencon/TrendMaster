@@ -13,30 +13,30 @@ from contextlib import contextmanager
 import pandas as pd
 from datetime import datetime
 
-# Import structured logging
+# ────────────────────────────────────────────────
+# Optional integrations (logging, optimization, validation, ETL exceptions)
+# ────────────────────────────────────────────────
+
 try:
-    from logging_system import get_database_logger, performance_context, correlation_context
+    from src.ogging_system import get_database_logger, performance_context, correlation_context
     LOGGING_SYSTEM_AVAILABLE = True
 except ImportError:
     LOGGING_SYSTEM_AVAILABLE = False
 
-# Import pandas optimization
 try:
-    from pandas_optimizer import PandasOptimizer, optimize_csv_reading
+    from .pandas_optimizer import PandasOptimizer, optimize_csv_reading
     PANDAS_OPTIMIZER_AVAILABLE = True
 except ImportError:
     PANDAS_OPTIMIZER_AVAILABLE = False
 
-# Import data validation
 try:
-    from data_validator import DataValidator, ValidationRule, ValidationSeverity
+    from .data_validator import DataValidator, ValidationRule, ValidationSeverity
     DATA_VALIDATOR_AVAILABLE = True
 except ImportError:
     DATA_VALIDATOR_AVAILABLE = False
 
-# Import ETL exceptions
 try:
-    from etl_exceptions import (
+    from src.etl_exceptions import (
         ETLException, DatabaseError, ValidationError, ProcessingError,
         ErrorContext, ErrorSeverity, handle_etl_exceptions, create_database_error
     )
@@ -44,54 +44,39 @@ try:
 except ImportError:
     ETL_EXCEPTIONS_AVAILABLE = False
 
-# Add database package to path (not needed for relative imports)
-# sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'database'))
+# ────────────────────────────────────────────────
+# Required imports (always present)
+# ────────────────────────────────────────────────
 
+from .connection_manager import DatabaseConnection, ConnectionPool
+from .schema_manager import SCHEMA_DEFINITIONS, TABLE_COLUMNS
+
+# Legacy config (optional)
 try:
-    from .connection_manager import DatabaseConnection, ConnectionPool
-    from .schema_manager import SCHEMA_DEFINITIONS, TABLE_COLUMNS
-    from connect import config as legacy_config
-    CONNECT_AVAILABLE = True
-    POOL_AVAILABLE = True
+    from src.connect import config as legacy_config
 except ImportError:
-    CONNECT_AVAILABLE = False
-    POOL_AVAILABLE = False
     legacy_config = {
-        'user': 'root',
-        'password': '',
-        'host': '127.0.0.1',
-        'database': 'trend_master'
+        "user": "root",
+        "password": "",
+        "host": "127.0.0.1",
+        "database": "trend_master",
     }
-    
-    # Create placeholder classes if not available
-    class DatabaseConnection:
-        def __init__(self, config: Dict = None, enable_pooling=True, pool_size=5):
-            self.config = config or {}
-            self.enable_pooling = enable_pooling
-            self.pool_size = pool_size
-        
-        @contextmanager
-        def get_connection(self):
-            # Fallback connection if real class not available
-            yield None
-    
-    class ConnectionPool:
-        def __init__(self, config, size):
-            pass
 
-# Import structured configuration
+# Structured configuration (optional)
 try:
     from config import get_config, ETLConfig
     CONFIG_MODULE_AVAILABLE = True
 except ImportError:
     CONFIG_MODULE_AVAILABLE = False
 
-# Global _logger for module functions
+# ────────────────────────────────────────────────
+# Logger
+# ────────────────────────────────────────────────
+
 if LOGGING_SYSTEM_AVAILABLE:
     _logger = get_database_logger()
 else:
     _logger = logging.getLogger(__name__)
-
 
 def _isna(value) -> bool:
     """
