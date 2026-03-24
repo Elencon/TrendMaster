@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\cache_cleaner.py
 Modern cache cleaner for TrendMaster.
 Uses Typer for CLI and Rich for beautiful terminal feedback.
 """

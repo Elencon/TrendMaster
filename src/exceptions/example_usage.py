@@ -1,5 +1,7 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\example_usage.py
 Example usage for the ETL exception package.
+python -m src.exceptions.example_usage
 """
 
 from .base_exceptions import ErrorContext

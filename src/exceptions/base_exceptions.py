@@ -1,11 +1,12 @@
 """
+C:\Economy\Invest\TrendMaster\src\exceptions\base_exceptions.py
 Base exception classes and core enums for ETL operations.
 Provides the foundation for all ETL-specific exceptions.
 """
 
 import traceback
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -41,7 +42,7 @@ class ErrorContext:
     file_path:       Optional[str]      = None
     record_count:    Optional[int]      = None
     additional_data: Dict[str, Any]     = field(default_factory=dict)
-    timestamp:       datetime           = field(default_factory=datetime.now)
+    timestamp:       datetime           = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def to_dict(self) -> Dict[str, Any]:
         """Return a JSON-serialisable representation."""
@@ -64,23 +65,12 @@ class ETLException(Exception):
         message: str,
         error_code: str                        = "ETL_UNKNOWN",
         severity:   ErrorSeverity              = ErrorSeverity.MEDIUM,
-        category:   ErrorCategory             = ErrorCategory.PROCESSING,
+        category:   ErrorCategory              = ErrorCategory.PROCESSING,
         context:    Optional[ErrorContext]     = None,
         recovery_suggestions: Optional[List[str]] = None,
         original_exception:   Optional[Exception] = None,
     ) -> None:
-        """
-        Initialise an ETL exception.
 
-        Args:
-            message:              Human-readable error description.
-            error_code:           Machine-readable unique code (e.g. "DB_CONNECTION_ERROR").
-            severity:             How severe the error is.
-            category:             Which subsystem the error belongs to.
-            context:              Structured context (operation, component, etc.).
-            recovery_suggestions: Ordered list of remediation hints.
-            original_exception:   Underlying exception that caused this one.
-        """
         super().__init__(message)
         self.message              = message
         self.error_code           = error_code
@@ -89,9 +79,14 @@ class ETLException(Exception):
         self.context              = context or ErrorContext()
         self.recovery_suggestions = recovery_suggestions or []
         self.original_exception   = original_exception
-        self.traceback_info       = (
-            traceback.format_exc() if original_exception else None
-        )
+
+        # Capture detailed traceback if an original exception exists
+        if original_exception:
+            self.traceback_info = "".join(
+                traceback.format_exception(original_exception)
+            )
+        else:
+            self.traceback_info = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Return a JSON-serialisable representation for logging / monitoring."""
@@ -108,11 +103,21 @@ class ETLException(Exception):
         }
 
     def __str__(self) -> str:
+        """Formatted string for console output and basic logging."""
         parts = [f"[{self.error_code}] {self.message}"]
+        
+        # Add context flags
         if self.context.operation:
-            parts.append(f"(Operation: {self.context.operation})")
-        if self.context.component:
-            parts.append(f"(Component: {self.context.component})")
+            parts.append(f"(Op: {self.context.operation})")
+        if self.context.table_name:
+            parts.append(f"(Table: {self.context.table_name})")
+            
+        # Highlight critical issues
         if self.severity in (ErrorSeverity.HIGH, ErrorSeverity.CRITICAL):
-            parts.append(f"[SEVERITY: {self.severity.value.upper()}]")
+            parts.append(f"!!{self.severity.value.upper()}!!")
+            
+        # Include original cause if present
+        if self.original_exception:
+            parts.append(f"| Cause: {type(self.original_exception).__name__}: {self.original_exception}")
+            
         return " ".join(parts)

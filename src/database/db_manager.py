@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\db_manager.py
 Enhanced Database Manager with batch processing and connection pooling.
 Provides comprehensive ETL operations with high-performance batch operations.
 """
@@ -85,11 +86,11 @@ try:
 except ImportError:
     CONFIG_MODULE_AVAILABLE = False
 
-# Global logger for module functions
+# Global _logger for module functions
 if LOGGING_SYSTEM_AVAILABLE:
-    logger = get_database_logger()
+    _logger = get_database_logger()
 else:
-    logger = logging.getLogger(__name__)
+    _logger = logging.getLogger(__name__)
 
 
 def _isna(value) -> bool:
@@ -140,15 +141,15 @@ class BatchProcessor:
         successful_inserts = 0
         errors = 0
         
-        context_manager = (performance_context(f"batch_insert_{table_name}", logger) 
+        context_manager = (performance_context(f"batch_insert_{table_name}", _logger) 
                           if LOGGING_SYSTEM_AVAILABLE else self._dummy_context())
         
         with context_manager:
-            logger.info("Starting batch insert of %d records into %s", total_records, table_name)
+            _logger.info("Starting batch insert of %d records into %s", total_records, table_name)
             
             columns = list(data[0].keys()) if data else []
             if not columns:
-                logger.error("No columns found in data")
+                _logger.error("No columns found in data")
                 return 0, 1
                 
             placeholders = ', '.join(['%s'] * len(columns))
@@ -163,7 +164,7 @@ class BatchProcessor:
                 try:
                     with self.connection_manager.get_connection() as conn:
                         if conn is None:
-                            logger.error("Failed to get database connection")
+                            _logger.error("Failed to get database connection")
                             errors += len(batch_data)
                             continue
 
@@ -185,13 +186,13 @@ class BatchProcessor:
                                 f"Inserted {successful_inserts}/{total_records} records ({progress:.1f}%)"
                             )
 
-                        logger.debug(
+                        _logger.debug(
                             "Batch %d: inserted %d records into %s",
                             i // self.batch_size + 1, batch_success, table_name,
                         )
                         
                 except Exception as e:
-                    logger.error(
+                    _logger.error(
                         "Error inserting batch %d into %s: %s",
                         i // self.batch_size + 1, table_name, e,
                     )
@@ -209,9 +210,9 @@ class BatchProcessor:
                             original_exception=e,
                             context=context
                         )
-                        logger.error("Structured error info: %s", db_error.to_dict())
+                        _logger.error("Structured error info: %s", db_error.to_dict())
                 
-            logger.info(
+            _logger.info(
                 "Completed batch insert: %d/%d records inserted into %s, %d errors",
                 successful_inserts, total_records, table_name, errors,
             )
@@ -273,7 +274,7 @@ class BatchProcessor:
                         progress_callback(f"Updated {i + 1}/{total_records} records ({progress:.1f}%)")
                         
             except Exception as e:
-                logger.error("Error updating record %d: %s", i + 1, e)
+                _logger.error("Error updating record %d: %s", i + 1, e)
                 errors += 1
                 
         return successful_updates, errors
@@ -353,7 +354,7 @@ class BatchProcessor:
                         )
                         
             except Exception as e:
-                logger.error("Error in upsert batch: %s", e)
+                _logger.error("Error in upsert batch: %s", e)
                 errors += len(batch_data)
                 
         return inserts, updates, errors
@@ -488,7 +489,7 @@ class DatabaseManager:
                     )
                     return [row[0] for row in cursor.fetchall()]
         except Exception as e:
-            logger.error("Failed to get tables: %s", e)
+            _logger.error("Failed to get tables: %s", e)
             return []
 
     def get_row_count(self, table_name: str) -> int:
@@ -502,7 +503,7 @@ class DatabaseManager:
                     result = cursor.fetchone()
                 return result[0] if result else 0
         except Exception as e:
-            logger.debug("Error getting row count for %s: %s", table_name, e)
+            _logger.debug("Error getting row count for %s: %s", table_name, e)
             return -1
 
     def get_total_sales(self) -> float:
@@ -519,7 +520,7 @@ class DatabaseManager:
                     result = cursor.fetchone()
                 return float(result[0]) if result and result[0] is not None else 0.0
         except Exception as e:
-            logger.error("Failed to get total sales: %s", e)
+            _logger.error("Failed to get total sales: %s", e)
             return 0.0
 
     # ------------------------------------------------------------------
@@ -532,21 +533,21 @@ class DatabaseManager:
         try:
             with self.get_connection() as conn:
                 if conn is None:
-                    logger.error("Failed to get database connection for table creation")
+                    _logger.error("Failed to get database connection for table creation")
                     return False
 
                 with conn.cursor() as cursor:
                     for table_name in DEFAULT_TABLE_ORDER:
                         if table_name in SCHEMA_DEFINITIONS:
                             cursor.execute(SCHEMA_DEFINITIONS[table_name])
-                            logger.info("Created/verified table: %s", table_name)
+                            _logger.info("Created/verified table: %s", table_name)
 
                 conn.commit()
-                logger.info("All tables created successfully")
+                _logger.info("All tables created successfully")
                 return True
                 
         except Exception as e:
-            logger.error("Error creating tables: %s", e)
+            _logger.error("Error creating tables: %s", e)
             return False
 
     # ------------------------------------------------------------------
@@ -567,7 +568,7 @@ class DatabaseManager:
         if not self.data_validator or df is None or df.empty:
             return None
         
-        logger.info("Validating DataFrame for table '%s': %s", table_name, df.shape)
+        _logger.info("Validating DataFrame for table '%s': %s", table_name, df.shape)
         
         auto_rules    = self.data_validator.create_schema_from_dataframe(df)
         original_rules = self.data_validator.rules.copy()
@@ -579,13 +580,13 @@ class DatabaseManager:
             summary = self.data_validator.validate_dataframe(df, stop_on_critical=False)
             
             if summary.failed_rules > 0:
-                logger.warning("Validation found issues: %d failed rules", summary.failed_rules)
+                _logger.warning("Validation found issues: %d failed rules", summary.failed_rules)
                 for failure in summary.get_critical_failures():
-                    logger.error("  Critical — %s: %s", failure.rule_name, failure.message)
+                    _logger.error("  Critical — %s: %s", failure.rule_name, failure.message)
                 for failure in summary.get_errors()[:3]:
-                    logger.warning("  Error — %s: %s", failure.rule_name, failure.message)
+                    _logger.warning("  Error — %s: %s", failure.rule_name, failure.message)
             else:
-                logger.info("Validation passed: all %d rules successful", summary.total_rules)
+                _logger.info("Validation passed: all %d rules successful", summary.total_rules)
             
             return summary
         finally:
@@ -607,7 +608,7 @@ class DatabaseManager:
             file_path = self.csv_dir / csv_filename
             if not file_path.exists():
                 error_msg = f"CSV file not found: {file_path}"
-                logger.error(error_msg)
+                _logger.error(error_msg)
                 if ETL_EXCEPTIONS_AVAILABLE:
                     from etl_exceptions import FileSystemError
                     raise FileSystemError(
@@ -616,43 +617,43 @@ class DatabaseManager:
                 return None
             
             if self.pandas_optimizer and PANDAS_OPTIMIZER_AVAILABLE:
-                logger.debug("Reading %s with pandas optimisation", csv_filename)
+                _logger.debug("Reading %s with pandas optimisation", csv_filename)
                 df = optimize_csv_reading(file_path, optimize_dtypes=True)
             else:
-                logger.debug("Reading %s with standard pandas", csv_filename)
+                _logger.debug("Reading %s with standard pandas", csv_filename)
                 df = pd.read_csv(file_path)
             
             df = df.where(pd.notna(df), None)
             
             if self.pandas_optimizer:
                 profile = self.pandas_optimizer.get_data_profile(df)
-                logger.info(
+                _logger.info(
                     "Read %s: %s shape, %.2fMB, %d categorical columns",
                     csv_filename, profile['shape'],
                     profile['memory_usage_mb'],
                     len(profile['categorical_columns']),
                 )
             else:
-                logger.debug("Read %d rows from %s", len(df), csv_filename)
+                _logger.debug("Read %d rows from %s", len(df), csv_filename)
             
             if self.data_validator:
                 table_name = csv_filename.replace('.csv', '')
                 summary = self.validate_dataframe(df, table_name)
                 if summary and summary.failed_rules > 0:
-                    logger.warning("Data validation found %d issues in %s", summary.failed_rules, csv_filename)
+                    _logger.warning("Data validation found %d issues in %s", summary.failed_rules, csv_filename)
                     if summary.get_critical_failures():
-                        logger.error("Critical validation failures in %s — manual review advised", csv_filename)
+                        _logger.error("Critical validation failures in %s — manual review advised", csv_filename)
                     else:
                         cleaned_df, fixes = self.data_validator.clean_data(df, summary)
                         if fixes:
-                            logger.info("Applied automatic fixes to %s: %s", csv_filename, fixes)
+                            _logger.info("Applied automatic fixes to %s: %s", csv_filename, fixes)
                             df = cleaned_df
             
             return df
             
         except Exception as e:
             error_msg = f"Error reading CSV file {csv_filename}: {e}"
-            logger.error(error_msg)
+            _logger.error(error_msg)
             
             if ETL_EXCEPTIONS_AVAILABLE and not isinstance(e, ETLException):
                 if "memory" in str(e).lower():
@@ -684,50 +685,50 @@ class DatabaseManager:
                     
                 df = self.read_csv_file(self.csv_files[table_name])
                 if df is None:
-                    logger.warning("Skipping %s — file not found or read error", table_name)
+                    _logger.warning("Skipping %s — file not found or read error", table_name)
                     continue
                 
                 records = df.to_dict('records')
                 if not records:
-                    logger.warning("No records found in %s", self.csv_files[table_name])
+                    _logger.warning("No records found in %s", self.csv_files[table_name])
                     continue
                 
                 inserted, errors = self.batch_processor.insert_batch(
                     table_name=table_name,
                     data=records,
-                    progress_callback=lambda msg, t=table_name: logger.info("%s: %s", t, msg),
+                    progress_callback=lambda msg, t=table_name: _logger.info("%s: %s", t, msg),
                     ignore_duplicates=True,
                 )
                 
                 total_inserted += inserted
                 total_errors   += errors
-                logger.info("Table %s: %d inserted, %d errors", table_name, inserted, errors)
+                _logger.info("Table %s: %d inserted, %d errors", table_name, inserted, errors)
             
-            logger.info(
+            _logger.info(
                 "CSV import completed: %d total records inserted, %d errors",
                 total_inserted, total_errors,
             )
             return total_errors == 0
             
         except Exception as e:
-            logger.error("Error importing CSV data: %s", e)
+            _logger.error("Error importing CSV data: %s", e)
             return False
 
     def export_api_data_to_csv(self) -> bool:
         """Export API data to CSV files (placeholder for compatibility)."""
         try:
             self.api_dir.mkdir(parents=True, exist_ok=True)
-            logger.info("API data export functionality — placeholder implementation")
+            _logger.info("API data export functionality — placeholder implementation")
             return True
         except Exception as e:
-            logger.error("Error exporting API data: %s", e)
+            _logger.error("Error exporting API data: %s", e)
             return False
     
     def verify_data(self) -> Dict[str, int]:
         """Return row counts for all known tables."""
         all_tables = list(self.csv_files) + list(self.api_tables)
         results    = {t: self.get_row_count(t) for t in all_tables}
-        logger.info("Data verification completed: %s", results)
+        _logger.info("Data verification completed: %s", results)
         return results
 
     # ------------------------------------------------------------------
@@ -817,35 +818,35 @@ if __name__ == "__main__":
         db_manager.batch_processor.batch_size = args.batch_size
         
         if not db_manager.test_connection():
-            logger.error("Failed to connect to database")
+            _logger.error("Failed to connect to database")
             sys.exit(1)
-        logger.info("Database connection successful")
+        _logger.info("Database connection successful")
         
         if not db_manager.create_database_if_not_exists():
-            logger.error("Failed to create database")
+            _logger.error("Failed to create database")
             sys.exit(1)
         
         if args.create_tables:
-            logger.info("Creating database tables...")
+            _logger.info("Creating database tables...")
             if not db_manager.create_all_tables_from_csv():
-                logger.error("Failed to create tables")
+                _logger.error("Failed to create tables")
                 sys.exit(1)
-            logger.info("Tables created successfully")
+            _logger.info("Tables created successfully")
         
         if args.import_csv:
-            logger.info("Importing CSV data...")
+            _logger.info("Importing CSV data...")
             if not db_manager.import_csv_data():
-                logger.error("Failed to import CSV data")
+                _logger.error("Failed to import CSV data")
         
         if args.verify:
-            logger.info("Verifying data...")
+            _logger.info("Verifying data...")
             for table, count in db_manager.verify_data().items():
-                logger.info("Table %s: %d records", table, count)
+                _logger.info("Table %s: %d records", table, count)
         
-        logger.info("Connection statistics: %s", db_manager.get_connection_stats())
+        _logger.info("Connection statistics: %s", db_manager.get_connection_stats())
         
     except Exception as e:
-        logger.error("Error in database manager: %s", e)
+        _logger.error("Error in database manager: %s", e)
         sys.exit(1)
     finally:
         if 'db_manager' in locals():

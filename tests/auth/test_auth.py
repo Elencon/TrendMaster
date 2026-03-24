@@ -822,10 +822,6 @@ class TestSessionManager(unittest.TestCase):
         self.sm.login(self._user())
         self.assertEqual(self.sm.get_user_id(), 1)
 
-    def test_get_staff_id_none(self):
-        self.sm.login(self._user())
-        self.assertIsNone(self.sm.get_staff_id())
-
     def test_get_current_user_returns_copy(self):
         self.sm.login(self._user())
         u1 = self.sm.get_current_user()
@@ -849,7 +845,6 @@ class TestSessionManager(unittest.TestCase):
         self.assertIsNone(self.sm.get_user_id())
         self.assertIsNone(self.sm.get_username())
         self.assertIsNone(self.sm.get_role())
-        self.assertIsNone(self.sm.get_staff_id())
         self.assertIsNone(self.sm.get_current_user())
 
     def test_repr(self):

@@ -1,4 +1,7 @@
-"""Background worker for dashboard operations"""
+r"""
+C:\Economy\Invest\TrendMaster\src\gui\dashboard_window\worker.py
+Background worker for dashboard operations
+"""
 
 from PySide6.QtCore import Signal
 

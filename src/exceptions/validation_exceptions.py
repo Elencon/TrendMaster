@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\validation_exceptions.py
 Data validation exception classes.
 Handles schema validation, data quality, and validation rule errors.
 """

@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\decorators.py
 Decorators for automatic exception handling and conversion.
 Wraps functions to catch generic exceptions and re-raise as typed ETL exceptions.
 """

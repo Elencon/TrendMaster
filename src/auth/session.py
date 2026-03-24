@@ -1,10 +1,11 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\auth\session.py
 Thread-safe singleton session manager for tracking authenticated users.
 """
 
 import logging
 from typing import Optional, TypedDict
-from datetime import datetime
+from datetime import datetime, timezone 
 from threading import Lock
 
 _logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ class SessionManager:
             self._initialized = True
 
     def __repr__(self) -> str:
-        return f"<SessionManager logged_in={self.is_logged_in()}>"
+        return f"<SessionManager user={self.get_username() or 'None'}>"
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -59,7 +60,7 @@ class SessionManager:
         with self._lock:
             try:
                 self._current_user = user_data.copy()
-                self._login_time   = datetime.now()
+                self._login_time   = datetime.now(timezone.utc)
                 _logger.info(
                     "Session started for user '%s' with role '%s'",
                     user_data.get("username"),
@@ -103,10 +104,6 @@ class SessionManager:
     def get_role(self) -> Optional[str]:
         with self._lock:
             return self._current_user.get("role") if self._current_user else None
-
-    def get_staff_id(self) -> Optional[int]:
-        with self._lock:
-            return self._current_user.get("staff_id") if self._current_user else None
 
     def get_login_time(self) -> Optional[datetime]:
         with self._lock:

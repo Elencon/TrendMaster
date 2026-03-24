@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\exception_factories.py
 Factory functions for creating exception instances.
 Provides convenient construction of appropriate exceptions based on context.
 """

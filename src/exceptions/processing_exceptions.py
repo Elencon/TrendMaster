@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\processing_exceptions.py
 Data processing exception classes.
 Handles data transformation, ETL pipeline, and processing stage errors.
 """

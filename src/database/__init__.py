@@ -1,3 +1,8 @@
+r"""
+C:\Economy\Invest\TrendMaster\src\database\__init__.py
+Database package - modular components for ETL operations
+"""
+
 # Database package - modular components for ETL operations
 from .db_manager import DatabaseManager
 from .schema_manager import SchemaManager, SCHEMA_DEFINITIONS, TABLE_COLUMNS

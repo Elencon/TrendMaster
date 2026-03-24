@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\database_exceptions.py
 Database-related exception classes.
 Handles database connection, query execution, and transaction errors.
 """

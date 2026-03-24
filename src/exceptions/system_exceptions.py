@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\exceptions\system_exceptions.py
 System-related exception classes.
 Handles configuration, file system, memory, and infrastructure errors.
 """

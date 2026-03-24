@@ -1,4 +1,7 @@
-"""Data Handler for Dashboard Window - Extracted data loading and event handling methods"""
+r"""
+C:\Economy\Invest\TrendMaster\src\gui\dashboard_window\data_handler.py
+Data Handler for Dashboard Window - Extracted data loading and event handling methods
+"""
 
 import sys
 import os

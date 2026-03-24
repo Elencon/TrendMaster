@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\logging_system.py
 Modern structured logging for ETL operations.
 Uses structlog for clean, fast, structured logs with correlation IDs and performance tracking.
 Public interface unchanged.
