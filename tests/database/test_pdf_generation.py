@@ -3,8 +3,8 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 # Correct: Since 'src' is in the pythonpath, start from the subfolder name
-from database.pdf_generator import CustomerOrderPDFGenerator
-from database.connection_manager import get_connection_manager
+from src.database.pdf_generator import CustomerOrderPDFGenerator
+from src.database.connection_manager import get_connection_manager
 
 # -----------------------------
 # Fixtures

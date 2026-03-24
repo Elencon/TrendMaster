@@ -1,8 +1,7 @@
 import pytest
-import anyio
 import msgspec
 from datetime import datetime
-from src.api.data_processor import APIDataProcessor, ProcessingStats
+from src.api.data_processor import APIDataProcessor
 from src.api.api_models import APIResponse
 
 # Sample struct for testing

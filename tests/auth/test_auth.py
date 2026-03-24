@@ -18,10 +18,9 @@ Run with:
 """
 
 import json
-import time
 import unittest
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 
 import pyotp
 
@@ -625,7 +624,7 @@ class TestTwoFactorAuth(unittest.TestCase):
     def test_generate_secret_is_base32(self):
         from auth.two_factor_auth import TwoFactorAuth
         secret = TwoFactorAuth.generate_secret()
-        import base64
+
         # pyotp secrets are valid base32
         self.assertIsInstance(secret, str)
         self.assertGreater(len(secret), 0)

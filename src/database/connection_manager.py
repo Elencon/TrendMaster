@@ -12,24 +12,31 @@ from typing import Dict, Optional
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Optional dependencies
+# Optional dependencies (MySQL drivers + connect module)
 # ---------------------------------------------------------------------------
 
+mysql = None
+_pooling = None
+pymysql = None
+pymysql_cursors = None
+
+# mysql.connector
 try:
-    import mysql.connector
+    import mysql.connector as mysql
     import mysql.connector.pooling as _pooling
 except ImportError:
-    mysql = None
-    _pooling = None
+    pass
 
+# PyMySQL
 try:
-    from connect import connect_to_mysql, mysql_connection
+    import pymysql
+    import pymysql.cursors as pymysql_cursors
 except ImportError:
-    connect_to_mysql = None
-    mysql_connection = None
+    pass
 
-_MYSQL_AVAILABLE = mysql is not None
-_CONNECT_AVAILABLE = connect_to_mysql is not None
+# Availability flags
+MYSQL_CONNECTOR_AVAILABLE = mysql is not None
+PYMYSQL_AVAILABLE = pymysql is not None
 
 # ---------------------------------------------------------------------------
 # Constants / defaults

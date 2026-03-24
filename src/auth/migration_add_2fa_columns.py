@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\tests\auth\test_user_repository.py
 Migration script to add security and 2FA columns to the users table.
 Run this once to update existing databases.
 """
