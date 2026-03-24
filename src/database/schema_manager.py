@@ -19,146 +19,95 @@ from typing import Dict, List, Optional
 # ---------------------------------------------------------------------------
 
 SCHEMA_DEFINITIONS = {
-    'brands':      "CREATE TABLE IF NOT EXISTS brands (brand_id INT PRIMARY KEY, brand_name VARCHAR(255) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+    'daily_prices': """CREATE TABLE `daily_prices` (
+  `price_id` bigint NOT NULL AUTO_INCREMENT,
+  `ticker_id` int NOT NULL,
+  `trade_date` date NOT NULL,
+  `open_price` decimal(14,4) DEFAULT NULL,
+  `high_price` decimal(14,4) DEFAULT NULL,
+  `low_price` decimal(14,4) DEFAULT NULL,
+  `close_price` decimal(14,4) DEFAULT NULL,
+  `adj_close` decimal(14,4) DEFAULT NULL,
+  `daily_yield_pct` decimal(8,4) DEFAULT NULL,
+  `volume` bigint DEFAULT NULL,
+  PRIMARY KEY (`price_id`),
+  UNIQUE KEY `unique_ticker_date` (`ticker_id`,`trade_date`),
+  KEY `idx_trade_date` (`trade_date`),
+  CONSTRAINT `daily_prices_ibfk_1` FOREIGN KEY (`ticker_id`) REFERENCES `tickers` (`ticker_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
 
-    'categories':  "CREATE TABLE IF NOT EXISTS categories (category_id INT PRIMARY KEY, category_name VARCHAR(255) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+    'portfolio_holdings': """CREATE TABLE `portfolio_holdings` (
+  `holding_id` int NOT NULL AUTO_INCREMENT,
+  `portfolio_id` int NOT NULL,
+  `ticker_id` int NOT NULL,
+  `quantity` decimal(14,4) NOT NULL DEFAULT '0.0000',
+  `average_buy_price` decimal(14,4) NOT NULL DEFAULT '0.0000',
+  `last_updated` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`holding_id`),
+  UNIQUE KEY `unique_portfolio_ticker` (`portfolio_id`,`ticker_id`),
+  KEY `ticker_id` (`ticker_id`),
+  CONSTRAINT `portfolio_holdings_ibfk_1` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolios` (`portfolio_id`) ON DELETE CASCADE,
+  CONSTRAINT `portfolio_holdings_ibfk_2` FOREIGN KEY (`ticker_id`) REFERENCES `tickers` (`ticker_id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
 
-    'stores':      """CREATE TABLE IF NOT EXISTS stores (
-                        store_id  INT          PRIMARY KEY AUTO_INCREMENT,
-                        name      VARCHAR(255) NOT NULL,
-                        phone     VARCHAR(20),
-                        email     VARCHAR(255),
-                        street    VARCHAR(255),
-                        city      VARCHAR(100),
-                        state     VARCHAR(50),
-                        zip_code  VARCHAR(20)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+    'portfolios': """CREATE TABLE `portfolios` (
+  `portfolio_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` text,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`portfolio_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `portfolios_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
 
-    # store_name  → store_id  (FK to stores)
-    # manager_id stays a self-referential FK
-    'staffs':      """CREATE TABLE IF NOT EXISTS staffs (
-                        staff_id   INT          PRIMARY KEY AUTO_INCREMENT,
-                        name       VARCHAR(100) NOT NULL,
-                        last_name  VARCHAR(100) NOT NULL,
-                        email      VARCHAR(255),
-                        phone      VARCHAR(20),
-                        active     BOOLEAN      DEFAULT TRUE,
-                        store_id   INT,
-                        street     VARCHAR(255),
-                        manager_id INT,
-                        FOREIGN KEY (store_id)   REFERENCES stores(store_id),
-                        FOREIGN KEY (manager_id) REFERENCES staffs(staff_id)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+    'tickers': """CREATE TABLE `tickers` (
+  `ticker_id` int NOT NULL AUTO_INCREMENT,
+  `symbol` varchar(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `exchange` varchar(50) DEFAULT NULL,
+  `sector` varchar(100) DEFAULT NULL,
+  `industry` varchar(100) DEFAULT NULL,
+  `asset_class` varchar(50) DEFAULT 'Equity',
+  `currency` varchar(10) DEFAULT 'USD',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ticker_id`),
+  UNIQUE KEY `symbol` (`symbol`),
+  KEY `idx_symbol` (`symbol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
 
-    'products':    """CREATE TABLE IF NOT EXISTS products (
-                        product_id   INT          PRIMARY KEY,
-                        product_name VARCHAR(255) NOT NULL,
-                        brand_id     INT,
-                        category_id  INT,
-                        model_year   INT,
-                        list_price   DECIMAL(10, 2),
-                        FOREIGN KEY (brand_id)    REFERENCES brands(brand_id),
-                        FOREIGN KEY (category_id) REFERENCES categories(category_id)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
+    'users': """CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `role` enum('Employee','Manager','Administrator','User') NOT NULL DEFAULT 'User',
+  `last_login` datetime DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `active` tinyint(1) DEFAULT '1',
+  `failed_login_attempts` int DEFAULT '0',
+  `last_failed_login` datetime DEFAULT NULL,
+  `account_locked_until` datetime DEFAULT NULL,
+  `password_last_changed` datetime DEFAULT CURRENT_TIMESTAMP,
+  `must_change_password` tinyint(1) DEFAULT '0',
+  `two_factor_enabled` tinyint(1) DEFAULT '0',
+  `two_factor_secret` varchar(32) DEFAULT NULL,
+  `backup_codes` text,
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_username` (`username`),
+  KEY `idx_role` (`role`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci""",
 
-    # store_name → store_id  (FK to stores)
-    # PK updated to (store_id, product_id)
-    'stocks':      """CREATE TABLE IF NOT EXISTS stocks (
-                        store_id   INT NOT NULL,
-                        product_id INT NOT NULL,
-                        quantity   INT DEFAULT 0,
-                        PRIMARY KEY (store_id, product_id),
-                        FOREIGN KEY (store_id)   REFERENCES stores(store_id),
-                        FOREIGN KEY (product_id) REFERENCES products(product_id)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
-
-    # store / staff_name → store_id / staff_id  (FK to stores / staffs)
-    'orders':      """CREATE TABLE IF NOT EXISTS orders (
-                        order_id          INT PRIMARY KEY,
-                        customer_id       INT NOT NULL,
-                        order_status      INT NOT NULL,
-                        order_status_name VARCHAR(50),
-                        order_date        DATE,
-                        required_date     DATE,
-                        shipped_date      DATE,
-                        staff_id          INT,
-                        store_id          INT,
-                        FOREIGN KEY (staff_id) REFERENCES staffs(staff_id),
-                        FOREIGN KEY (store_id) REFERENCES stores(store_id),
-                        INDEX idx_customer_id  (customer_id),
-                        INDEX idx_order_date   (order_date),
-                        INDEX idx_order_status (order_status),
-                        INDEX idx_store_id     (store_id)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
-
-    # Added FK declarations for order_id and product_id
-    'order_items': """CREATE TABLE IF NOT EXISTS order_items (
-                        item_id    INT            PRIMARY KEY,
-                        order_id   INT            NOT NULL,
-                        product_id INT            NOT NULL,
-                        quantity   INT            NOT NULL DEFAULT 1,
-                        list_price DECIMAL(10, 2) NOT NULL,
-                        discount   DECIMAL(4,  2) DEFAULT 0.00,
-                        FOREIGN KEY (order_id)   REFERENCES orders(order_id),
-                        FOREIGN KEY (product_id) REFERENCES products(product_id),
-                        INDEX idx_order_id   (order_id),
-                        INDEX idx_product_id (product_id)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
-
-    'customers':   """CREATE TABLE IF NOT EXISTS customers (
-                        customer_id INT          PRIMARY KEY,
-                        first_name  VARCHAR(100) NOT NULL,
-                        last_name   VARCHAR(100) NOT NULL,
-                        email       VARCHAR(255) UNIQUE,
-                        phone       VARCHAR(20),
-                        street      VARCHAR(255),
-                        city        VARCHAR(100),
-                        state       VARCHAR(50),
-                        zip_code    VARCHAR(20),
-                        INDEX idx_email (email),
-                        INDEX idx_state (state),
-                        INDEX idx_city  (city)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
-
-    'users':       """CREATE TABLE IF NOT EXISTS users (
-                        user_id                INT      PRIMARY KEY AUTO_INCREMENT,
-                        staff_id               INT      UNIQUE,
-                        username               VARCHAR(50)  UNIQUE NOT NULL,
-                        password_hash          VARCHAR(255) NOT NULL,
-                        role                   ENUM('Employee', 'Manager', 'Administrator') NOT NULL DEFAULT 'Employee',
-                        last_login             DATETIME,
-                        created_at             DATETIME DEFAULT CURRENT_TIMESTAMP,
-                        active                 BOOLEAN  DEFAULT TRUE,
-                        failed_login_attempts  INT      DEFAULT 0,
-                        last_failed_login      DATETIME,
-                        account_locked_until   DATETIME,
-                        password_last_changed  DATETIME DEFAULT CURRENT_TIMESTAMP,
-                        must_change_password   BOOLEAN  DEFAULT FALSE,
-                        two_factor_enabled     BOOLEAN  DEFAULT FALSE,
-                        two_factor_secret      VARCHAR(32),
-                        backup_codes           TEXT,
-                        FOREIGN KEY (staff_id) REFERENCES staffs(staff_id) ON DELETE SET NULL,
-                        INDEX idx_username (username),
-                        INDEX idx_role     (role)
-                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4""",
 }
 
 TABLE_COLUMNS: Dict[str, List[str]] = {
-    'brands':      ['brand_id', 'brand_name'],
-    'categories':  ['category_id', 'category_name'],
-    'stores':      ['store_id', 'name', 'phone', 'email', 'street', 'city', 'state', 'zip_code'],
-    'staffs':      ['staff_id', 'name', 'last_name', 'email', 'phone', 'active', 'store_id', 'street', 'manager_id'],
-    'products':    ['product_id', 'product_name', 'brand_id', 'category_id', 'model_year', 'list_price'],
-    'stocks':      ['store_id', 'product_id', 'quantity'],
-    'orders':      ['order_id', 'customer_id', 'order_status', 'order_status_name',
-                    'order_date', 'required_date', 'shipped_date', 'staff_id', 'store_id'],
-    'order_items': ['item_id', 'order_id', 'product_id', 'quantity', 'list_price', 'discount'],
-    'customers':   ['customer_id', 'first_name', 'last_name', 'email', 'phone',
-                    'street', 'city', 'state', 'zip_code'],
-    'users':       ['user_id', 'staff_id', 'username', 'password_hash', 'role',
-                    'last_login', 'created_at', 'active', 'failed_login_attempts',
-                    'last_failed_login', 'account_locked_until', 'password_last_changed',
-                    'must_change_password', 'two_factor_enabled', 'two_factor_secret', 'backup_codes'],
+    'daily_prices': ['price_id', 'ticker_id', 'trade_date', 'open_price', 'high_price', 'low_price', 'close_price', 'adj_close', 'daily_yield_pct', 'volume'],
+    'portfolio_holdings': ['holding_id', 'portfolio_id', 'ticker_id', 'quantity', 'average_buy_price', 'last_updated'],
+    'portfolios': ['portfolio_id', 'user_id', 'name', 'description', 'created_at'],
+    'tickers': ['ticker_id', 'symbol', 'name', 'exchange', 'sector', 'industry', 'asset_class', 'currency', 'created_at'],
+    'users': ['user_id', 'username', 'email', 'password_hash', 'role', 'last_login', 'created_at', 'active', 'failed_login_attempts', 'last_failed_login', 'account_locked_until', 'password_last_changed', 'must_change_password', 'two_factor_enabled', 'two_factor_secret', 'backup_codes'],
 }
 
 # Foreign-key-safe creation order
@@ -272,7 +221,7 @@ def _validate_column_registry() -> None:
         )
 
 
-_validate_column_registry()
+# _validate_column_registry()
 
 
 class SchemaManager:

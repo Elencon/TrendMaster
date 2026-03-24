@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\pandas_optimizer.py
 Compact pandas optimization utilities for memory-efficient ETL operations.
 """
 
@@ -16,45 +17,72 @@ try:
 except ImportError:
     _PSUTIL_AVAILABLE = False
 
-logger = logging.getLogger(__name__)
-
 
 # ---------------------------------------------------------------------------
 # Internal utilities (not part of public interface)
 # ---------------------------------------------------------------------------
 
+_logger = logging.getLogger(__name__)
+
+
 class DataUtils:
+    """Stateless utility methods for DataFrame inspection and stats tracking."""
+
     @staticmethod
     def get_dataframe_memory_mb(df: pd.DataFrame) -> float:
+        """Return DataFrame memory usage in MB, or 0.0 on failure."""
+        if not isinstance(df, pd.DataFrame):
+            return 0.0
         try:
-            return df.memory_usage(deep=True).sum() / 1024 / 1024
+            return df.memory_usage(deep=True).sum() / (1024 * 1024)
         except Exception:
             return 0.0
 
     @staticmethod
     def should_be_categorical(series: pd.Series, threshold: float = 0.5) -> bool:
+        """
+        Return True if *series* should be converted to category dtype.
+
+        Uses unique-to-total ratio — values below *threshold* suggest
+        low cardinality and benefit from categorisation.
+        """
+        if not isinstance(series, pd.Series) or series.empty:
+            return False
         try:
-            if len(series) == 0:
-                return False
-            return series.nunique() / len(series) < threshold
+            return series.nunique(dropna=True) / series.size < threshold
         except Exception:
             return False
 
     @staticmethod
     def create_stats_tracker() -> Dict[str, Any]:
+        """Return a stats dict with consistent initial values."""
         return {
             "memory_optimized": 0,
             "chunks_processed": 0,
-            "rows_processed": 0,
-            "memory_saved_mb": 0.0,
+            "rows_processed":   0,
+            "memory_saved_mb":  0.0,
         }
 
     @staticmethod
     def update_stats(stats: Dict[str, Any], key: str, value: Any) -> None:
-        stats[key] = stats.get(key, 0) + value
+        """
+        Update a stats field in place.
+
+        Numeric fields are accumulated; all others are overwritten.
+        Unknown keys are created with a warning.
+        """
+        if key not in stats:
+            _logger.warning("update_stats: unknown key '%s' — creating it", key)
+            stats[key] = value
+            return
+        if isinstance(stats[key], (int, float)) and isinstance(value, (int, float)):
+            stats[key] += value
+        else:
+            stats[key] = value
 
     @staticmethod
     def force_cleanup() -> None:
+        """Force a garbage collection cycle."""
         gc.collect()
 
 
@@ -124,7 +152,7 @@ class PandasOptimizer:
         DataUtils.update_stats(self.stats, "memory_optimized", 1)
         DataUtils.update_stats(self.stats, "memory_saved_mb", memory_saved)
 
-        logger.info(
+        _logger.info(
             "Memory: %.2fMB → %.2fMB (saved %.2fMB)",
             original_memory, optimized_memory, memory_saved,
         )
@@ -144,13 +172,13 @@ class PandasOptimizer:
             **read_kwargs,
         }
 
-        logger.info("Processing %s in chunks of %d", file_path, self.chunk_size)
+        _logger.info("Processing %s in chunks of %d", file_path, self.chunk_size)
         total_chunks = total_rows = 0
 
         try:
             for chunk in pd.read_csv(file_path, **read_params):
                 if self.get_memory_usage_mb() > self.max_memory_mb:
-                    logger.warning("Memory limit exceeded, forcing cleanup")
+                    _logger.warning("Memory limit exceeded, forcing cleanup")
                     DataUtils.force_cleanup()
 
                 if self.auto_optimize:
@@ -163,10 +191,10 @@ class PandasOptimizer:
 
             DataUtils.update_stats(self.stats, "chunks_processed", total_chunks)
             DataUtils.update_stats(self.stats, "rows_processed", total_rows)
-            logger.info("Processed %d chunks, %d total rows", total_chunks, total_rows)
+            _logger.info("Processed %d chunks, %d total rows", total_chunks, total_rows)
 
         except Exception:
-            logger.error("Chunk processing failed for %s", file_path, exc_info=True)
+            _logger.error("Chunk processing failed for %s", file_path, exc_info=True)
             raise
 
     def efficient_groupby(
@@ -188,7 +216,7 @@ class PandasOptimizer:
             .reset_index()
         )
 
-        logger.info(
+        _logger.info(
             "Groupby: %d → %d rows, %.2fMB → %.2fMB",
             len(df), len(result),
             original_memory, DataUtils.get_dataframe_memory_mb(result),
@@ -204,7 +232,7 @@ class PandasOptimizer:
         **kwargs,
     ) -> pd.DataFrame:
         """Memory-efficient merge."""
-        logger.debug(
+        _logger.debug(
             "Merging: left(%d rows, %.2fMB) %s right(%d rows, %.2fMB)",
             len(left), DataUtils.get_dataframe_memory_mb(left),
             how,
@@ -216,7 +244,7 @@ class PandasOptimizer:
             right = self.optimize_dtypes(right)
 
         result = pd.merge(left, right, on=on, how=how, **kwargs)
-        logger.info(
+        _logger.info(
             "Merge complete: %d rows, %.2fMB",
             len(result), DataUtils.get_dataframe_memory_mb(result),
         )
@@ -276,7 +304,7 @@ class DataFrameChunker:
         """Yield successive slices of *df*."""
         total_rows = len(df)
         total_chunks = (total_rows + self.chunk_size - 1) // self.chunk_size
-        logger.info("Chunking: %d rows → %d chunks", total_rows, total_chunks)
+        _logger.info("Chunking: %d rows → %d chunks", total_rows, total_chunks)
         for i in range(0, total_rows, self.chunk_size):
             yield df.iloc[i : i + self.chunk_size]
 
@@ -291,7 +319,7 @@ class DataFrameChunker:
 
         if combine_results and all(isinstance(r, pd.DataFrame) for r in results):
             combined = pd.concat(results, ignore_index=True)
-            logger.info("Combined %d chunks → %d rows", len(results), len(combined))
+            _logger.info("Combined %d chunks → %d rows", len(results), len(combined))
             return combined
 
         return results
@@ -314,16 +342,16 @@ def optimize_csv_reading(
         df = pd.read_csv(file_path, **kwargs)
         if auto_optimize:
             df = optimizer.optimize_dtypes(df)
-        logger.info("Read and optimized %s: %s", file_path, df.shape)
+        _logger.info("Read and optimized %s: %s", file_path, df.shape)
         return df
 
     except MemoryError:
-        logger.warning("MemoryError reading %s, switching to chunked processing", file_path)
+        _logger.warning("MemoryError reading %s, switching to chunked processing", file_path)
         result = pd.concat(
             optimizer.process_in_chunks(file_path, lambda x: x, **kwargs),
             ignore_index=True,
         )
-        logger.info("Chunked read complete: %s", result.shape)
+        _logger.info("Chunked read complete: %s", result.shape)
         return result
 
 

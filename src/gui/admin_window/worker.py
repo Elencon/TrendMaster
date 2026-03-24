@@ -16,7 +16,7 @@ sys.path.insert(0, str(SRC_PATH))
 MODULES_AVAILABLE = True
 try:
     from src.database.db_manager import DatabaseManager
-    from src.connect import mysql_connection, config
+    from src.connect import config
     from src.database.data_from_api import APIDataFetcher as APIClient
 except ImportError as e:
     print(f"Warning: Could not import ETL modules: {e}")

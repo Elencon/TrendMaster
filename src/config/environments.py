@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\config\environments.py
 Environment-specific configuration profiles.
 """
 

@@ -49,14 +49,16 @@ except ImportError:
 try:
     from .connection_manager import DatabaseConnection, ConnectionPool
     from .schema_manager import SCHEMA_DEFINITIONS, TABLE_COLUMNS
-    from connect import config as legacy_config, mysql_connection
+    from connect import config as legacy_config
     CONNECT_AVAILABLE = True
     POOL_AVAILABLE = True
 except ImportError:
     CONNECT_AVAILABLE = False
     POOL_AVAILABLE = False
     legacy_config = {
-        'user': 'root', 'password': '', 'host': '127.0.0.1', 
+        'user': 'root',
+        'password': '',
+        'host': '127.0.0.1',
         'database': 'trend_master'
     }
     

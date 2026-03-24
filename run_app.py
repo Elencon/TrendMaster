@@ -29,10 +29,10 @@ from src.auth.permissions import PermissionManager
 from src.config import DatabaseConfig
 from src.gui.login_window import LoginWindow  # type: ignore
 from src.gui.dashboard_window import DashboardMainWindow  # type: ignore
-from themes import ThemeManager  # type: ignore
-from tabbed_window import TabbedMainWindow  # type: ignore
-from admin_window import ETLMainWindow  # type: ignore
-from user_management import UserManagementDialog  # type: ignore
+from src.gui.themes import ThemeManager  # type: ignore
+from src.gui.tabbed_window import TabbedMainWindow  # type: ignore
+from src.gui.admin_window import ETLMainWindow  # type: ignore
+from src.gui.user_management import UserManagementDialog  # type: ignore
 
 # Setup logging
 logging.basicConfig(

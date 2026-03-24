@@ -19,29 +19,46 @@ _DEFAULT_SQL_MODE = (
 # MySQLConfig
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(frozen=True)
 class MySQLConfig(DatabaseConfig):
-    """MySQL-specific configuration with optimized defaults."""
+    """
+    MySQL-specific configuration extending DatabaseConfig.
 
-    # Character set
-    charset: str = "utf8mb4"
+    - Does NOT redeclare charset (inherited from DatabaseConfig)
+    - Applies MySQL-specific defaults in __post_init__
+    - Adds collation + sql_mode cleanly
+    """
+
     collation: str = "utf8mb4_unicode_ci"
     sql_mode: str = _DEFAULT_SQL_MODE
 
-    # InnoDB (server-level tuning; kept for documentation)
+    # Server-level tuning (documented, not included in to_dict)
     innodb_buffer_pool_size: str = "128M"
     innodb_log_file_size: str = "64M"
-
-    # Performance (server-level tuning)
     max_connections: int = 151
-    query_cache_size: str = "16M"  # Ignored in MySQL 8+
+    query_cache_size: str = "16M"
     tmp_table_size: str = "16M"
     max_heap_table_size: str = "16M"
 
+    def __post_init__(self):
+        # Run parent validation first
+        super().__post_init__()
+
+        # MySQL-specific validation
+        if not self.collation:
+            raise ValueError("MySQL collation cannot be empty")
+
+        if not isinstance(self.sql_mode, str) or not self.sql_mode.strip():
+            raise ValueError("sql_mode must be a non-empty string")
+
+        # Override charset ONLY if user did not specify one
+        if self.charset is None or self.charset.strip() == "":
+            object.__setattr__(self, "charset", "utf8mb4")
+
     def to_dict(self) -> Dict[str, Any]:
         """
-        Return a dict for mysql.connector, including MySQL-specific client options.
-        Server-level tuning parameters are intentionally not included.
+        Return a dict for mysql.connector or PyMySQL.
+        Only client-side options are included.
         """
         base = super().to_dict()
 
@@ -54,7 +71,7 @@ class MySQLConfig(DatabaseConfig):
         )
 
         return base
-
+        
 # ---------------------------------------------------------------------------
 # Preset factories
 # ---------------------------------------------------------------------------

@@ -1,16 +1,15 @@
-"""
+r"""
 C:\Economy\Invest\TrendMaster\src\config\__init__.py
-Configuration Management Module.
-Provides structured configuration classes using dataclasses for type safety and validation.
+ETL Configuration Module
+------------------------
+Provides structured configuration classes using dataclasses.
+Automatically validates fields via __post_init__.
 """
 
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
-# env_config is the single module in this package that imports `os`.
-# All env-var access goes through these three helpers.
-from .env_config import _env, _env_bool, _env_int
+import os
 
 try:
     from dotenv import load_dotenv
@@ -19,106 +18,114 @@ except ImportError:
     pass
 
 # ---------------------------------------------------------------------------
-# Constants
+# Helpers
 # ---------------------------------------------------------------------------
 
-_VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"})
-_DATA_ROOT        = Path(__file__).parent.parent.parent / "data"
+def _env(key: str, default: Any = None) -> Any:
+    return os.environ.get(key, default)
+
+def _env_int(key: str, default: int = 0) -> int:
+    val = os.environ.get(key)
+    return int(val) if val is not None else default
+
+def _env_bool(key: str, default: bool = False) -> bool:
+    val = os.environ.get(key)
+    if val is None:
+        return default
+    return val.lower() in ("1", "true", "yes")
+
 
 # ---------------------------------------------------------------------------
 # DatabaseConfig
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(frozen=True)
 class DatabaseConfig:
-    """Database connection configuration with validation."""
+    """Database connection configuration."""
 
-    user:     str = field(default_factory=lambda: _env("DB_USER", "root"))
+    user: str = field(default_factory=lambda: _env("DB_USER", "root"))
     password: str = field(default_factory=lambda: _env("DB_PASSWORD", ""))
-    host:     str = field(default_factory=lambda: _env("DB_HOST", "127.0.0.1"))
-    port:     int = field(default_factory=lambda: _env_int("DB_PORT", 3306))
+    host: str = field(default_factory=lambda: _env("DB_HOST", "127.0.0.1"))
+    port: int = field(default_factory=lambda: _env_int("DB_PORT", 3306))
     database: str = field(default_factory=lambda: _env("DB_NAME", "trend_master"))
+    
+    # Added charset field
+    charset: str = field(default_factory=lambda: _env("DB_CHARSET", "utf8mb4"))
 
-    # Connection pool
-    pool_size:          int  = field(default=5)
-    enable_pooling:     bool = field(default=True)
-    pool_reset_session: bool = field(default=True)
+    pool_size: int = 5
+    enable_pooling: bool = True
+    pool_reset_session: bool = True
 
-    # Connection behaviour
-    raise_on_warnings: bool = field(default=True)
-    autocommit:        bool = field(default=False)
-    connect_timeout:   int  = field(default=30)
+    raise_on_warnings: bool = True
+    autocommit: bool = False
+    connect_timeout: int = 30
 
-    # Retry
-    max_retry_attempts: int = field(default=3)
-    retry_delay:        int = field(default=2)
+    max_retry_attempts: int = 3
+    retry_delay: int = 2
+
+    def __post_init__(self):
+        """Validate configuration after initialization."""
+        if not self.host or not self.user:
+            raise ValueError("Database host and user cannot be empty")
+        
+        if not (1 <= self.port <= 65535):
+            raise ValueError(f"Invalid port: {self.port}")
+            
+        if self.pool_size < 1:
+            raise ValueError("pool_size must be >= 1")
+            
+        if not self.charset:
+            raise ValueError("Database charset cannot be empty")
 
     def to_dict(self) -> Dict[str, Any]:
-        """Return a dict suitable for passing to mysql.connector.connect()."""
+        """Return parameters suitable for MySQL drivers (PyMySQL/mysql-connector)."""
         return {
-            "user":              self.user,
-            "password":          self.password,
-            "host":              self.host,
-            "port":              self.port,
-            "database":          self.database,
+            "user": self.user,
+            "password": self.password,
+            "host": self.host,
+            "port": self.port,
+            "database": self.database,
+            "charset": self.charset,  # Now included automatically
             "raise_on_warnings": self.raise_on_warnings,
-            "autocommit":        self.autocommit,
-            "connect_timeout":   self.connect_timeout,
+            "autocommit": self.autocommit,
+            "connect_timeout": self.connect_timeout,
         }
 
     def get_connection_string(self) -> str:
-        """Return a loggable connection string (password omitted)."""
-        return f"mysql://{self.user}@{self.host}:{self.port}/{self.database}"
-
-    def validate(self) -> bool:
-        """Return True if all required fields are within acceptable bounds."""
-        if not self.host or not self.user:
-            return False
-        if not (1 <= self.port <= 65535):
-            return False
-        if self.pool_size < 1:
-            return False
-        return True
-
+        """Return a safe connection string for logging."""
+        return f"mysql://{self.user}@{self.host}:{self.port}/{self.database}?charset={self.charset}"
 
 # ---------------------------------------------------------------------------
 # APIConfig
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(frozen=True)
 class APIConfig:
-    """API configuration for external data sources."""
+    base_url: str = field(default_factory=lambda: _env("API_BASE_URL", "https://etl-server.fly.dev"))
+    timeout: int = 30
+    retries: int = 3
+    retry_delay: float = 1.0
+    rate_limit_calls: int = 100
+    rate_limit_period: int = 60
+    api_key: Optional[str] = field(default_factory=lambda: _env("API_KEY") or None)
+    bearer_token: Optional[str] = field(default_factory=lambda: _env("API_BEARER_TOKEN") or None)
+    user_agent: str = "ETL-Pipeline/1.0"
+    accept: str = "application/json"
+    max_concurrent_requests: int = 10
+    semaphore_limit: int = 5
 
-    base_url: str = field(
-        default_factory=lambda: _env("API_BASE_URL", "https://etl-server.fly.dev")
-    )
-    timeout:     int   = field(default=30)
-    retries:     int   = field(default=3)
-    retry_delay: float = field(default=1.0)
-
-    # Rate limiting
-    rate_limit_calls:  int = field(default=100)
-    rate_limit_period: int = field(default=60)  # seconds
-
-    # Authentication
-    api_key:      Optional[str] = field(default_factory=lambda: _env("API_KEY") or None)
-    bearer_token: Optional[str] = field(
-        default_factory=lambda: _env("API_BEARER_TOKEN") or None
-    )
-
-    # Headers
-    user_agent: str = field(default="ETL-Pipeline/1.0")
-    accept:     str = field(default="application/json")
-
-    # Concurrency
-    max_concurrent_requests: int = field(default=10)
-    semaphore_limit:         int = field(default=5)
+    def __post_init__(self):
+        if not self.base_url:
+            raise ValueError("API base_url cannot be empty")
+        if self.timeout <= 0 or self.retries < 0:
+            raise ValueError("Invalid timeout or retries")
+        if self.max_concurrent_requests <= 0:
+            raise ValueError("max_concurrent_requests must be > 0")
 
     def get_headers(self) -> Dict[str, str]:
-        """Return HTTP headers for API requests."""
-        headers: Dict[str, str] = {
-            "User-Agent":   self.user_agent,
-            "Accept":       self.accept,
+        headers = {
+            "User-Agent": self.user_agent,
+            "Accept": self.accept,
             "Content-Type": "application/json",
         }
         if self.api_key:
@@ -127,248 +134,139 @@ class APIConfig:
             headers["Authorization"] = f"Bearer {self.bearer_token}"
         return headers
 
-    def validate(self) -> bool:
-        if not self.base_url:
-            return False
-        if self.timeout <= 0 or self.retries < 0:
-            return False
-        if self.max_concurrent_requests <= 0:
-            return False
-        return True
-
 
 # ---------------------------------------------------------------------------
 # ProcessingConfig
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(frozen=True)
 class ProcessingConfig:
-    """Data processing configuration."""
+    batch_size: int = 1000
+    max_batch_size: int = 10_000
+    chunk_size: int = 5000
+    max_memory_usage_mb: int = 512
+    csv_encoding: str = "utf-8"
+    csv_delimiter: str = ","
+    csv_quotechar: str = '"'
+    pandas_low_memory: bool = False
+    pandas_na_values: List[str] = field(default_factory=lambda: ["", "NULL", "null", "NaN", "nan"])
+    validate_schema: bool = True
+    strict_validation: bool = False
+    use_multiprocessing: bool = False
+    max_workers: int = 4
 
-    # Batch processing
-    batch_size:     int = field(default=1000)
-    max_batch_size: int = field(default=10_000)
-
-    # Memory
-    chunk_size:          int = field(default=5000)
-    max_memory_usage_mb: int = field(default=512)
-
-    # CSV
-    csv_encoding:  str = field(default="utf-8")
-    csv_delimiter: str = field(default=",")
-    csv_quotechar: str = field(default='"')
-
-    # Pandas
-    pandas_low_memory: bool      = field(default=False)
-    pandas_na_values:  List[str] = field(
-        default_factory=lambda: ["", "NULL", "null", "NaN", "nan"]
-    )
-
-    # Validation
-    validate_schema:   bool = field(default=True)
-    strict_validation: bool = field(default=False)
-
-    # Performance
-    use_multiprocessing: bool = field(default=False)
-    max_workers:         int  = field(default=4)
-
-    def validate(self) -> bool:
+    def __post_init__(self):
         if self.batch_size <= 0 or self.batch_size > self.max_batch_size:
-            return False
+            raise ValueError("batch_size invalid")
         if self.chunk_size <= 0:
-            return False
+            raise ValueError("chunk_size must be > 0")
         if self.max_workers <= 0:
-            return False
-        return True
+            raise ValueError("max_workers must be > 0")
 
 
 # ---------------------------------------------------------------------------
 # LoggingConfig
 # ---------------------------------------------------------------------------
 
-@dataclass
+_VALID_LOG_LEVELS = frozenset({"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"})
+
+@dataclass(frozen=True)
 class LoggingConfig:
-    """Logging configuration."""
+    level: str = field(default_factory=lambda: _env("LOG_LEVEL", "INFO"))
+    format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    date_format: str = "%Y-%m-%d %H:%M:%S"
+    enable_file_logging: bool = True
+    log_file: str = "logs/etl_pipeline.log"
+    max_file_size: int = 10_000_000
+    backup_count: int = 5
+    enable_console_logging: bool = True
+    console_level: str = "INFO"
+    use_json_format: bool = False
+    include_extra_fields: bool = True
+    log_sql_queries: bool = False
+    log_performance_metrics: bool = True
 
-    level:       str = field(default_factory=lambda: _env("LOG_LEVEL", "INFO"))
-    format:      str = field(default="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    date_format: str = field(default="%Y-%m-%d %H:%M:%S")
-
-    # File logging
-    enable_file_logging: bool = field(default=True)
-    log_file:            str  = field(default="logs/etl_pipeline.log")
-    max_file_size:       int  = field(default=10_000_000)  # 10 MB
-    backup_count:        int  = field(default=5)
-
-    # Console logging
-    enable_console_logging: bool = field(default=True)
-    console_level:          str  = field(default="INFO")
-
-    # Structured logging
-    use_json_format:      bool = field(default=False)
-    include_extra_fields: bool = field(default=True)
-
-    # Performance logging
-    log_sql_queries:         bool = field(default=False)
-    log_performance_metrics: bool = field(default=True)
-
-    def get_log_directory(self) -> Path:
-        """Return the directory that contains the log file."""
-        return Path(self.log_file).parent
-
-    def validate(self) -> bool:
+    def __post_init__(self):
         if self.level.upper() not in _VALID_LOG_LEVELS:
-            return False
+            raise ValueError(f"Invalid logging level: {self.level}")
         if self.console_level.upper() not in _VALID_LOG_LEVELS:
-            return False
+            raise ValueError(f"Invalid console level: {self.console_level}")
         if self.max_file_size <= 0 or self.backup_count < 0:
-            return False
-        return True
+            raise ValueError("Invalid log file settings")
 
 
 # ---------------------------------------------------------------------------
 # ApplicationConfig
 # ---------------------------------------------------------------------------
 
-@dataclass
+_DATA_ROOT = Path(__file__).parent.parent.parent / "data"
+
+@dataclass(frozen=True)
 class ApplicationConfig:
-    """Main application configuration."""
-
-    # Metadata
-    name:        str = field(default="ETL Pipeline Manager")
-    version:     str = field(default="2.0.0")
+    name: str = "ETL Pipeline Manager"
+    version: str = "2.0.0"
     environment: str = field(default_factory=lambda: _env("ENVIRONMENT", "development"))
+    data_dir: Path = field(default_factory=lambda: _DATA_ROOT)
+    csv_dir: Optional[Path] = None
+    api_dir: Optional[Path] = None
+    cache_dir: Optional[Path] = None
+    enable_caching: bool = True
+    enable_monitoring: bool = True
+    enable_api_mode: bool = True
+    debug_mode: bool = field(default_factory=lambda: _env_bool("DEBUG", False))
+    allow_data_export: bool = True
 
-    # Directories
-    data_dir:  Path           = field(default_factory=lambda: _DATA_ROOT)
-    csv_dir:   Optional[Path] = field(default=None)
-    api_dir:   Optional[Path] = field(default=None)
-    cache_dir: Optional[Path] = field(default=None)
-
-    # Feature flags
-    enable_caching:    bool = field(default=True)
-    enable_monitoring: bool = field(default=True)
-    enable_api_mode:   bool = field(default=True)
-
-    # Security
-    debug_mode:        bool = field(default_factory=lambda: _env_bool("DEBUG", False))
-    allow_data_export: bool = field(default=True)
-
-    def __post_init__(self) -> None:
-        """Derive sub-directory paths from data_dir if not explicitly set."""
-        if self.csv_dir is None:
-            self.csv_dir = self.data_dir / "CSV"
-        if self.api_dir is None:
-            self.api_dir = self.data_dir / "API"
-        if self.cache_dir is None:
-            self.cache_dir = self.data_dir / "cache"
-
-    def create_directories(self) -> None:
-        """Create all configured directories, including parents."""
-        for directory in (self.data_dir, self.csv_dir, self.api_dir, self.cache_dir):
-            if directory:
-                directory.mkdir(parents=True, exist_ok=True)
-
-    def is_production(self) -> bool:
-        return self.environment.lower() == "production"
-
-    def is_development(self) -> bool:
-        return self.environment.lower() == "development"
-
-    def validate(self) -> bool:
-        if not self.name or not self.version:
-            return False
-        if not self.data_dir:
-            return False
-        return True
+    def __post_init__(self):
+        object.__setattr__(self, "csv_dir", self.csv_dir or self.data_dir / "CSV")
+        object.__setattr__(self, "api_dir", self.api_dir or self.data_dir / "API")
+        object.__setattr__(self, "cache_dir", self.cache_dir or self.data_dir / "cache")
 
 
 # ---------------------------------------------------------------------------
-# ETLConfig  (composite root)
+# ETLConfig composite root
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(frozen=True)
 class ETLConfig:
-    """Complete ETL configuration combining all components."""
-
-    database:    DatabaseConfig    = field(default_factory=DatabaseConfig)
-    api:         APIConfig         = field(default_factory=APIConfig)
-    processing:  ProcessingConfig  = field(default_factory=ProcessingConfig)
-    logging:     LoggingConfig     = field(default_factory=LoggingConfig)
+    database: DatabaseConfig = field(default_factory=DatabaseConfig)
+    api: APIConfig = field(default_factory=APIConfig)
+    processing: ProcessingConfig = field(default_factory=ProcessingConfig)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
     application: ApplicationConfig = field(default_factory=ApplicationConfig)
 
-    def validate_all(self) -> Dict[str, bool]:
-        """Return a per-section validation report."""
-        return {
-            "database":    self.database.validate(),
-            "api":         self.api.validate(),
-            "processing":  self.processing.validate(),
-            "logging":     self.logging.validate(),
-            "application": self.application.validate(),
-        }
-
-    def is_valid(self) -> bool:
-        """Return True only if every section passes validation."""
-        return all(self.validate_all().values())
+    def __post_init__(self):
+        # Ensure all components validate automatically
+        self.database.__post_init__()
+        self.api.__post_init__()
+        self.processing.__post_init__()
+        self.logging.__post_init__()
+        self.application.__post_init__()
 
     def get_summary(self) -> Dict[str, Any]:
-        """Return a loggable summary (no secrets)."""
         return {
             "application": {
-                "name":        self.application.name,
-                "version":     self.application.version,
+                "name": self.application.name,
+                "version": self.application.version,
                 "environment": self.application.environment,
             },
             "database": {
-                "host":      self.database.host,
-                "port":      self.database.port,
-                "database":  self.database.database,
-                "pooling":   self.database.enable_pooling,
+                "host": self.database.host,
+                "port": self.database.port,
+                "database": self.database.database,
+                "pooling": self.database.enable_pooling,
                 "pool_size": self.database.pool_size,
             },
             "api": {
-                "base_url":       self.api.base_url,
-                "timeout":        self.api.timeout,
+                "base_url": self.api.base_url,
+                "timeout": self.api.timeout,
                 "max_concurrent": self.api.max_concurrent_requests,
             },
             "processing": {
-                "batch_size":      self.processing.batch_size,
-                "chunk_size":      self.processing.chunk_size,
+                "batch_size": self.processing.batch_size,
+                "chunk_size": self.processing.chunk_size,
                 "multiprocessing": self.processing.use_multiprocessing,
             },
         }
-
-
-# ---------------------------------------------------------------------------
-# Factory functions
-# ---------------------------------------------------------------------------
-
-def load_config_from_env() -> ETLConfig:
-    """Load configuration from environment variables (uses field defaults)."""
-    return ETLConfig()
-
-
-def load_config_from_dict(config_dict: Dict[str, Any]) -> ETLConfig:
-    """
-    Load configuration from a nested dictionary.
-
-    Only keys that correspond to existing fields are applied;
-    unknown keys are silently ignored.
-    """
-    config = ETLConfig()
-    _apply_dict(config.database,   config_dict.get("database",   {}))
-    _apply_dict(config.api,        config_dict.get("api",        {}))
-    _apply_dict(config.processing, config_dict.get("processing", {}))
-    return config
-
-
-def get_default_config() -> ETLConfig:
-    """Return a configuration with sensible production-ready defaults."""
-    config = ETLConfig()
-    config.database.pool_size          = 10
-    config.processing.batch_size       = 2000
-    config.api.max_concurrent_requests = 15
-    return config
 
 
 # ---------------------------------------------------------------------------
@@ -377,45 +275,16 @@ def get_default_config() -> ETLConfig:
 
 _global_config: Optional[ETLConfig] = None
 
-
 def get_config() -> ETLConfig:
-    """Return the global ETLConfig, initialising from env vars on first call."""
     global _global_config
     if _global_config is None:
-        _global_config = load_config_from_env()
+        _global_config = ETLConfig()
     return _global_config
 
-
 def set_config(config: ETLConfig) -> None:
-    """Replace the global ETLConfig."""
     global _global_config
     _global_config = config
 
-
 def reset_config() -> None:
-    """Reset the global ETLConfig to None (forces re-initialisation on next get_config())."""
     global _global_config
     _global_config = None
-
-
-# ---------------------------------------------------------------------------
-# Private helpers
-# ---------------------------------------------------------------------------
-
-def _apply_dict(target: object, updates: Dict[str, Any]) -> None:
-    """Apply key/value pairs from *updates* to *target*, skipping unknown keys."""
-    for key, value in updates.items():
-        if hasattr(target, key):
-            setattr(target, key, value)
-
-
-# ---------------------------------------------------------------------------
-# CLI smoke-test
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    config = get_default_config()
-    print("Configuration loaded successfully:")
-    print(f"Valid: {config.is_valid()}")
-    print(f"Validation results: {config.validate_all()}")
-    print(f"Summary: {config.get_summary()}")
