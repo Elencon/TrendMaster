@@ -28,7 +28,7 @@ from .data_validator import (
     ValidationResult,
     ValidationSeverity,
 )
-from .data_from_api import APIDataFetcher, DataProcessor
+from .data_from_api import APIDataFetcher
 
 # Connection helpers
 from .connect import (
@@ -76,7 +76,6 @@ __all__ = [
 
     # API data
     "APIDataFetcher",
-    "DataProcessor",
 
     # Connection helpers
     "connect_sync",
