@@ -67,13 +67,13 @@ class BatchProcessor:
                     ignore_duplicates: bool = False) -> Tuple[int, int]:
         """
         Insert data in batches with progress tracking.
-        
+
         Args:
             table_name: Target table name.
             data: List of row dictionaries.
             progress_callback: Optional progress callback function.
             ignore_duplicates: Use INSERT IGNORE for duplicate handling.
-            
+
         Returns:
             Tuple of (successful_inserts, errors).
         """
@@ -173,13 +173,13 @@ class BatchProcessor:
                     progress_callback: Optional[callable] = None) -> Tuple[int, int]:
         """
         Update records in batches.
-        
+
         Args:
             table_name: Target table name.
             updates: List of update dictionaries.
             key_columns: Column names to use as WHERE conditions.
             progress_callback: Optional progress callback.
-            
+
         Returns:
             Tuple of (successful_updates, errors).
         """
@@ -225,13 +225,13 @@ class BatchProcessor:
                     progress_callback: Optional[callable] = None) -> Tuple[int, int, int]:
         """
         Insert or update records in batches (MySQL ON DUPLICATE KEY UPDATE).
-        
+
         Args:
             table_name: Target table name.
             data: List of row dictionaries.
             key_columns: Columns that define uniqueness.
             progress_callback: Optional progress callback.
-            
+
         Returns:
             Tuple of (inserts, updates, errors).
         """
@@ -316,7 +316,7 @@ class DatabaseManager:
                  enable_pooling: bool = True, pool_size: int = 5):
         """
         Initialize database manager with enhanced connection management.
-        
+
         Args:
             config: Database configuration dict or ETLConfig instance.
             data_dir: Data directory path.
@@ -324,6 +324,7 @@ class DatabaseManager:
             enable_pooling: Enable connection pooling.
             pool_size: Connection pool size.
         """
+
         if config is None:
             etl_config = get_config()
             self.config = etl_config.database.to_dict()

@@ -25,7 +25,7 @@ class CustomerOrderPDFGenerator:
 
     def __init__(self, output_dir: Path = None):
         """Initialize PDF generator
-        
+
         Args:
             output_dir: Directory to save PDFs (defaults to data/print)
         """
@@ -37,11 +37,11 @@ class CustomerOrderPDFGenerator:
 
     def generate_customer_report(self, customer_data: Dict, orders_data: List[Dict]) -> str:
         """Generate PDF report for a customer
-        
+
         Args:
             customer_data: Dictionary with customer info (customer_id, first_name, last_name, email, phone, street, city, state, zip_code)
             orders_data: List of order dictionaries (order_id, order_date, order_status, staff_id, store_id, items)
-            
+
         Returns:
             str: Path to generated PDF file
         """

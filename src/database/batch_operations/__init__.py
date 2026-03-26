@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\batch_operations\__init__.py
 Batch operations package - Modular batch processing classes.
 Each operation type has its own specialized class for better maintainability.
 

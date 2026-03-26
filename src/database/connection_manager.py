@@ -2,14 +2,15 @@ r"""
 C:\Economy\Invest\TrendMaster\src\database\connection_manager.py
 Standalone database connection manager — no external utility dependencies.
 """
+
 import threading
 import logging
 import re
 from contextlib import contextmanager
 from typing import Dict, Optional
+
 import pymysql
 import pymysql.cursors
-from sqlalchemy import create_engine
 
 _logger = logging.getLogger(__name__)
 
@@ -22,26 +23,53 @@ _DEFAULT_CONFIG: Dict = {
     "password": "",
     "host": "127.0.0.1",
     "database": "trend_master",
-    # autocommit=False: callers must call conn.commit() explicitly.
-    # This ensures writes are intentional and errors trigger a clean rollback.
     "autocommit": False,
 }
-
-_DB_NAME_RE = re.compile(r"^\w+$")
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _validate_db_name(name: str) -> None:
-    """Raise ValueError if *name* is not a safe SQL identifier."""
-    if not _DB_NAME_RE.match(name):
+_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$") # Shared regex pattern
+
+# ---------------------------------------------------------------------------
+# Validator
+# ---------------------------------------------------------------------------
+
+def _validate_name(name: str, kind: str = "name") -> str:
+    """
+    Validate a database or table name to prevent SQL injection.
+
+    Args:
+        name: the name to validate
+        kind: descriptive type, e.g., 'database' or 'table'
+
+    Rules:
+    - Must be a string
+    - Must start with a letter or underscore
+    - Can contain letters, digits, underscores
+    - No spaces, dots, or special characters
+
+    Returns:
+        Lowercased validated name (optional normalization)
+
+    Raises:
+        TypeError: if name is not a string
+        ValueError: if name is invalid
+    """
+    if not isinstance(name, str):
+        raise TypeError(f"{kind.capitalize()} name must be a string")
+
+    if not _NAME_RE.fullmatch(name):
         raise ValueError(
-            f"Unsafe database name {name!r}: only word characters are allowed."
+            f"Unsafe {kind} name {name!r}: must start with a letter or underscore "
+            "and contain only letters, digits, and underscores"
         )
 
+    return name.lower()  # optional normalization
+
+
 def _safe_close(conn) -> None:
-    """Close *conn*, suppressing and logging any error."""
     if conn is None:
         return
     try:
@@ -51,9 +79,9 @@ def _safe_close(conn) -> None:
 
 
 def _open_connection(config: Dict):
-    """Open a single raw PyMySQL connection."""
     try:
         params = config.copy()
+
         core_keys = {"host", "user", "password", "database", "port", "autocommit"}
         connection_args = {k: params[k] for k in core_keys if k in params}
         connection_args["connect_timeout"] = params.get("connect_timeout", 30)
@@ -66,11 +94,10 @@ def _open_connection(config: Dict):
         )
     except Exception as exc:
         _logger.error("Connection creation failed: %s", exc)
-    return None
+        return None
 
 
 def _test_alive(conn) -> bool:
-    """Return True if *conn* appears to be alive."""
     try:
         if hasattr(conn, "ping"):
             conn.ping(reconnect=False)
@@ -78,80 +105,14 @@ def _test_alive(conn) -> bool:
     except Exception:
         pass
     return False
-# ---------------------------------------------------------------------------
-# ConnectionManager (with SQLAlchemy engine)
-# ---------------------------------------------------------------------------
 
-class ConnectionManager:
-    """
-    High-level DB manager combining:
-    - manual PyMySQL connection pool
-    - SQLAlchemy engine for metadata inspection
-    """
-
-    def __init__(
-        self,
-        config: Optional[Dict] = None,
-        pool_size: int = 5,
-        acquire_timeout: float = 30.0,
-    ) -> None:
-        self._config = {**_DEFAULT_CONFIG, **(config or {})}
-
-        # SQLAlchemy engine (for schema inspection, ORM, metadata)
-        self.engine = create_engine(
-            self._build_sqlalchemy_url(self._config),
-            pool_pre_ping=True,
-            future=True,
-        )
-
-        # Manual PyMySQL pool (for actual query execution)
-        self._pool = ConnectionPool(
-            self._config,
-            pool_size=pool_size,
-            acquire_timeout=acquire_timeout,
-        )
-
-    # ------------------------------------------------------------------
-
-    def _build_sqlalchemy_url(self, cfg: Dict) -> str:
-        user = cfg.get("user", "root")
-        password = cfg.get("password", "")
-        host = cfg.get("host", "127.0.0.1")
-        database = cfg.get("database", "")
-        port = cfg.get("port", 3306)
-
-        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}"
-
-    # ------------------------------------------------------------------
-
-    @contextmanager
-    def get_connection(self):
-        """Proxy to the underlying PyMySQL pool."""
-        with self._pool.get_connection() as conn:
-            yield conn
-
-    def close_all(self) -> None:
-        """Close all pooled connections."""
-        self._pool.close_all()
-
-    def get_stats(self) -> Dict:
-        """Return pool stats."""
-        return self._pool.get_stats()
 
 # ---------------------------------------------------------------------------
 # ConnectionPool
 # ---------------------------------------------------------------------------
 
 class ConnectionPool:
-    """
-    Thread-safe manual MySQL connection pool.
-
-    Design principles:
-    - Heal on acquire ONLY
-    - Acquire is atomic (pop → heal → track under one lock)
-    - `_used` always reflects real checked-out connections
-    - No dual tracking, no identity mismatch
-    """
+    """Thread-safe MySQL connection pool."""
 
     def __init__(
         self,
@@ -171,12 +132,7 @@ class ConnectionPool:
 
         self._initialize_pool()
 
-    # ------------------------------------------------------------------
-    # Initialization
-    # ------------------------------------------------------------------
-
     def _initialize_pool(self) -> None:
-        """Create initial pool connections."""
         conns = []
 
         for _ in range(self._pool_size):
@@ -187,19 +143,10 @@ class ConnectionPool:
         with self._lock:
             self._available.extend(conns)
 
-        _logger.info(
-            "Pool initialized: %d/%d connections",
-            len(conns),
-            self._pool_size,
-        )
-
-    # ------------------------------------------------------------------
-    # Public interface
-    # ------------------------------------------------------------------
+        _logger.info("Pool initialized: %d/%d", len(conns), self._pool_size)
 
     @contextmanager
     def get_connection(self):
-        """Yield a connection from the pool; return it automatically."""
         conn = self._acquire()
         try:
             yield conn
@@ -207,7 +154,6 @@ class ConnectionPool:
             self._release(conn)
 
     def close_all(self) -> None:
-        """Close all connections."""
         with self._lock:
             all_conns = list(self._available) + list(self._used)
             self._available.clear()
@@ -219,7 +165,6 @@ class ConnectionPool:
         _logger.info("Connection pool closed")
 
     def get_stats(self) -> Dict:
-        """Return pool stats."""
         with self._lock:
             return {
                 "size": self._pool_size,
@@ -228,11 +173,8 @@ class ConnectionPool:
             }
 
     # ------------------------------------------------------------------
-    # Internal acquire / release
-    # ------------------------------------------------------------------
 
     def _acquire(self):
-        """Acquire a connection, blocking until available."""
         with self._not_empty:
             ok = self._not_empty.wait_for(
                 lambda: bool(self._available),
@@ -240,33 +182,30 @@ class ConnectionPool:
             )
 
             if not ok:
-                raise TimeoutError(
-                    f"Could not acquire connection within {self._acquire_timeout}s "
-                    f"(pool size={self._pool_size}, in use={len(self._used)})"
-                )
+                raise TimeoutError("Connection pool exhausted")
 
             conn = self._available.pop()
 
-            # Heal INSIDE lock (atomic)
             if not _test_alive(conn):
-                _logger.warning("Stale connection detected — replacing")
+                _logger.warning("Replacing stale connection")
                 _safe_close(conn)
-
                 conn = _open_connection(self._config)
+
                 if conn is None:
-                    raise RuntimeError("Failed to open replacement connection")
+                    raise RuntimeError("Failed to recreate connection")
 
             self._used.add(conn)
-
             return conn
 
     def _release(self, conn) -> None:
-        """Return connection to the pool."""
         if conn is None:
             return
 
         with self._not_empty:
-            self._used.discard(conn)
+            if conn in self._used:
+                self._used.remove(conn)
+            else:
+                _logger.warning("Releasing unknown connection")
 
             if len(self._available) < self._pool_size:
                 self._available.append(conn)
@@ -275,16 +214,13 @@ class ConnectionPool:
 
             self._not_empty.notify()
 
+
 # ---------------------------------------------------------------------------
 # DatabaseConnection
 # ---------------------------------------------------------------------------
 
-
 class DatabaseConnection:
     """Database connection manager with optional pooling."""
-
-    _pool: Optional[ConnectionPool] = None
-    _pool_lock = threading.Lock()
 
     def __init__(
         self,
@@ -298,53 +234,35 @@ class DatabaseConnection:
         self._enable_pooling = enable_pooling
         self.connection_attempts = 0
 
-        if enable_pooling and DatabaseConnection._pool is None:
+        self._pool: Optional[ConnectionPool] = None
 
-            with DatabaseConnection._pool_lock:
-
-                if DatabaseConnection._pool is None:
-
-                    DatabaseConnection._pool = ConnectionPool(
-                        self._config,
-                        pool_size,
-                        acquire_timeout,
-                    )
+        if enable_pooling:
+            self._pool = ConnectionPool(
+                self._config,
+                pool_size,
+                acquire_timeout,
+            )
 
     # ------------------------------------------------------------------
 
     @contextmanager
     def get_connection(self):
-        """Yield a database connection (pooled or direct).
-
-        autocommit is False by default — call conn.commit() after writes,
-        or conn.rollback() on error.
-        """
-
-        if self._enable_pooling and DatabaseConnection._pool:
-
-            with DatabaseConnection._pool.get_connection() as conn:
-
-                if conn is None:
-                    _logger.warning("Pool returned None connection")
-                else:
+        if self._enable_pooling and self._pool:
+            with self._pool.get_connection() as conn:
+                if conn:
                     self.connection_attempts += 1
-
+                else:
+                    _logger.warning("Pool returned None connection")
                 yield conn
-
         else:
-
             with self._direct_connection() as conn:
                 yield conn
 
     @contextmanager
     def _direct_connection(self):
-        """Yield a direct (non-pooled) connection.
-
-        Rolls back automatically on exception; caller must commit() on success.
-        """
         conn = _open_connection(self._config)
 
-        if conn is not None:
+        if conn:
             self.connection_attempts += 1
 
         try:
@@ -361,51 +279,100 @@ class DatabaseConnection:
 
     @contextmanager
     def get_connection_without_db(self, config: Dict):
-        """Yield connection without selecting default database."""
         conn = _open_connection(config)
-
         try:
             yield conn
         finally:
             _safe_close(conn)
 
     # ------------------------------------------------------------------
+    # Schema capability
+    # ------------------------------------------------------------------
+
+    def get_schema(self, table_name: str) -> list[str]:
+        """
+        Return ordered list of column names for a table.
+
+        Uses INFORMATION_SCHEMA for reliable metadata access.
+        """
+        try:
+            _validate_name(table_name)
+
+            db_name = self._config.get("database")
+
+            _validate_name(db_name)
+
+            with self.get_connection() as conn:
+                if conn is None:
+                    _logger.warning("No connection available for schema fetch")
+                    return []
+
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT COLUMN_NAME
+                        FROM INFORMATION_SCHEMA.COLUMNS
+                        WHERE TABLE_SCHEMA = %s
+                        AND TABLE_NAME = %s
+                        ORDER BY ORDINAL_POSITION
+                        """,
+                        (db_name, table_name),
+                    )
+
+                    rows = cur.fetchall()
+
+                    if not rows:
+                        _logger.info(
+                            "No columns found (table may not exist): %s.%s",
+                            db_name,
+                            table_name,
+                        )
+                        return []
+
+                    # Works with DictCursor (your default)
+                    if isinstance(rows[0], dict):
+                        return [row.get("COLUMN_NAME") for row in rows if "COLUMN_NAME" in row]
+
+                    # Fallback (just in case cursor type changes)
+                    return [row[0] for row in rows]
+
+        except ValueError as e:
+            _logger.warning("Validation error in get_schema: %s", e)
+            return []
+
+        except Exception as e:
+            _logger.warning("Schema fetch failed for '%s': %s", table_name, e)
+            return []
+
+    # ------------------------------------------------------------------
     # Database administration
     # ------------------------------------------------------------------
 
     def create_database_if_not_exists(self, database_name: str = None) -> bool:
-
         try:
-
             db_name = database_name or self._config.get("database", "trend_master")
-
-            _validate_db_name(db_name)
+            _validate_name(db_name)
 
             temp_config = {k: v for k, v in self._config.items() if k != "database"}
 
             with self.get_connection_without_db(temp_config) as conn:
-
                 if conn is None:
                     return False
 
                 with conn.cursor() as cur:
-
                     cur.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
                     cur.execute(f"USE `{db_name}`")
 
                 conn.commit()
 
             _logger.info("Database '%s' ready", db_name)
-
             return True
 
         except ValueError as exc:
-
             _logger.error("Invalid database name: %s", exc)
             return False
 
         except Exception as exc:
-
             _logger.error("Database creation error: %s", exc)
             return False
 
@@ -420,19 +387,17 @@ class DatabaseConnection:
         return alive
 
     def get_connection_stats(self) -> Dict:
-
-        stats: Dict = {
+        stats = {
             "attempts": self.connection_attempts,
             "pooling_enabled": self._enable_pooling,
         }
 
-        if self._enable_pooling and DatabaseConnection._pool:
-            stats.update(DatabaseConnection._pool.get_stats())
+        if self._enable_pooling and self._pool:
+            stats.update(self._pool.get_stats())
 
         return stats
 
     def get_config_summary(self) -> Dict:
-
         summary = self._config.copy()
 
         if "password" in summary:
@@ -443,22 +408,15 @@ class DatabaseConnection:
 
     # ------------------------------------------------------------------
 
-    @classmethod
-    def close_pool(cls) -> None:
-
-        with cls._pool_lock:
-
-            if cls._pool:
-
-                cls._pool.close_all()
-                cls._pool = None
-                _logger.info("Connection pool closed")
-
+    def close_pool(self) -> None:
+        if self._pool:
+            self._pool.close_all()
+            self._pool = None
+            _logger.info("Connection pool closed")
 
 # ---------------------------------------------------------------------------
 # Factory
 # ---------------------------------------------------------------------------
-
 
 def create_connection_manager(
     config=None,
@@ -466,5 +424,4 @@ def create_connection_manager(
     pool_size: int = 5,
     acquire_timeout: float = 30.0,
 ) -> DatabaseConnection:
-    """Return a configured DatabaseConnection."""
     return DatabaseConnection(config, enable_pooling, pool_size, acquire_timeout)

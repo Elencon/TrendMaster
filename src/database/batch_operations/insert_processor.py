@@ -43,7 +43,7 @@ class InsertProcessor(BaseBatchProcessor):
         if not records:
             return 0, 0
 
-        if validate_data and self.data_validator:
+        if validate_data and self._data_validator:
             records, validation_errors = self.validate_records(records)
             if validation_errors:
                 logger.warning(
@@ -54,10 +54,10 @@ class InsertProcessor(BaseBatchProcessor):
         total_failed = 0
         any_batch_failed = False
 
-        with safe_operation(f"batch insert into {table_name}", self.logger):
-            with self.connection_manager.get_connection() as conn:
+        with safe_operation(f"batch insert into {table_name}", self._logger):
+            with self._connection_manager.get_connection() as conn:
                 if not conn:
-                    self.stats.add_operation(
+                    self._stats.add_operation(
                         records_failed=len(records),
                         error="No database connection"
                     )
@@ -76,9 +76,9 @@ class InsertProcessor(BaseBatchProcessor):
                     )
                     columns = list(records[0].keys())
 
-                    for start in range(0, len(records), self.batch_size):
-                        batch = records[start:start + self.batch_size]
-                        batch_num = (start // self.batch_size) + 1
+                    for start in range(0, len(records), self._batch_size):
+                        batch = records[start:start + self._batch_size]
+                        batch_num = (start // self._batch_size) + 1
 
                         try:
                             data_tuples = DatabaseUtils.records_to_tuples(batch, columns)
@@ -101,7 +101,7 @@ class InsertProcessor(BaseBatchProcessor):
                                 f"({len(batch)} records): {e}"
                             )
                             logger.error(error_msg)
-                            self.stats.add_operation(
+                            self._stats.add_operation(
                                 records_failed=len(batch),
                                 error=error_msg
                             )
@@ -123,7 +123,7 @@ class InsertProcessor(BaseBatchProcessor):
                     conn.autocommit = original_autocommit
                     cursor.close()
 
-        self.stats.add_operation(
+        self._stats.add_operation(
             records_processed=len(records),
             records_inserted=total_inserted,
             records_failed=total_failed

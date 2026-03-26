@@ -1,10 +1,12 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\tests\database\batch_operations\test_batch_processors.py
 Tests for batch_operations package.
 Path: tests/database/batch_operations/test_batch_processors.py
 """
 
 import pytest
 from unittest.mock import MagicMock, patch
+from pathlib import Path
 
 from src.database.batch_operations import (
     BatchProcessor,
@@ -20,8 +22,7 @@ from src.database.batch_operations import (
 # Shared fixtures and helpers
 # ---------------------------------------------------------------------------
 
-BASE_PATH = "src.database.batch_operations"
-
+BASE_PATH = Path(*"src.database.batch_operations".split("."))
 
 def make_cursor(rowcount: int = 5) -> MagicMock:
     cursor = MagicMock()

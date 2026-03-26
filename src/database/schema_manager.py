@@ -107,7 +107,8 @@ TABLE_COLUMNS: Dict[str, List[str]] = {
     'portfolio_holdings': ['holding_id', 'portfolio_id', 'ticker_id', 'quantity', 'average_buy_price', 'last_updated'],
     'portfolios': ['portfolio_id', 'user_id', 'name', 'description', 'created_at'],
     'tickers': ['ticker_id', 'symbol', 'name', 'exchange', 'sector', 'industry', 'asset_class', 'currency', 'created_at'],
-    'users': ['user_id', 'username', 'email', 'password_hash', 'role', 'last_login', 'created_at', 'active', 'failed_login_attempts', 'last_failed_login', 'account_locked_until', 'password_last_changed', 'must_change_password', 'two_factor_enabled', 'two_factor_secret', 'backup_codes'],
+    'users': ['user_id', 'username', 'email', 'password_hash', 'role', 'last_login', 'created_at', 'active', 'failed_login_attempts', 'last_failed_login',
+    'account_locked_until', 'password_last_changed', 'must_change_password', 'two_factor_enabled', 'two_factor_secret', 'backup_codes'],
 }
 
 # Foreign-key-safe creation order

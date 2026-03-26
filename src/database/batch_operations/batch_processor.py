@@ -2,7 +2,7 @@
 Main batch processor that coordinates all specialized batch operations.
 Provides a unified interface while delegating to specialized processors.
 """
-
+import pyarrow as pa
 import logging
 from typing import Any, Callable
 
@@ -13,13 +13,8 @@ from .upsert_processor import UpsertProcessor
 from .delete_processor import DeleteProcessor
 from src.database.utilities import DataUtils
 
-try:
-    import pyarrow as pa
-    HAS_PYARROW = True
-except ImportError:
-    HAS_PYARROW = False
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class BatchProcessor(BaseBatchProcessor):
@@ -74,12 +69,12 @@ class BatchProcessor(BaseBatchProcessor):
         if isinstance(records, list):
             return records
 
-        if HAS_PYARROW:
-            if isinstance(records, pa.Table):
-                return DataUtils.arrow_to_records(records, table_schema)
-            if isinstance(records, pa.RecordBatch):
-                return DataUtils.arrow_to_records(
-                    pa.Table.from_batches([records]), table_schema
+        if isinstance(records, pa.Table):
+            return DataUtils.arrow_to_records(records, table_schema)
+
+        if isinstance(records, pa.RecordBatch):
+            return DataUtils.arrow_to_records(
+                pa.Table.from_batches([records]), table_schema
                 )
 
         try:
@@ -222,7 +217,7 @@ class BatchProcessor(BaseBatchProcessor):
         """Reset statistics for all processors and self."""
         for processor in self._processors:
             processor.reset_stats()
-        self.stats.reset()
+        self._stats.reset()
 
     # -------------------------------------------------------------------------
     # Utilities
@@ -230,9 +225,9 @@ class BatchProcessor(BaseBatchProcessor):
 
     def set_batch_size(self, batch_size: int) -> None:
         """Update batch size for this processor and all sub-processors."""
-        self.batch_size = batch_size
+        self._batch_size = batch_size
         for processor in self._processors:
-            processor.batch_size = batch_size
+            processor._batch_size = batch_size
 
     def get_processor(self, operation_type: str) -> BaseBatchProcessor:
         """

@@ -59,7 +59,7 @@ class APIClient:
     def __init__(self, base_url: str = "https://etl-server.fly.dev"):
         """
         Initialize API client.
-        
+
         Args:
             base_url (str): Base URL for the API server
         """
@@ -89,11 +89,11 @@ class APIClient:
     def fetch_data(self, endpoint_name: str, retry_count: int = 0) -> Optional[pd.DataFrame]:
         """
         Fetch data from the specified API endpoint.
-        
+
         Args:
             endpoint_name (str): Name of the endpoint ('orders', 'order_items', 'customers')
             retry_count (int): Current retry attempt number
-            
+
         Returns:
             pd.DataFrame: Data as DataFrame, None if failed
         """
@@ -158,7 +158,7 @@ class APIClient:
     def fetch_all_data(self) -> Dict[str, Optional[pd.DataFrame]]:
         """
         Fetch data from all available endpoints.
-        
+
         Returns:
             Dict[str, pd.DataFrame]: Dictionary with endpoint names as keys and DataFrames as values
         """
@@ -173,10 +173,10 @@ class APIClient:
     def _clean_orders_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Clean and validate the orders data.
-        
+
         Args:
             df (pd.DataFrame): Raw orders DataFrame
-            
+
         Returns:
             pd.DataFrame: Cleaned orders DataFrame
         """
@@ -283,12 +283,12 @@ class APIClient:
                    output_dir: str = "../data/API") -> bool:
         """
         Save the orders DataFrame to CSV file.
-        
+
         Args:
             df (pd.DataFrame): Orders DataFrame to save
             filename (str): Output filename
             output_dir (str): Output directory
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
@@ -310,10 +310,10 @@ class APIClient:
     def save_all_api_data_to_csv(self, output_dir: str = "../data/API") -> bool:
         """
         Fetch all API data and save each endpoint as CSV files.
-        
+
         Args:
             output_dir (str): Output directory for CSV files
-            
+
         Returns:
             bool: True if all files saved successfully, False otherwise
         """
@@ -358,10 +358,10 @@ class APIClient:
     def get_data_summary(self, df: pd.DataFrame) -> Dict:
         """
         Generate a summary of the orders data.
-        
+
         Args:
             df (pd.DataFrame): Orders DataFrame
-            
+
         Returns:
             Dict: Summary statistics
         """
@@ -424,7 +424,7 @@ class APIClient:
         
         Args:
             endpoint_name: Name of the endpoint to fetch from
-            
+
         Returns:
             DataFrame with API data or None if failed
         """
@@ -474,10 +474,10 @@ class APIClient:
     async def fetch_all_data_async(self, progress_callback=None) -> Dict[str, pd.DataFrame]:
         """
         Fetch all endpoint data concurrently using async client.
-        
+
         Args:
             progress_callback: Optional callback for progress updates
-            
+
         Returns:
             Dictionary mapping endpoint names to DataFrames
         """
@@ -535,12 +535,12 @@ class APIClient:
                                        max_pages: Optional[int] = None) -> Optional[pd.DataFrame]:
         """
         Fetch paginated data from API endpoint using async client.
-        
+
         Args:
             endpoint_name: Name of the endpoint
             page_size: Number of items per page
             max_pages: Maximum number of pages to fetch
-            
+
         Returns:
             Combined DataFrame from all pages or None if failed
         """
@@ -664,7 +664,7 @@ def main():
         client.close()
 
 async def main_async_demo():
-    """Demonstrate async API capabilities."""
+    """ Demonstrate async API capabilities. """
     print("🚀 Starting Async API Data Fetch Demo...")
 
     if not ASYNC_API_AVAILABLE:

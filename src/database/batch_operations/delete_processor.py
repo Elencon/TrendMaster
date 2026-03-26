@@ -42,10 +42,10 @@ class DeleteProcessor(BaseBatchProcessor):
         total_deleted = 0
         total_failed = 0
 
-        with safe_operation(f"batch delete from {table_name}", self.logger):
-            with self.connection_manager.get_connection() as conn:
+        with safe_operation(f"batch delete from {table_name}", self._logger):
+            with self._connection_manager.get_connection() as conn:
                 if not conn:
-                    self.stats.add_operation(
+                    self._stats.add_operation(
                         records_failed=len(conditions),
                         error="No database connection"
                     )
@@ -102,7 +102,7 @@ class DeleteProcessor(BaseBatchProcessor):
                                         f"({len(chunk)} values): {e}"
                                     )
                                     logger.error(error_msg)
-                                    self.stats.add_operation(
+                                    self._stats.add_operation(
                                         records_failed=len(chunk),
                                         error=error_msg
                                     )
@@ -111,9 +111,9 @@ class DeleteProcessor(BaseBatchProcessor):
                             # Composite-key delete — use executemany with WHERE clause
                             sql = DatabaseUtils.generate_delete_sql(table_name, column_list)
 
-                            for start in range(0, len(group), self.batch_size):
-                                batch = group[start:start + self.batch_size]
-                                batch_num = (start // self.batch_size) + 1
+                            for start in range(0, len(group), self._batch_size):
+                                batch = group[start:start + self._batch_size]
+                                batch_num = (start // self._batch_size) + 1
 
                                 try:
                                     data_tuples = DatabaseUtils.records_to_tuples(
@@ -131,7 +131,7 @@ class DeleteProcessor(BaseBatchProcessor):
                                         f"({len(batch)} records): {e}"
                                     )
                                     logger.error(error_msg)
-                                    self.stats.add_operation(
+                                    self._stats.add_operation(
                                         records_failed=len(batch),
                                         error=error_msg
                                     )
@@ -152,7 +152,7 @@ class DeleteProcessor(BaseBatchProcessor):
                     conn.autocommit = original_autocommit
                     cursor.close()
 
-        self.stats.add_operation(
+        self._stats.add_operation(
             records_processed=len(conditions),
             records_deleted=total_deleted,
             records_failed=total_failed

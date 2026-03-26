@@ -14,10 +14,8 @@ Usage:
 """
 
 import asyncio
-import sys
 import logging
 from contextlib import contextmanager, asynccontextmanager
-from datetime import datetime
 from typing import Any, Dict, Optional
 from copy import deepcopy
 
@@ -212,6 +210,3 @@ async def mysql_cursor_async(config: Optional[Dict[str, Any]] = None,
                 await asyncio.to_thread(conn.close)
             except Exception as err:
                 _logger.warning("Error closing async connection: %s", err)
-
-
-# ────────────────────────────────────────────────

@@ -57,10 +57,10 @@ class UpdateProcessor(BaseBatchProcessor):
         total_failed = 0
         any_batch_failed = False
 
-        with safe_operation(f"batch update to {table_name}", self.logger):
-            with self.connection_manager.get_connection() as conn:
+        with safe_operation(f"batch update to {table_name}", self._logger):
+            with self._connection_manager.get_connection() as conn:
                 if not conn:
-                    self.stats.add_operation(
+                    self._stats.add_operation(
                         records_failed=len(records),
                         error="No database connection"
                     )
@@ -79,9 +79,9 @@ class UpdateProcessor(BaseBatchProcessor):
                     # Column order must match SQL: update values first, then key values
                     all_columns = update_columns + key_columns
 
-                    for start in range(0, len(records), self.batch_size):
-                        batch = records[start:start + self.batch_size]
-                        batch_num = (start // self.batch_size) + 1
+                    for start in range(0, len(records), self._batch_size):
+                        batch = records[start:start + self._batch_size]
+                        batch_num = (start // self._batch_size) + 1
 
                         try:
                             data_tuples = DatabaseUtils.records_to_tuples(batch, all_columns)
@@ -104,7 +104,7 @@ class UpdateProcessor(BaseBatchProcessor):
                                 f"({len(batch)} records): {e}"
                             )
                             logger.error(error_msg)
-                            self.stats.add_operation(
+                            self._stats.add_operation(
                                 records_failed=len(batch),
                                 error=error_msg
                             )
@@ -127,7 +127,7 @@ class UpdateProcessor(BaseBatchProcessor):
                     conn.autocommit = original_autocommit
                     cursor.close()
 
-        self.stats.add_operation(
+        self._stats.add_operation(
             records_processed=len(records),
             records_updated=total_updated,
             records_failed=total_failed
