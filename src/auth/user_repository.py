@@ -7,6 +7,7 @@ import logging
 from contextlib import contextmanager
 from typing import Optional, Dict, Any, List
 from datetime import datetime
+import pymysql.cursors
 
 _logger = logging.getLogger(__name__)
 
@@ -42,12 +43,7 @@ _DELETE_USER_QUERY   = "DELETE FROM users WHERE user_id = %s"
 # ---------------------------------------------------------------------------
 
 def _get_dict_cursor(db_connection):
-    """Return a dictionary cursor compatible with mysql.connector and PyMySQL."""
-    try:
-        return db_connection.cursor(dictionary=True)
-    except TypeError:
-        import pymysql.cursors
-        return db_connection.cursor(pymysql.cursors.DictCursor)
+    return db_connection.cursor(pymysql.cursors.DictCursor)
 
 
 @contextmanager

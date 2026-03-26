@@ -1,72 +1,89 @@
 r"""
-C:\Economy\Invest\TrendMaster\src\database\__init__.py
 Database package - modular components for ETL operations
 """
 
-# Database package - modular components for ETL operations
+# Core database management
 from .db_manager import DatabaseManager
 from .schema_manager import SchemaManager, SCHEMA_DEFINITIONS, TABLE_COLUMNS
 
-# Import modular components
-from .utilities import ConfigUtils, DataUtils, DatabaseUtils, OperationStats, safe_operation
+# Modular utilities
+from .utilities import (
+    ConfigUtils,
+    DataUtils,
+    DatabaseUtils,
+    OperationStats,
+    safe_operation,
+)
+
+# Specialized processors
 from .batch_operations import BatchProcessor
 from .csv_operations import CSVImporter
 
-# Import other modules with fallback handling
-try:
-    from .connection_manager import DatabaseConnection, ConnectionPool
-    CONNECTION_MANAGER_AVAILABLE = True
-except ImportError:
-    CONNECTION_MANAGER_AVAILABLE = False
+# Always-present components
+from .connection_manager import DatabaseConnection, ConnectionPool
+from .pandas_optimizer import PandasOptimizer, DataFrameChunker
+from .data_validator import (
+    DataValidator,
+    ValidationRule,
+    ValidationResult,
+    ValidationSeverity,
+)
+from .data_from_api import APIDataFetcher, DataProcessor
 
-try:
-    from .data_validator import DataValidator, ValidationRule, ValidationResult, ValidationSeverity
-    DATA_VALIDATOR_AVAILABLE = True
-except ImportError:
-    DATA_VALIDATOR_AVAILABLE = False
+# Connection helpers
+from .connect import (
+    connect_sync,
+    connect_async,
+    mysql_cursor_sync,
+    mysql_cursor_async,
+    connect_to_mysql,
+    config,
+    logger,
+)
 
-try:
-    from .data_from_api import APIDataFetcher, DataProcessor
-    API_DATA_AVAILABLE = True
-except ImportError:
-    API_DATA_AVAILABLE = False
-
-try:
-    from .pandas_optimizer import PandasOptimizer, DataFrameChunker
-    PANDAS_OPTIMIZER_AVAILABLE = True
-except ImportError:
-    PANDAS_OPTIMIZER_AVAILABLE = False
 
 __all__ = [
-    # Core modular database management
-    'DatabaseManager',
-    
-    # Modular utilities (from utilities package)
-    'ConfigUtils',
-    'DataUtils', 
-    'DatabaseUtils',
-    'OperationStats',
-    'safe_operation',
-    
-    # Specialized processors
-    'BatchProcessor',
-    'CSVImporter',
-    
-    # Schema management
-    'SchemaManager',
-    'SCHEMA_DEFINITIONS',
-    'TABLE_COLUMNS',
-]
+    # Core
+    "DatabaseManager",
 
-# Add optional components if available
-if CONNECTION_MANAGER_AVAILABLE:
-    __all__.extend(['DatabaseConnection', 'ConnectionPool'])
-    
-if DATA_VALIDATOR_AVAILABLE:
-    __all__.extend(['DataValidator', 'ValidationRule', 'ValidationResult', 'ValidationSeverity'])
-    
-if API_DATA_AVAILABLE:
-    __all__.extend(['APIDataFetcher', 'DataProcessor'])
-    
-if PANDAS_OPTIMIZER_AVAILABLE:
-    __all__.extend(['PandasOptimizer', 'DataFrameChunker'])
+    # Utilities
+    "ConfigUtils",
+    "DataUtils",
+    "DatabaseUtils",
+    "OperationStats",
+    "safe_operation",
+
+    # Processors
+    "BatchProcessor",
+    "CSVImporter",
+
+    # Schema
+    "SchemaManager",
+    "SCHEMA_DEFINITIONS",
+    "TABLE_COLUMNS",
+
+    # Always-present components
+    "DatabaseConnection",
+    "ConnectionPool",
+    "PandasOptimizer",
+    "DataFrameChunker",
+
+    # Validation
+    "DataValidator",
+    "ValidationRule",
+    "ValidationResult",
+    "ValidationSeverity",
+
+    # API data
+    "APIDataFetcher",
+    "DataProcessor",
+
+    # Connection helpers
+    "connect_sync",
+    "connect_async",
+    "mysql_cursor_sync",
+    "mysql_cursor_async",
+    "connect_to_mysql",
+    "config",
+    "logger",
+]

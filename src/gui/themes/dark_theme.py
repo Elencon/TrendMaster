@@ -7,16 +7,16 @@ from .base_theme import BaseTheme
 
 class DarkTheme(BaseTheme):
     """Dark theme with cyan accents and modern styling"""
-    
+
     def __init__(self):
         super().__init__("Dark Theme")
-    
+
     def get_qt_material_theme(self) -> str:
         return 'dark_cyan.xml'
-    
+
     def get_button_text(self) -> str:
         return "Toggle Light Theme"
-    
+
     def _get_component_styles(self) -> str:
         """Shared component styles used by both custom and fallback"""
         return """
@@ -129,10 +129,10 @@ class DarkTheme(BaseTheme):
             QMenu::item:selected { background-color: #42a5f5; color: #fff; }
             QMenu::separator { height: 1px; background-color: #555; margin: 4px 0; }
         """
-    
+
     def get_custom_styles(self) -> str:
         return self._get_component_styles()
-    
+
     def get_fallback_styles(self) -> str:
         return f"""
             QMainWindow {{ background-color: #2b2b2b; color: #fff; }}

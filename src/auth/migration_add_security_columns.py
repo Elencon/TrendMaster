@@ -10,7 +10,7 @@ from pathlib import Path
 # Add project root to path before local imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from connect import connect_to_mysql
+from database import connect_to_mysql
 
 logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger(__name__)

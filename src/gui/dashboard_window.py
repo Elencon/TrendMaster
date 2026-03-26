@@ -4,7 +4,6 @@ Compatibility wrapper - imports from modularized dashboard_window package
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Set up Python path to find src directory

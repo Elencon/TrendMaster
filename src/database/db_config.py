@@ -1,4 +1,4 @@
-"""
+r"""
 C:\Economy\Invest\TrendMaster\src\database\db_config.py
 Database Configuration Module
 Handles .env validation via Pydantic and URL construction via yarl.

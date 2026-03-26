@@ -1,5 +1,5 @@
 """
-C:\Economy\Invest\TrendMaster\src\exceptions\base_exceptions.py
+C:\\Economy\\Invest\\TrendMaster\\src\\exceptions\base_exceptions.py
 Base exception classes and core enums for ETL operations.
 Provides the foundation for all ETL-specific exceptions.
 """
@@ -105,19 +105,19 @@ class ETLException(Exception):
     def __str__(self) -> str:
         """Formatted string for console output and basic logging."""
         parts = [f"[{self.error_code}] {self.message}"]
-        
+
         # Add context flags
         if self.context.operation:
             parts.append(f"(Op: {self.context.operation})")
         if self.context.table_name:
             parts.append(f"(Table: {self.context.table_name})")
-            
+
         # Highlight critical issues
         if self.severity in (ErrorSeverity.HIGH, ErrorSeverity.CRITICAL):
             parts.append(f"!!{self.severity.value.upper()}!!")
-            
+
         # Include original cause if present
         if self.original_exception:
             parts.append(f"| Cause: {type(self.original_exception).__name__}: {self.original_exception}")
-            
+
         return " ".join(parts)

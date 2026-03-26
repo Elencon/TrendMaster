@@ -2,18 +2,18 @@
 
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import List, Dict
 import logging
 
 logger = logging.getLogger(__name__)
 
 try:
     from reportlab.lib import colors
-    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.lib.pagesizes import A4
     from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import inch
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.lib.enums import TA_CENTER
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
@@ -22,7 +22,7 @@ except ImportError:
 
 class CustomerOrderPDFGenerator:
     """Generate PDF reports for customer orders"""
-    
+
     def __init__(self, output_dir: Path = None):
         """Initialize PDF generator
         
@@ -31,10 +31,10 @@ class CustomerOrderPDFGenerator:
         """
         if not REPORTLAB_AVAILABLE:
             raise ImportError("reportlab is required for PDF generation. Install with: pip install reportlab")
-        
+
         self.output_dir = output_dir or Path(__file__).parent.parent.parent / "data" / "print"
         self.output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     def generate_customer_report(self, customer_data: Dict, orders_data: List[Dict]) -> str:
         """Generate PDF report for a customer
         
@@ -50,15 +50,15 @@ class CustomerOrderPDFGenerator:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"customer_report_{customer_data['customer_id']}_{customer_name}_{timestamp}.pdf"
         filepath = self.output_dir / filename
-        
+
         # Create PDF document
         doc = SimpleDocTemplate(str(filepath), pagesize=A4,
                                rightMargin=72, leftMargin=72,
                                topMargin=72, bottomMargin=18)
-        
+
         # Container for the 'Flowable' objects
         elements = []
-        
+
         # Define styles
         styles = getSampleStyleSheet()
         title_style = ParagraphStyle(
@@ -69,7 +69,7 @@ class CustomerOrderPDFGenerator:
             spaceAfter=30,
             alignment=TA_CENTER
         )
-        
+
         heading_style = ParagraphStyle(
             'CustomHeading',
             parent=styles['Heading2'],
@@ -78,15 +78,15 @@ class CustomerOrderPDFGenerator:
             spaceAfter=12,
             spaceBefore=12
         )
-        
+
         # Title
         title = Paragraph("Customer Order Report", title_style)
         elements.append(title)
         elements.append(Spacer(1, 12))
-        
+
         # Customer Information Section
         elements.append(Paragraph("Customer Information", heading_style))
-        
+
         customer_info = [
             ['Customer ID:', str(customer_data['customer_id'])],
             ['Name:', f"{customer_data['first_name']} {customer_data['last_name']}"],
@@ -94,7 +94,7 @@ class CustomerOrderPDFGenerator:
             ['Phone:', customer_data.get('phone', 'N/A')],
             ['Address:', f"{customer_data.get('street', 'N/A')}, {customer_data.get('city', 'N/A')}, {customer_data.get('state', 'N/A')} {customer_data.get('zip_code', 'N/A')}"]
         ]
-        
+
         customer_table = Table(customer_info, colWidths=[2*inch, 4*inch])
         customer_table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#f0f0f0')),
@@ -110,16 +110,16 @@ class CustomerOrderPDFGenerator:
         ]))
         elements.append(customer_table)
         elements.append(Spacer(1, 24))
-        
+
         # Orders Section
         elements.append(Paragraph(f"Order History ({len(orders_data)} orders)", heading_style))
-        
+
         if orders_data:
             # Calculate totals
             total_orders = len(orders_data)
             # Handle None values in total_amount
             total_amount = sum(order.get('total_amount') or 0 for order in orders_data)
-            
+
             # Summary
             summary_data = [
                 ['Total Orders:', str(total_orders)],
@@ -139,10 +139,10 @@ class CustomerOrderPDFGenerator:
             ]))
             elements.append(summary_table)
             elements.append(Spacer(1, 16))
-            
+
             # Orders table
             order_table_data = [['Order ID', 'Date', 'Status', 'Items', 'Total']]
-            
+
             for order in orders_data:
                 order_table_data.append([
                     str(order.get('order_id', 'N/A')),
@@ -151,7 +151,7 @@ class CustomerOrderPDFGenerator:
                     str(order.get('item_count') or 0),
                     f"{order.get('total_amount') or 0:,.2f} kr"
                 ])
-            
+
             orders_table = Table(order_table_data, colWidths=[1*inch, 1.5*inch, 1.2*inch, 0.8*inch, 1.5*inch])
             orders_table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1976d2')),
@@ -169,16 +169,16 @@ class CustomerOrderPDFGenerator:
             elements.append(orders_table)
         else:
             elements.append(Paragraph("No orders found for this customer.", styles['Normal']))
-        
+
         elements.append(Spacer(1, 24))
-        
+
         # Footer
         footer_text = f"Report generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         footer = Paragraph(footer_text, styles['Italic'])
         elements.append(footer)
-        
+
         # Build PDF
         doc.build(elements)
-        
+
         logger.info(f"Generated customer report: {filepath}")
         return str(filepath)

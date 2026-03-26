@@ -48,7 +48,7 @@ class DatabaseConfig:
     host: str = field(default_factory=lambda: _env("DB_HOST", "127.0.0.1"))
     port: int = field(default_factory=lambda: _env_int("DB_PORT", 3306))
     database: str = field(default_factory=lambda: _env("DB_NAME", "trend_master"))
-    
+
     # Added charset field
     charset: str = field(default_factory=lambda: _env("DB_CHARSET", "utf8mb4"))
 
@@ -67,18 +67,18 @@ class DatabaseConfig:
         """Validate configuration after initialization."""
         if not self.host or not self.user:
             raise ValueError("Database host and user cannot be empty")
-        
+
         if not (1 <= self.port <= 65535):
             raise ValueError(f"Invalid port: {self.port}")
-            
+
         if self.pool_size < 1:
             raise ValueError("pool_size must be >= 1")
-            
+
         if not self.charset:
             raise ValueError("Database charset cannot be empty")
 
     def to_dict(self) -> Dict[str, Any]:
-        """Return parameters suitable for MySQL drivers (PyMySQL/mysql-connector)."""
+        """Return parameters suitable for PyMySQL driver."""
         return {
             "user": self.user,
             "password": self.password,

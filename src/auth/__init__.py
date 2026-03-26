@@ -12,7 +12,7 @@ from .user_repository import UserRepository
 
 __all__ = [
     'UserManager',
-    'SessionManager', 
+    'SessionManager',
     'PermissionManager',
     'PasswordHandler',
     'UserAuthenticator',

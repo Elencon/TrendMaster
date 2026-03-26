@@ -10,9 +10,9 @@ from yarl import URL
 
 from ..common import RetryHandler, RetryConfig
 from ..common.exceptions import (
-    APIConnectionError, 
-    APITimeoutError, 
-    APIResponseError, 
+    APIConnectionError,
+    APITimeoutError,
+    APIResponseError,
     APIError
 )
 from .api_models import APIRequest, APIResponse

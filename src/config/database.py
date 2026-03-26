@@ -2,7 +2,7 @@
 Database-specific configuration utilities and presets.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict
 
 from . import DatabaseConfig
@@ -71,7 +71,7 @@ class MySQLConfig(DatabaseConfig):
         )
 
         return base
-        
+
 # ---------------------------------------------------------------------------
 # Preset factories
 # ---------------------------------------------------------------------------

@@ -20,12 +20,12 @@ def main():
     app.setApplicationName("ETL Pipeline Manager")
     app.setOrganizationName("ETL Solutions")
     app.setApplicationVersion("2.0")
-    
+
     app.setStyle('Fusion')
-    
+
     # Don't apply theme here - let ThemeManager handle it in the window
     # This avoids double theme application which slows startup
-    
+
     try:
         window = ETLMainWindow()
         window.show()

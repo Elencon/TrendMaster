@@ -1,7 +1,6 @@
 # src/common/base_db_config.py
 
-from dataclasses import dataclass, field
-from typing import Any, Dict
+from dataclasses import dataclass
 
 @dataclass
 class BaseDbConfig:

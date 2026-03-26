@@ -96,7 +96,7 @@ class RetryHandler:
                 if isinstance(e, (KeyboardInterrupt, SystemExit, cancelled_exc)):
                     raise
                 self._handle_failure(e, attempt, func_name, is_async=True)
-                
+
                 delay = self._calculate_delay(attempt)
                 self.total_retries += 1
                 self.total_delay += delay
@@ -109,17 +109,17 @@ class RetryHandler:
         for attempt in range(1, self.config.max_attempts + 1):
             try:
                 result = func(*args, **kwargs)
-                
+
                 if self.config.retry_on_result and self.config.retry_on_result(result):
                     raise _ResultRetryTrigger("Result-based retry triggered", result=result)
-                
+
                 return result
 
             except Exception as e:
                 if isinstance(e, (KeyboardInterrupt, SystemExit)):
                     raise
                 self._handle_failure(e, attempt, func_name, is_async=False)
-                
+
                 delay = self._calculate_delay(attempt)
                 self.total_retries += 1
                 self.total_delay += delay
@@ -129,7 +129,7 @@ class RetryHandler:
         """Common logic for checking if we should retry or raise."""
         is_result_retry = isinstance(e, _ResultRetryTrigger)
         is_exception_retry = (
-            self.config.retry_on_exception 
+            self.config.retry_on_exception
             and isinstance(e, self.config.retry_on_exception)
         )
 
@@ -139,9 +139,9 @@ class RetryHandler:
         if attempt == self.config.max_attempts:
             mode = "async" if is_async else "sync"
             self._log_structured(
-                logging.ERROR, 
-                f"Retry exhausted ({mode})", 
-                function=func_name, 
+                logging.ERROR,
+                f"Retry exhausted ({mode})",
+                function=func_name,
                 attempts=attempt
             )
             if is_result_retry:
@@ -149,10 +149,10 @@ class RetryHandler:
             raise e
 
         self._log_structured(
-            logging.WARNING, 
-            "Failure detected, retrying...", 
-            function=func_name, 
-            attempt=attempt, 
+            logging.WARNING,
+            "Failure detected, retrying...",
+            function=func_name,
+            attempt=attempt,
             exception=type(e).__name__
         )
 
@@ -190,9 +190,9 @@ def retryable_async(config: Optional[RetryConfig] = None, run_sync_in_thread: bo
         async def wrapper(*args, **kwargs):
             # handler instance per call
             return await RetryHandler(config).execute_async(
-                func, 
-                *args, 
-                run_sync_in_thread=run_sync_in_thread, 
+                func,
+                *args,
+                run_sync_in_thread=run_sync_in_thread,
                 **kwargs
             )
         return wrapper

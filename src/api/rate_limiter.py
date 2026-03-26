@@ -32,10 +32,10 @@ class RateLimiter:
             async with self._lock:
                 elapsed = time.perf_counter() - self._last_request_time
                 delay = (1.0 / self._config.requests_per_second) - elapsed
-                
+
                 if delay > 0:
                     await asyncio.sleep(delay)
-                
+
                 self._last_request_time = time.perf_counter()
 
             # 2. Handle Concurrency (Semaphore already locked)

@@ -5,7 +5,7 @@ Thread-safe singleton session manager for tracking authenticated users.
 
 import logging
 from typing import Optional, TypedDict
-from datetime import datetime, timezone 
+from datetime import datetime, timezone
 from threading import Lock
 
 _logger = logging.getLogger(__name__)

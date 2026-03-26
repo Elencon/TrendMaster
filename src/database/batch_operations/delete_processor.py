@@ -4,10 +4,10 @@ Specialized processor for batch delete operations with bulk optimization.
 
 import logging
 from collections import defaultdict
-from typing import Any, Callable
+from typing import Callable
 
 from .base_processor import BaseBatchProcessor
-from ..utilities import DatabaseUtils, safe_operation
+from src.database.utilities import DatabaseUtils, safe_operation
 
 logger = logging.getLogger(__name__)
 

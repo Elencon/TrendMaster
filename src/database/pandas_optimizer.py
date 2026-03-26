@@ -10,12 +10,7 @@ from typing import Any, Callable, Dict, Iterator, List, Union
 
 import numpy as np
 import pandas as pd
-
-try:
-    import psutil
-    _PSUTIL_AVAILABLE = True
-except ImportError:
-    _PSUTIL_AVAILABLE = False
+import psutil
 
 
 # ---------------------------------------------------------------------------
@@ -108,18 +103,12 @@ class PandasOptimizer:
     # Memory helpers
     # ------------------------------------------------------------------
 
-    def get_memory_usage_mb(self) -> float:
-        """Return current process RSS memory in MB."""
-        if _PSUTIL_AVAILABLE:
-            try:
-                return psutil.Process().memory_info().rss / 1024 / 1024
-            except Exception:
-                pass
-        try:
-            import resource
-            return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
-        except Exception:
-            return 0.0
+def get_memory_usage_mb(self) -> float:
+    """Return current process RSS memory in MB."""
+    try:
+        return psutil.Process().memory_info().rss / 1024 / 1024
+    except Exception:
+        return 0.0
 
     # ------------------------------------------------------------------
     # Core optimizations
@@ -140,9 +129,11 @@ class PandasOptimizer:
 
             if pd.api.types.is_integer_dtype(dtype):
                 optimized_df[col] = pd.to_numeric(optimized_df[col], downcast="integer")
+
             elif pd.api.types.is_float_dtype(dtype):
                 optimized_df[col] = pd.to_numeric(optimized_df[col], downcast="float")
-            elif dtype == object:
+
+            elif pd.api.types.is_object_dtype(dtype):
                 if DataUtils.should_be_categorical(optimized_df[col], categorical_threshold):
                     optimized_df[col] = optimized_df[col].astype("category")
 
@@ -276,14 +267,16 @@ class PandasOptimizer:
             )
 
         total = len(df)
+
         for col in df.columns:
             dtype = df[col].dtype
             n_unique = profile["unique_counts"][col]
 
-            if dtype == object and total and n_unique / total < 0.5:
+            if pd.api.types.is_object_dtype(dtype) and total and n_unique / total < 0.5:
                 suggestions.append(
                     f"'{col}' could be categorical ({n_unique}/{total} unique)"
                 )
+
             elif pd.api.types.is_integer_dtype(dtype) or pd.api.types.is_float_dtype(dtype):
                 suggestions.append(f"'{col}' ({dtype}) could be downcast")
 
@@ -358,18 +351,23 @@ def optimize_csv_reading(
 def get_memory_efficient_dtypes(df: pd.DataFrame) -> Dict[str, str]:
     """Return suggested memory-efficient dtype names for each column."""
     suggestions: Dict[str, str] = {}
+
     for col in df.columns:
         dtype = df[col].dtype
+
         if pd.api.types.is_integer_dtype(dtype):
             suggestions[col] = str(pd.to_numeric(df[col], downcast="integer").dtype)
+
         elif pd.api.types.is_float_dtype(dtype):
             suggestions[col] = str(pd.to_numeric(df[col], downcast="float").dtype)
-        elif dtype == object and DataUtils.should_be_categorical(df[col]):
+
+        elif pd.api.types.is_object_dtype(dtype) and DataUtils.should_be_categorical(df[col]):
             suggestions[col] = "category"
+
         else:
             suggestions[col] = str(dtype)
-    return suggestions
 
+    return suggestions
 
 def create_pandas_optimizer(
     max_memory_mb: float = 512,

@@ -26,12 +26,12 @@ class APIRequest(msgspec.Struct):
     method: RequestMethod = RequestMethod.GET
     headers: Dict[str, str] = {}
     params: Dict[str, Any] = {}
-    
+
     # Payload options - aligned with Client logic
-    json: Optional[Dict[str, Any]] = None 
+    json: Optional[Dict[str, Any]] = None
     data: Optional[Union[str, bytes, Dict[str, Any]]] = None
-    form: Optional[Dict[str, Any]] = None  
-    
+    form: Optional[Dict[str, Any]] = None
+
     timeout: Optional[float] = None
     metadata: Dict[str, Any] = {}
 

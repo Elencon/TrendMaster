@@ -2,7 +2,7 @@
 API-specific configuration utilities and presets.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from . import APIConfig

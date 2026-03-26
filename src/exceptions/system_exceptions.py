@@ -4,7 +4,7 @@ System-related exception classes.
 Handles configuration, file system, memory, and infrastructure errors.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from .base_exceptions import ETLException, ErrorCategory, ErrorContext, ErrorSeverity
 

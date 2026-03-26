@@ -4,7 +4,6 @@ Compatibility wrapper - imports from modularized main_window package
 """
 
 import sys
-from pathlib import Path
 from main_window import main
 
 

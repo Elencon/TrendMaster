@@ -8,26 +8,19 @@ Install: pip install bcrypt
 """
 
 import logging
-from typing import Callable, Optional, Any, Dict
+from typing import Callable, Any
 import bcrypt
+import pymysql.cursors  # single supported backend
 
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Cursor helper
+# Cursor helper (PyMySQL only)
 # ---------------------------------------------------------------------------
 
 def _dict_cursor(connection):
-    """
-    Return a dictionary cursor compatible with mysql.connector and PyMySQL.
-    """
-    try:
-        # mysql.connector
-        return connection.cursor(dictionary=True)
-    except TypeError:
-        # PyMySQL
-        import pymysql.cursors
-        return connection.cursor(pymysql.cursors.DictCursor)
+    """Return a dictionary cursor using PyMySQL."""
+    return connection.cursor(pymysql.cursors.DictCursor)
 
 
 # ---------------------------------------------------------------------------
@@ -35,7 +28,6 @@ def _dict_cursor(connection):
 # ---------------------------------------------------------------------------
 
 def default_hash_password(password: str) -> str:
-    """Hash a password using bcrypt."""
     if not isinstance(password, str):
         raise TypeError("Password must be a string")
 
@@ -44,7 +36,6 @@ def default_hash_password(password: str) -> str:
 
 
 def default_verify_password(password: str, password_hash: str) -> bool:
-    """Verify a password against its bcrypt hash."""
     try:
         return bcrypt.checkpw(
             password.encode("utf-8"),
@@ -70,9 +61,6 @@ SQL_UPDATE_PASSWORD = "UPDATE users SET password_hash = %s WHERE user_id = %s"
 class PasswordHandler:
     """
     Handles password hashing, verification, and updates.
-
-    Hashing and verification functions are dependency-injectable to allow
-    future migration to Argon2 or other algorithms without modifying callers.
     """
 
     def __init__(
@@ -85,19 +73,7 @@ class PasswordHandler:
         self._hash = hash_password
         self._verify = verify_password
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
-
-    def change_password(
-        self, user_id: int, old_password: str, new_password: str
-    ) -> bool:
-        """
-        Change a user's password after verifying the current one.
-
-        Returns:
-            True if password changed successfully, False otherwise.
-        """
+    def change_password(self, user_id: int, old_password: str, new_password: str) -> bool:
         if not new_password:
             _logger.error("Rejecting empty new password for user %s", user_id)
             return False
@@ -106,7 +82,6 @@ class PasswordHandler:
         try:
             cursor = _dict_cursor(self._db_connection)
 
-            # Fetch existing hash
             cursor.execute(SQL_GET_PASSWORD, (user_id,))
             row = cursor.fetchone()
 
@@ -114,7 +89,6 @@ class PasswordHandler:
                 _logger.warning("User %s not found", user_id)
                 return False
 
-            # Verify old password
             if not self._verify(old_password, row["password_hash"]):
                 _logger.warning(
                     "Password change failed: invalid old password for user %s",
@@ -122,10 +96,8 @@ class PasswordHandler:
                 )
                 return False
 
-            # Hash new password
             new_hash = self._hash(new_password)
 
-            # Update DB
             cursor.execute(SQL_UPDATE_PASSWORD, (new_hash, user_id))
             self._db_connection.commit()
 
@@ -134,15 +106,10 @@ class PasswordHandler:
 
         except Exception as e:
             _logger.error("Error changing password for user %s: %s", user_id, e)
-
-            # Attempt rollback
             try:
                 self._db_connection.rollback()
             except Exception as rb_err:
-                _logger.error(
-                    "Rollback failed for user %s: %s", user_id, rb_err
-                )
-
+                _logger.error("Rollback failed for user %s: %s", user_id, rb_err)
             return False
 
         finally:

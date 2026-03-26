@@ -4,7 +4,7 @@ Main module for database operations.
 """
 
 from pathlib import Path
-from connect import config, logger
+from database import config, logger
 from database.db_manager import DatabaseManager
 
 DATA_DIR = Path(__file__).parent.parent / "data"

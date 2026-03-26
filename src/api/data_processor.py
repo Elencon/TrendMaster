@@ -64,13 +64,13 @@ class APIDataProcessor(Generic[T, R]):
         """
         self.stats = ProcessingStats(total_responses=len(responses))
         start_time = time.perf_counter()
-        
+
         final_results: List[R] = []
-        
+
         async with anyio.create_task_group() as tg:
             # Create a memory stream to gather results from workers
             send_stream, receive_stream = anyio.create_memory_object_stream(max_buffer_size=len(responses))
-            
+
             async with send_stream:
                 for resp in responses:
                     tg.start_soon(self._worker, resp, target_type, send_stream.clone(), error_handler)
@@ -84,8 +84,8 @@ class APIDataProcessor(Generic[T, R]):
         return final_results
 
     async def _worker(
-        self, 
-        response: APIResponse, 
+        self,
+        response: APIResponse,
         target_type: type[R],
         send_stream: anyio.abc.ObjectSendStream[List[R]],
         error_handler: Optional[Callable]
@@ -101,9 +101,9 @@ class APIDataProcessor(Generic[T, R]):
                     # msgspec.convert replaces the old processor_func
                     # It validates and converts the dict to your Struct at C-speed
                     converted = msgspec.convert(response.data, type=Union[List[target_type], target_type])
-                    
+
                     items = converted if isinstance(converted, list) else [converted]
-                    
+
                     self.stats.successful_responses += 1
                     self.stats.processed_items += len(items)
                     await send_stream.send(items)
@@ -112,7 +112,7 @@ class APIDataProcessor(Generic[T, R]):
                     self.stats.failed_responses += 1
                     self.stats.errors_by_type[type(e).__name__] += 1
                     logger.error(f"Processing error: {e} | URL: {response.url}")
-                    
+
                     if error_handler:
                         err_res = error_handler(response, e)
                         if err_res:

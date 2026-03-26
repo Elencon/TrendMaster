@@ -6,12 +6,12 @@ from typing import Callable, Dict
 
 class BaseWorker(QThread):
     """Base worker thread with common functionality"""
-    
+
     # Common signals
     finished = Signal(str)
     error = Signal(str)
     progress = Signal(str)
-    
+
     def __init__(self, operation: str, *args, **kwargs):
         super().__init__()
         self.operation = operation
@@ -19,11 +19,11 @@ class BaseWorker(QThread):
         self.kwargs = kwargs
         self._is_cancelled = False
         self._operations: Dict[str, Callable] = {}
-    
+
     def cancel(self):
         """Request cancellation of the operation"""
         self._is_cancelled = True
-    
+
     def run(self):
         """Main execution method with operation routing"""
         try:

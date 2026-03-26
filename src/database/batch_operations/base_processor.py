@@ -11,7 +11,7 @@ try:
 except ImportError:
     HAS_SQLALCHEMY = False
 
-from ..utilities import DataUtils, safe_operation, OperationStats
+from src.database.utilities import DataUtils, OperationStats
 
 logger = logging.getLogger(__name__)
 

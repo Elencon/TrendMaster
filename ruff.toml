@@ -1,0 +1,13 @@
+# ruff.toml
+
+line-length = 200
+
+[lint]
+select = [
+    "F",  # Pyflakes (includes F821: undefined name)
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+]
+
+[format]
+quote-style = "double"

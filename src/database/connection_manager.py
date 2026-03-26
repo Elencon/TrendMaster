@@ -2,41 +2,16 @@ r"""
 C:\Economy\Invest\TrendMaster\src\database\connection_manager.py
 Standalone database connection manager — no external utility dependencies.
 """
-
+import threading
 import logging
 import re
-import threading
 from contextlib import contextmanager
 from typing import Dict, Optional
+import pymysql
+import pymysql.cursors
+from sqlalchemy import create_engine
 
 _logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Optional dependencies (MySQL drivers + connect module)
-# ---------------------------------------------------------------------------
-
-mysql = None
-_pooling = None
-pymysql = None
-pymysql_cursors = None
-
-# mysql.connector
-try:
-    import mysql.connector as mysql
-    import mysql.connector.pooling as _pooling
-except ImportError:
-    pass
-
-# PyMySQL
-try:
-    import pymysql
-    import pymysql.cursors as pymysql_cursors
-except ImportError:
-    pass
-
-# Availability flags
-MYSQL_CONNECTOR_AVAILABLE = mysql is not None
-PYMYSQL_AVAILABLE = pymysql is not None
 
 # ---------------------------------------------------------------------------
 # Constants / defaults
@@ -47,6 +22,9 @@ _DEFAULT_CONFIG: Dict = {
     "password": "",
     "host": "127.0.0.1",
     "database": "trend_master",
+    # autocommit=False: callers must call conn.commit() explicitly.
+    # This ensures writes are intentional and errors trigger a clean rollback.
+    "autocommit": False,
 }
 
 _DB_NAME_RE = re.compile(r"^\w+$")
@@ -55,14 +33,12 @@ _DB_NAME_RE = re.compile(r"^\w+$")
 # Helpers
 # ---------------------------------------------------------------------------
 
-
 def _validate_db_name(name: str) -> None:
     """Raise ValueError if *name* is not a safe SQL identifier."""
     if not _DB_NAME_RE.match(name):
         raise ValueError(
             f"Unsafe database name {name!r}: only word characters are allowed."
         )
-
 
 def _safe_close(conn) -> None:
     """Close *conn*, suppressing and logging any error."""
@@ -75,12 +51,19 @@ def _safe_close(conn) -> None:
 
 
 def _open_connection(config: Dict):
-    """Open a single raw connection using whatever driver is available."""
+    """Open a single raw PyMySQL connection."""
     try:
-        if _CONNECT_AVAILABLE:
-            return connect_to_mysql(config)
-        if _MYSQL_AVAILABLE:
-            return mysql.connector.connect(**config)
+        params = config.copy()
+        core_keys = {"host", "user", "password", "database", "port", "autocommit"}
+        connection_args = {k: params[k] for k in core_keys if k in params}
+        connection_args["connect_timeout"] = params.get("connect_timeout", 30)
+
+        return pymysql.connect(
+            **connection_args,
+            charset=params.get("charset", "utf8mb4"),
+            init_command=params.get("init_command"),
+            cursorclass=pymysql.cursors.DictCursor,
+        )
     except Exception as exc:
         _logger.error("Connection creation failed: %s", exc)
     return None
@@ -89,27 +72,85 @@ def _open_connection(config: Dict):
 def _test_alive(conn) -> bool:
     """Return True if *conn* appears to be alive."""
     try:
-        if hasattr(conn, "is_connected"):
-            return conn.is_connected()
         if hasattr(conn, "ping"):
             conn.ping(reconnect=False)
             return True
     except Exception:
         pass
     return False
+# ---------------------------------------------------------------------------
+# ConnectionManager (with SQLAlchemy engine)
+# ---------------------------------------------------------------------------
 
+class ConnectionManager:
+    """
+    High-level DB manager combining:
+    - manual PyMySQL connection pool
+    - SQLAlchemy engine for metadata inspection
+    """
+
+    def __init__(
+        self,
+        config: Optional[Dict] = None,
+        pool_size: int = 5,
+        acquire_timeout: float = 30.0,
+    ) -> None:
+        self._config = {**_DEFAULT_CONFIG, **(config or {})}
+
+        # SQLAlchemy engine (for schema inspection, ORM, metadata)
+        self.engine = create_engine(
+            self._build_sqlalchemy_url(self._config),
+            pool_pre_ping=True,
+            future=True,
+        )
+
+        # Manual PyMySQL pool (for actual query execution)
+        self._pool = ConnectionPool(
+            self._config,
+            pool_size=pool_size,
+            acquire_timeout=acquire_timeout,
+        )
+
+    # ------------------------------------------------------------------
+
+    def _build_sqlalchemy_url(self, cfg: Dict) -> str:
+        user = cfg.get("user", "root")
+        password = cfg.get("password", "")
+        host = cfg.get("host", "127.0.0.1")
+        database = cfg.get("database", "")
+        port = cfg.get("port", 3306)
+
+        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{database}"
+
+    # ------------------------------------------------------------------
+
+    @contextmanager
+    def get_connection(self):
+        """Proxy to the underlying PyMySQL pool."""
+        with self._pool.get_connection() as conn:
+            yield conn
+
+    def close_all(self) -> None:
+        """Close all pooled connections."""
+        self._pool.close_all()
+
+    def get_stats(self) -> Dict:
+        """Return pool stats."""
+        return self._pool.get_stats()
 
 # ---------------------------------------------------------------------------
 # ConnectionPool
 # ---------------------------------------------------------------------------
 
-
 class ConnectionPool:
     """
-    Thread-safe MySQL connection pool (native preferred, manual fallback).
+    Thread-safe manual MySQL connection pool.
 
-    Manual pool blocks until a connection is available instead of creating
-    unlimited new connections when exhausted.
+    Design principles:
+    - Heal on acquire ONLY
+    - Acquire is atomic (pop → heal → track under one lock)
+    - `_used` always reflects real checked-out connections
+    - No dual tracking, no identity mismatch
     """
 
     def __init__(
@@ -122,44 +163,20 @@ class ConnectionPool:
         self._pool_size = pool_size
         self._acquire_timeout = acquire_timeout
 
-        self._pool: list = []
+        self._available: list = []
         self._used: set = set()
 
         self._lock = threading.Lock()
         self._not_empty = threading.Condition(self._lock)
 
-        self._type = "manual"
-        self._native = None
-
-        self._init()
+        self._initialize_pool()
 
     # ------------------------------------------------------------------
+    # Initialization
+    # ------------------------------------------------------------------
 
-    def _init(self) -> None:
-        """Initialize native pool if available, otherwise manual pool."""
-
-        if _MYSQL_AVAILABLE and _pooling is not None:
-            try:
-                cfg = {k: v for k, v in self._config.items() if k != "raise_on_warnings"}
-
-                self._native = _pooling.MySQLConnectionPool(
-                    pool_name="etl_pool",
-                    pool_size=self._pool_size,
-                    pool_reset_session=True,
-                    **cfg,
-                )
-
-                self._type = "native"
-                _logger.info("Native pool ready: %d connections", self._pool_size)
-                return
-
-            except Exception as exc:
-                _logger.warning("Native pool failed (%s); using manual pool", exc)
-
-        self._fill_manual_pool()
-
-    def _fill_manual_pool(self) -> None:
-        """Pre-create manual pool connections."""
+    def _initialize_pool(self) -> None:
+        """Create initial pool connections."""
         conns = []
 
         for _ in range(self._pool_size):
@@ -168,9 +185,13 @@ class ConnectionPool:
                 conns.append(conn)
 
         with self._lock:
-            self._pool.extend(conns)
+            self._available.extend(conns)
 
-        _logger.info("Manual pool ready: %d/%d connections", len(conns), self._pool_size)
+        _logger.info(
+            "Pool initialized: %d/%d connections",
+            len(conns),
+            self._pool_size,
+        )
 
     # ------------------------------------------------------------------
     # Public interface
@@ -186,23 +207,24 @@ class ConnectionPool:
             self._release(conn)
 
     def close_all(self) -> None:
-        """Close every connection in the pool."""
+        """Close all connections."""
         with self._lock:
-            all_conns = list(self._pool) + list(self._used)
-            self._pool.clear()
+            all_conns = list(self._available) + list(self._used)
+            self._available.clear()
             self._used.clear()
 
         for conn in all_conns:
             _safe_close(conn)
 
+        _logger.info("Connection pool closed")
+
     def get_stats(self) -> Dict:
-        """Return a snapshot of pool utilisation."""
+        """Return pool stats."""
         with self._lock:
             return {
-                "type": self._type,
                 "size": self._pool_size,
-                "available": len(self._pool),
-                "used": len(self._used),
+                "available": len(self._available),
+                "in_use": len(self._used),
             }
 
     # ------------------------------------------------------------------
@@ -210,69 +232,44 @@ class ConnectionPool:
     # ------------------------------------------------------------------
 
     def _acquire(self):
-        """Return a connection from the pool."""
-
-        if self._type == "native":
-            try:
-                return self._native.get_connection()
-            except Exception as exc:
-                _logger.error("Native pool acquire failed: %s", exc)
-                return None
-
+        """Acquire a connection, blocking until available."""
         with self._not_empty:
-
-            available = self._not_empty.wait_for(
-                lambda: bool(self._pool),
+            ok = self._not_empty.wait_for(
+                lambda: bool(self._available),
                 timeout=self._acquire_timeout,
             )
 
-            if not available:
+            if not ok:
                 raise TimeoutError(
-                    f"Could not acquire connection within "
-                    f"{self._acquire_timeout}s "
+                    f"Could not acquire connection within {self._acquire_timeout}s "
                     f"(pool size={self._pool_size}, in use={len(self._used)})"
                 )
 
-            conn = self._pool.pop()
+            conn = self._available.pop()
+
+            # Heal INSIDE lock (atomic)
+            if not _test_alive(conn):
+                _logger.warning("Stale connection detected — replacing")
+                _safe_close(conn)
+
+                conn = _open_connection(self._config)
+                if conn is None:
+                    raise RuntimeError("Failed to open replacement connection")
+
             self._used.add(conn)
 
-        return self._heal(conn)
-
-    def _heal(self, conn):
-        """Return *conn* if alive, otherwise replace it."""
-        if _test_alive(conn):
             return conn
 
-        _logger.warning("Stale connection detected — replacing")
-
-        _safe_close(conn)
-
-        replacement = _open_connection(self._config)
-
-        if replacement is None:
-            with self._not_empty:
-                self._used.discard(conn)
-                self._not_empty.notify()
-            raise RuntimeError("Failed to open replacement connection")
-
-        return replacement
-
     def _release(self, conn) -> None:
-        """Return connection to pool and notify waiting thread."""
-
+        """Return connection to the pool."""
         if conn is None:
             return
 
-        if self._type == "native":
-            _safe_close(conn)
-            return
-
         with self._not_empty:
-
             self._used.discard(conn)
 
-            if len(self._pool) < self._pool_size and _test_alive(conn):
-                self._pool.append(conn)
+            if len(self._available) < self._pool_size:
+                self._available.append(conn)
             else:
                 _safe_close(conn)
 
@@ -297,9 +294,7 @@ class DatabaseConnection:
         acquire_timeout: float = 30.0,
     ) -> None:
 
-        # prevent mutation of default config
         self._config = (config or _DEFAULT_CONFIG).copy()
-
         self._enable_pooling = enable_pooling
         self.connection_attempts = 0
 
@@ -319,7 +314,11 @@ class DatabaseConnection:
 
     @contextmanager
     def get_connection(self):
-        """Yield a database connection (pooled or direct)."""
+        """Yield a database connection (pooled or direct).
+
+        autocommit is False by default — call conn.commit() after writes,
+        or conn.rollback() on error.
+        """
 
         if self._enable_pooling and DatabaseConnection._pool:
 
@@ -339,19 +338,10 @@ class DatabaseConnection:
 
     @contextmanager
     def _direct_connection(self):
-        """Yield a direct (non-pooled) connection."""
+        """Yield a direct (non-pooled) connection.
 
-        if _CONNECT_AVAILABLE:
-
-            with mysql_connection(self._config) as conn:
-
-                if conn is not None:
-                    self.connection_attempts += 1
-
-                yield conn
-
-            return
-
+        Rolls back automatically on exception; caller must commit() on success.
+        """
         conn = _open_connection(self._config)
 
         if conn is not None:
@@ -359,20 +349,19 @@ class DatabaseConnection:
 
         try:
             yield conn
+        except Exception:
+            if conn:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+            raise
         finally:
             _safe_close(conn)
 
     @contextmanager
     def get_connection_without_db(self, config: Dict):
         """Yield connection without selecting default database."""
-
-        if _CONNECT_AVAILABLE:
-
-            with mysql_connection(config) as conn:
-                yield conn
-
-            return
-
         conn = _open_connection(config)
 
         try:
@@ -425,19 +414,10 @@ class DatabaseConnection:
     # ------------------------------------------------------------------
 
     def test_connection(self) -> bool:
-
-        if _CONNECT_AVAILABLE:
-
-            conn = connect_to_mysql(self._config, attempts=1)
-
-            alive = conn is not None
-
-            _safe_close(conn)
-
-            return alive
-
-        with self.get_connection() as conn:
-            return conn is not None
+        conn = _open_connection(self._config)
+        alive = conn is not None
+        _safe_close(conn)
+        return alive
 
     def get_connection_stats(self) -> Dict:
 
@@ -456,9 +436,7 @@ class DatabaseConnection:
         summary = self._config.copy()
 
         if "password" in summary:
-
             pw = summary["password"]
-
             summary["password"] = "*" * len(pw) if pw else "empty"
 
         return summary
@@ -473,9 +451,7 @@ class DatabaseConnection:
             if cls._pool:
 
                 cls._pool.close_all()
-
                 cls._pool = None
-
                 _logger.info("Connection pool closed")
 
 

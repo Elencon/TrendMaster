@@ -1,10 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 from sqlalchemy.engine import Engine
-from database.connection_manager import (
-    ConnectionManager,
-    get_connection_manager
-)
+from src.database.connection_manager import (ConnectionManager,  get_connection_manager)
 
 
 # -----------------------------

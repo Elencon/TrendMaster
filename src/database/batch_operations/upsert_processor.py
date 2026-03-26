@@ -3,10 +3,10 @@ Specialized processor for batch upsert operations.
 """
 
 import logging
-from typing import Any, Callable
+from typing import Callable
 
 from .base_processor import BaseBatchProcessor
-from ..utilities import DatabaseUtils, safe_operation
+from src.database.utilities import DatabaseUtils, safe_operation
 
 logger = logging.getLogger(__name__)
 

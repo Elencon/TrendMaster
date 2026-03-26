@@ -11,7 +11,7 @@ from .insert_processor import InsertProcessor
 from .update_processor import UpdateProcessor
 from .upsert_processor import UpsertProcessor
 from .delete_processor import DeleteProcessor
-from ..utilities import DataUtils
+from src.database.utilities import DataUtils
 
 try:
     import pyarrow as pa

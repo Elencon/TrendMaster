@@ -10,7 +10,6 @@ import logging
 from typing import Optional
 
 from PySide6.QtWidgets import QMessageBox, QTableWidgetItem
-from PySide6.QtCore import QPoint
 
 from .worker import DashboardWorker, MODULES_AVAILABLE
 from auth.session import SessionManager  # type: ignore
@@ -26,7 +25,7 @@ else:
 
 class DashboardDataHandler:
     """Handles all data loading and event handling for the dashboard window"""
-    
+
     def __init__(self, window):
         """
         Initialize the data handler.
@@ -36,7 +35,7 @@ class DashboardDataHandler:
         """
         self.window = window
         self.current_worker: Optional[DashboardWorker] = None
-    
+
     def initialize_dashboard(self):
         """Initialize dashboard and load table list"""
         if MODULES_AVAILABLE:
@@ -61,7 +60,7 @@ class DashboardDataHandler:
         else:
             self.window.tables_list.addItem("⚠️ Database modules not available")
             self.window.statusBar().showMessage("Database modules not available")
-    
+
     def load_customers(self):
         """Load customers into dropdown"""
         worker = DashboardWorker("fetch_customers")
@@ -69,7 +68,7 @@ class DashboardDataHandler:
         worker.error.connect(lambda msg: logger.error(f"Customer fetch error: {msg}"))
         worker.finished.connect(worker.deleteLater)
         worker.start()
-    
+
     def on_customers_loaded(self, customers: list):
         """
         Handle customers data loaded.
@@ -81,7 +80,7 @@ class DashboardDataHandler:
         if not hasattr(self.window, 'customer_combo'):
             logger.error("Customer combo widget not found!")
             return
-        
+
         self.window.customer_combo.clear()
         self.window.customer_combo.addItem("-- Select a customer --", None)
         for customer in customers:
@@ -89,7 +88,7 @@ class DashboardDataHandler:
             name = f"{customer['first_name']} {customer['last_name']}"
             display_text = f"{name} (ID: {customer_id})"
             self.window.customer_combo.addItem(display_text, customer_id)
-    
+
     def load_employees(self, retry_count=0):
         """Load employees into table, with retry on blank/error."""
         worker = DashboardWorker("fetch_employees")
@@ -109,7 +108,7 @@ class DashboardDataHandler:
         if retry_count < 2:
             logger.info(f"Retrying employee fetch after error ({retry_count+1})...")
             self.load_employees(retry_count=retry_count+1)
-    
+
     def on_employees_loaded(self, employees: list):
         """
         Handle employees data loaded.
@@ -146,7 +145,7 @@ class DashboardDataHandler:
         except Exception as e:
             logger.error(f"Error populating employee_table: {e}")
         # PDF generation should only be triggered by explicit user action, not on login/employee load.
-    
+
     def on_pdf_generated(self, filepath: str):
         """
         Handle PDF generation complete.
@@ -154,8 +153,8 @@ class DashboardDataHandler:
         Args:
             filepath: Path to the generated PDF file
         """
-        self.window.statusBar().showMessage(f"PDF report generated successfully!", 5000)
-        
+        self.window.statusBar().showMessage("PDF report generated successfully!", 5000)
+
         # Ask if user wants to open the PDF
         reply = QMessageBox.question(
             self.window,
@@ -164,7 +163,7 @@ class DashboardDataHandler:
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.Yes
         )
-        
+
         if reply == QMessageBox.StandardButton.Yes:
             if sys.platform == "win32":
                 os.startfile(filepath)
@@ -172,7 +171,7 @@ class DashboardDataHandler:
                 subprocess.run(["open", filepath])
             else:  # linux
                 subprocess.run(["xdg-open", filepath])
-    
+
     def fetch_sales_data(self):
         """Fetch sales data for gauge chart"""
         worker = DashboardWorker("fetch_sales")
@@ -180,7 +179,7 @@ class DashboardDataHandler:
         worker.error.connect(lambda msg: logger.error(f"Sales fetch error: {msg}"))
         worker.finished.connect(worker.deleteLater)
         worker.start()
-    
+
     def on_sales_loaded(self, total_sales: float):
         """
         Handle sales data loaded.
@@ -193,7 +192,7 @@ class DashboardDataHandler:
             self.window.sales_gauge.set_sales_data(total_sales)
         except Exception as e:
             logger.error(f"Failed to update sales gauge: {e}")
-    
+
     def _start_operation(self, operation: str):
         """
         Start background operation.
@@ -203,30 +202,30 @@ class DashboardDataHandler:
         """
         if self.current_worker and self.current_worker.isRunning():
             return
-        
+
         self.current_worker = DashboardWorker(operation)
         self.current_worker.progress.connect(self._on_progress)
         self.current_worker.finished.connect(self._on_operation_finished)
         self.current_worker.error.connect(self._on_operation_error)
-        
+
         if operation == "fetch_tables":
             self.current_worker.tables_loaded.connect(self.on_tables_loaded)
-        
+
         self.current_worker.start()
-    
+
     def _on_progress(self, message: str):
         """Handle progress updates"""
         self.window.statusBar().showMessage(message)
-    
+
     def _on_operation_finished(self, message: str):
         """Handle operation completion"""
         self.window.statusBar().showMessage(message)
         self._cleanup_operation()
-    
+
     def _on_operation_error(self, message: str):
         """Handle operation error"""
         self.window.statusBar().showMessage(f"Error: {message}")
-        
+
         # If database connection failed, show expected tables from schema
         try:
             from src.database.schema_manager import SCHEMA_DEFINITIONS
@@ -237,9 +236,9 @@ class DashboardDataHandler:
         except Exception:
             self.window.tables_list.clear()
             self.window.tables_list.addItem(f"⚠️ {message}")
-        
+
         self._cleanup_operation()
-    
+
     def on_tables_loaded(self, tables: list):
         """
         Handle tables list loaded.
@@ -253,7 +252,7 @@ class DashboardDataHandler:
                 self.window.tables_list.addItem(f"📁 {table}")
         else:
             self.window.tables_list.addItem("No tables found")
-    
+
     def _cleanup_operation(self):
         """Clean up after operation completion"""
         if self.current_worker:
@@ -268,7 +267,7 @@ class DashboardDataHandler:
                 pass
             self.current_worker.deleteLater()
             self.current_worker = None
-    
+
     def cleanup_on_close(self):
             import logging as _logging
             logger = _logging.getLogger(__name__)
@@ -293,7 +292,7 @@ class DashboardDataHandler:
                 # Force terminate if it doesn't stop gracefully
                 self.current_worker.terminate()
                 self.current_worker.wait(500)
-    
+
     def generate_customer_pdf(self):
         """Generate PDF report for the selected customer."""
         if not hasattr(self.window, 'customer_combo'):
