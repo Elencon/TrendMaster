@@ -1,4 +1,6 @@
-"""Test runner for core ETL pipeline functionality tests."""
+"""
+Test runner for core ETL pipeline functionality tests.
+"""
 
 import importlib.util
 from pathlib import Path

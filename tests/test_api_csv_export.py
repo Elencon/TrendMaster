@@ -1,4 +1,6 @@
-"""Test API data export to CSV files."""
+"""
+Test API data export to CSV files.
+"""
 
 import sys
 from pathlib import Path

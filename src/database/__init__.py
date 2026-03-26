@@ -7,7 +7,7 @@ from .db_manager import DatabaseManager
 from .schema_manager import SchemaManager, SCHEMA_DEFINITIONS, TABLE_COLUMNS
 
 # Modular utilities
-from .utilities import (
+from src.database.utilities import (
     ConfigUtils,
     DataUtils,
     DatabaseUtils,

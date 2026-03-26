@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\batch_operations\delete_processor.py
 Specialized processor for batch delete operations with bulk optimization.
 """
 

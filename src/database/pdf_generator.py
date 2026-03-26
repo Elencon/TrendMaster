@@ -1,4 +1,8 @@
-"""PDF report generator for customer orders"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\pdf_generator.py
+PDF report generator for customer orders
+python -m src.database.pdf_generator
+"""
 
 from pathlib import Path
 from datetime import datetime
@@ -7,18 +11,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-try:
-    from reportlab.lib import colors
-    from reportlab.lib.pagesizes import A4
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-    from reportlab.lib.units import inch
-    from reportlab.lib.enums import TA_CENTER
-    REPORTLAB_AVAILABLE = True
-except ImportError:
-    REPORTLAB_AVAILABLE = False
-    logger.warning("reportlab not available - PDF generation disabled")
-
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER
 
 class CustomerOrderPDFGenerator:
     """Generate PDF reports for customer orders"""
@@ -29,8 +27,6 @@ class CustomerOrderPDFGenerator:
         Args:
             output_dir: Directory to save PDFs (defaults to data/print)
         """
-        if not REPORTLAB_AVAILABLE:
-            raise ImportError("reportlab is required for PDF generation. Install with: pip install reportlab")
 
         self.output_dir = output_dir or Path(__file__).parent.parent.parent / "data" / "print"
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -182,3 +178,79 @@ class CustomerOrderPDFGenerator:
 
         logger.info(f"Generated customer report: {filepath}")
         return str(filepath)
+
+# ------------------------------------------------------------------
+# Local manual tests
+# ------------------------------------------------------------------
+import tempfile
+
+if __name__ == "__main__":
+    print("Running local CustomerOrderPDFGenerator tests...")
+
+    # -----------------------------
+    # Setup temp output directory
+    # -----------------------------
+    temp_dir = Path(tempfile.mkdtemp())
+    print(f"Using temp dir: {temp_dir}")
+
+    generator = CustomerOrderPDFGenerator(output_dir=temp_dir)
+
+    # -----------------------------
+    # Mock test data
+    # -----------------------------
+    customer_data = {
+        "customer_id": 1,
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "phone": "123456789",
+        "street": "Main St 1",
+        "city": "Tel Aviv",
+        "state": "IL",
+        "zip_code": "12345",
+    }
+
+    orders_data = [
+        {
+            "order_id": 101,
+            "order_date": "2024-01-01",
+            "order_status": "Completed",
+            "item_count": 3,
+            "total_amount": 150.75,
+        },
+        {
+            "order_id": 102,
+            "order_date": "2024-02-01",
+            "order_status": "Shipped",
+            "item_count": 1,
+            "total_amount": 50.00,
+        },
+    ]
+
+    # -----------------------------
+    # Test: generate PDF
+    # -----------------------------
+    try:
+        pdf_path = generator.generate_customer_report(customer_data, orders_data)
+        print("✅ PDF generated:", pdf_path)
+
+        # Verify file exists
+        path_obj = Path(pdf_path)
+        assert path_obj.exists(), "PDF file was not created"
+        assert path_obj.stat().st_size > 0, "PDF file is empty"
+
+        print("✅ File exists and is non-empty")
+
+    except Exception as e:
+        print("❌ Failed to generate PDF:", e)
+
+    # -----------------------------
+    # Test: empty orders
+    # -----------------------------
+    try:
+        pdf_path = generator.generate_customer_report(customer_data, [])
+        print("✅ PDF generated with empty orders:", pdf_path)
+    except Exception as e:
+        print("❌ Failed on empty orders:", e)
+
+    print("🎉 Local tests completed")

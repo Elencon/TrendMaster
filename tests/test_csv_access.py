@@ -1,4 +1,6 @@
-"""Test CSV file access after moving to CSV subfolder."""
+"""
+Test CSV file access after moving to CSV subfolder.
+"""
 
 import sys
 from pathlib import Path

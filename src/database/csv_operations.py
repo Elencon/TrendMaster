@@ -1,6 +1,8 @@
-"""
+r"""
 CSV import operations for database manager.
 Extracted from db_manager for better modularity.
+C:\Economy\Invest\TrendMaster\src\database\csv_operations.py
+python -m src.database.csv_operations
 """
 
 import logging
@@ -8,8 +10,8 @@ import pandas as pd
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from .utilities import DataUtils, safe_operation
-from .batch_operations import BatchProcessor
+from src.database.utilities import DataUtils, safe_operation
+from src.database.batch_operations import BatchProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +29,11 @@ class CSVImporter:
         pandas_optimizer=None,
         batch_size: int = 1000,
     ) -> None:
-        self.connection_manager = connection_manager
-        self.data_dir = data_dir
-        self.table_columns = table_columns
-        self.pandas_optimizer = pandas_optimizer
-        self.batch_processor = BatchProcessor(connection_manager, batch_size=batch_size)
+        self._connection_manager = connection_manager
+        self._data_dir = data_dir
+        self._table_columns = table_columns
+        self._pandas_optimizer = pandas_optimizer
+        self._batch_processor = BatchProcessor(connection_manager, batch_size=batch_size)
 
     # ------------------------------------------------------------------
     # Path helper
@@ -39,20 +41,16 @@ class CSVImporter:
 
     def _csv_path(self, filename: str) -> Path:
         """Resolve a CSV filename to its full path."""
-        return self.data_dir / self._CSV_SUBDIR / filename
+        return self._data_dir / self._CSV_SUBDIR / filename
 
     # ------------------------------------------------------------------
     # Discovery
     # ------------------------------------------------------------------
 
     def discover_csv_files(self, schema_definitions: Dict[str, str]) -> Dict[str, str]:
-        """Discover available CSV files based on schema definitions.
-
-        Returns:
-            Mapping of table names to CSV filenames.
-        """
+        """Discover available CSV files based on schema definitions."""
         csv_files: Dict[str, str] = {}
-        csv_dir = self.data_dir / self._CSV_SUBDIR
+        csv_dir = self._data_dir / self._CSV_SUBDIR
 
         if not csv_dir.exists():
             logger.warning("CSV directory not found: %s", csv_dir)
@@ -78,11 +76,7 @@ class CSVImporter:
         import_order: Optional[List[str]] = None,
         progress_callback: Optional[Callable] = None,
     ) -> bool:
-        """Import all CSV data respecting foreign-key order.
-
-        Returns:
-            True if every eligible table imported successfully.
-        """
+        """Import all CSV data respecting foreign-key order."""
         default_order = [
             "brands", "categories", "stores", "staffs", "products",
             "stocks", "customers", "orders", "order_items",
@@ -127,11 +121,7 @@ class CSVImporter:
         csv_filename: str,
         progress_callback: Optional[Callable] = None,
     ) -> int:
-        """Import a single CSV file into the specified table.
-
-        Returns:
-            Number of records imported.
-        """
+        """Import a single CSV file into the specified table."""
         csv_path = self._csv_path(csv_filename)
 
         if not csv_path.exists():
@@ -145,14 +135,14 @@ class CSVImporter:
                 return 0
 
             df = DataUtils.clean_dataframe(df)
-            schema = self.table_columns.get(table_name, [])
+            schema = self._table_columns.get(table_name, [])
             records = DataUtils.dataframe_to_records(df, schema)
 
             if not records:
                 logger.warning("No valid records found in %s", csv_filename)
                 return 0
 
-            inserted, failed = self.batch_processor.insert_batch(
+            inserted, failed = self._batch_processor.insert_batch(
                 table_name,
                 records,
                 progress_callback=progress_callback,
@@ -171,11 +161,7 @@ class CSVImporter:
     def validate_csv_file(
         self, csv_filename: str, table_schema: List[str]
     ) -> tuple[bool, List[str]]:
-        """Validate CSV file columns against the expected table schema.
-
-        Returns:
-            ``(is_valid, error_messages)``
-        """
+        """Validate CSV file columns against the expected table schema."""
         csv_path = self._csv_path(csv_filename)
 
         if not csv_path.exists():
@@ -220,13 +206,11 @@ class CSVImporter:
         try:
             info["size_bytes"] = csv_path.stat().st_size
 
-            # Header only — avoids loading the full file
             header_df = pd.read_csv(csv_path, nrows=0)
             info["columns"] = list(header_df.columns)
 
-            # Row count without reading all data into memory
             with csv_path.open("r", encoding="utf-8", errors="replace") as fh:
-                info["row_count"] = max(0, sum(1 for _ in fh) - 1)  # subtract header
+                info["row_count"] = max(0, sum(1 for _ in fh) - 1)
 
         except Exception as e:
             info["errors"].append(f"Analysis failed: {e}")
@@ -238,23 +222,109 @@ class CSVImporter:
     # ------------------------------------------------------------------
 
     def get_import_statistics(self) -> Dict[str, Any]:
-        """Return import statistics from the batch processor."""
-        return self.batch_processor.get_stats()
+        return self._batch_processor.get_stats()
 
     def reset_statistics(self) -> None:
-        """Reset import statistics."""
-        self.batch_processor.reset_stats()
+        self._batch_processor.reset_stats()
 
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
 
     def _read_csv_optimized(self, csv_path: Path) -> Optional[pd.DataFrame]:
-        """Read CSV via the pandas optimizer if available, else plain read."""
+        """Read CSV via optimizer if available."""
         try:
-            if self.pandas_optimizer and hasattr(self.pandas_optimizer, "optimize_csv_reading"):
-                return self.pandas_optimizer.optimize_csv_reading(csv_path, auto_optimize=True)
+            if self._pandas_optimizer and hasattr(self._pandas_optimizer, "optimize_csv_reading"):
+                return self._pandas_optimizer.optimize_csv_reading(csv_path, auto_optimize=True)
             return pd.read_csv(csv_path)
         except Exception as e:
             logger.error("Failed to read %s: %s", csv_path, e)
             return None
+
+
+# ------------------------------------------------------------------
+# Local manual tests
+# ------------------------------------------------------------------
+
+if __name__ == "__main__":
+    import tempfile
+
+    print("Running local CSVImporter tests...")
+
+    # -----------------------------
+    # Setup temp environment
+    # -----------------------------
+    temp_dir = Path(tempfile.mkdtemp())
+    csv_dir = temp_dir / "CSV"
+    csv_dir.mkdir()
+
+    test_csv = csv_dir / "users.csv"
+    test_csv.write_text("id,name\n1,Alice\n2,Bob\n")
+
+    # -----------------------------
+    # Mock dependencies
+    # -----------------------------
+    class MockBatchProcessor:
+        def __init__(self, *args, **kwargs):
+            self._stats = {"inserted": 0}
+
+        def insert_batch(self, table_name, records, **kwargs):
+            print(f"[MockBatch] inserting into {table_name}: {len(records)} records")
+            self._stats["inserted"] += len(records)
+            return len(records), 0
+
+        def get_stats(self):
+            return self._stats
+
+        def reset_stats(self):
+            self._stats = {"inserted": 0}
+
+    class MockConnectionManager:
+        pass
+
+    # Patch BatchProcessor locally
+    CSVImporter._batch_processor = None  # safety
+
+    importer = CSVImporter(
+        connection_manager=MockConnectionManager(),
+        data_dir=temp_dir,
+        table_columns={"users": ["id", "name"]},
+    )
+
+    # Inject mock batch processor
+    importer._batch_processor = MockBatchProcessor()
+
+    # -----------------------------
+    # Test: discover_csv_files
+    # -----------------------------
+    files = importer.discover_csv_files({"users": "schema"})
+    print("Discovered files:", files)
+
+    # -----------------------------
+    # Test: import_csv_file
+    # -----------------------------
+    imported = importer.import_csv_file("users", "users.csv")
+    print("Imported rows:", imported)
+
+    # -----------------------------
+    # Test: validate_csv_file
+    # -----------------------------
+    valid, errors = importer.validate_csv_file("users.csv", ["id", "name"])
+    print("Validation:", valid, errors)
+
+    # -----------------------------
+    # Test: get_csv_info
+    # -----------------------------
+    info = importer.get_csv_info("users.csv")
+    print("CSV info:", info)
+
+    # -----------------------------
+    # Test: statistics
+    # -----------------------------
+    stats = importer.get_import_statistics()
+    print("Stats:", stats)
+
+    importer.reset_statistics()
+    print("Stats after reset:", importer.get_import_statistics())
+
+    print("✅ Local tests completed")
