@@ -421,7 +421,7 @@ class APIClient:
     async def fetch_data_async(self, endpoint_name: str) -> Optional[pd.DataFrame]:
         """
         Fetch data from API endpoint using async client for better performance.
-        
+
         Args:
             endpoint_name: Name of the endpoint to fetch from
 

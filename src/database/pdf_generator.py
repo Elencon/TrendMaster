@@ -9,14 +9,14 @@ from datetime import datetime
 from typing import List, Dict
 import logging
 
-logger = logging.getLogger(__name__)
-
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib.enums import TA_CENTER
+
+logger = logging.getLogger(__name__)
 
 class CustomerOrderPDFGenerator:
     """Generate PDF reports for customer orders"""
@@ -182,9 +182,10 @@ class CustomerOrderPDFGenerator:
 # ------------------------------------------------------------------
 # Local manual tests
 # ------------------------------------------------------------------
-import tempfile
 
 if __name__ == "__main__":
+    import tempfile
+
     print("Running local CustomerOrderPDFGenerator tests...")
 
     # -----------------------------
