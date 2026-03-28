@@ -355,9 +355,9 @@ class DatabaseManager:
             max_memory_mb = 512
 
         self.pandas_optimizer = PandasOptimizer(
-            max_memory_usage_mb=max_memory_mb,
+            max_memory_mb=max_memory_mb,
             chunk_size=chunk_size,
-            optimize_dtypes=True
+            auto_optimize=True
         )
 
         self.data_validator = DataValidator()
