@@ -38,9 +38,46 @@ _logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-_SEPARATOR     = "=" * 60
+_SEPARATOR        = "=" * 60
 _MIN_PASSWORD_LEN = 6
-_DEFAULT_ADMIN = "admin"
+_DEFAULT_ADMIN    = "admin"
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _dict_cursor(connection):
+    """
+    Return a dictionary-style cursor regardless of MySQL driver.
+
+    Supports:
+    - PyMySQL
+    - MySQLdb
+    - MariaDB connector
+    - mysql-connector-python (fallback)
+    """
+    try:
+        # PyMySQL / MySQLdb
+        from pymysql.cursors import DictCursor
+        return connection.cursor(DictCursor)
+    except Exception:
+        pass
+
+    try:
+        # MariaDB connector (newer versions)
+        return connection.cursor(named_tuple=False)
+    except Exception:
+        pass
+
+    try:
+        # mysql-connector-python
+        return connection.cursor(dictionary=True)
+    except Exception:
+        pass
+
+    # Fallback: normal cursor (not ideal but prevents crashes)
+    return connection.cursor()
+
 
 # ---------------------------------------------------------------------------
 # Steps
@@ -55,7 +92,12 @@ def _connect(db_config: dict) -> DatabaseConnection:
 
 
 def _ensure_users_table(db_manager: DatabaseConnection) -> None:
-    """Create the users table if it does not exist, or raise."""
+    """
+    Create the users table if it does not exist.
+
+    With the updated SchemaManager, create_table() returns True even if the
+    table already exists, so failure here means a real error.
+    """
     schema_manager = SchemaManager(db_manager)
     if not schema_manager.create_table("users"):
         raise RuntimeError("Failed to ensure the users table exists.")
@@ -85,7 +127,7 @@ def _resolve_credentials() -> tuple[str, str]:
 
 def _user_exists(connection, username: str) -> bool:
     """Return True if *username* already exists in the users table."""
-    cursor = connection.cursor(dictionary=True)
+    cursor = _dict_cursor(connection)
     try:
         cursor.execute(
             "SELECT user_id FROM users WHERE username = %s", (username,)

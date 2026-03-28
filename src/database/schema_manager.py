@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\schema_manager.py
 Compact schema manager - handles table schema definitions and creation using utilities.
 """
 
@@ -229,7 +230,8 @@ class SchemaManager:
     """Manages database table schemas using data-driven definitions."""
 
     def __init__(self, db_connection):
-        self.db_connection = db_connection
+        # Protected attribute: internal use only
+        self._db_connection = db_connection
 
     # ------------------------------------------------------------------
     # Schema introspection
@@ -255,7 +257,8 @@ class SchemaManager:
         """
         Create *table_name* in the database.
 
-        Returns True on success, False otherwise.
+        Returns True on success (including if the table already exists),
+        False only on real errors.
         """
         schema = self.get_schema(table_name)
         if not schema:
@@ -263,16 +266,30 @@ class SchemaManager:
             return False
 
         try:
-            with self.db_connection.get_connection() as conn:
+            with self._db_connection.get_connection() as conn:
                 if conn is None:
                     logger.error("Database connection failed")
                     return False
 
                 with conn.cursor() as cursor:
-                    cursor.execute(schema)
-                conn.commit()
-                logger.info("Table '%s' created successfully", table_name)
-                return True
+                    try:
+                        cursor.execute(schema)
+                        conn.commit()
+                        logger.info("Table '%s' created successfully", table_name)
+                        return True
+
+                    except Exception as exc:
+                        msg = str(exc).lower()
+
+                        # MySQL / MariaDB variations
+                        if "already exists" in msg or "exists" in msg:
+                            logger.info(
+                                "Table '%s' already exists — skipping creation",
+                                table_name,
+                            )
+                            return True
+
+                        raise  # real error
 
         except Exception as exc:
             logger.error("Error creating table %s: %s", table_name, exc)
@@ -289,7 +306,14 @@ class SchemaManager:
             True only if every table was created successfully.
         """
         order = table_order or DEFAULT_TABLE_ORDER
-        successes = sum(1 for t in order if self.create_table(t))
+        successes = 0
+
+        for table in order:
+            if self.create_table(table):
+                successes += 1
+            else:
+                logger.error("Failed to create table '%s'", table)
+
         logger.info("Created %d/%d tables", successes, len(order))
         return successes == len(order)
 
@@ -300,14 +324,17 @@ class SchemaManager:
     def table_exists(self, table_name: str) -> bool:
         """Return True if *table_name* exists in the connected database."""
         try:
-            with self.db_connection.get_connection() as conn:
+            with self._db_connection.get_connection() as conn:
                 if conn is None:
                     return False
 
                 with conn.cursor() as cursor:
                     cursor.execute(
-                        "SELECT 1 FROM information_schema.tables "
-                        "WHERE table_name = %s",
+                        """
+                        SELECT 1
+                        FROM information_schema.tables
+                        WHERE table_name = %s
+                        """,
                         (table_name,),
                     )
                     return cursor.fetchone() is not None
