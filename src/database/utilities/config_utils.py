@@ -7,7 +7,7 @@ from typing import Any
 
 from dotenv import dotenv_values
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class ConfigUtils:
@@ -65,7 +65,7 @@ class ConfigUtils:
                 try:
                     config[config_key] = int(value)
                 except ValueError:
-                    logger.warning("Invalid port value in %s: %s", env_key, value)
+                    _logger.warning("Invalid port value in %s: %s", env_key, value)
             else:
                 config[config_key] = value
 
@@ -101,7 +101,7 @@ class ConfigUtils:
             errors.append("Database name cannot be empty")
 
         if config.get("password") == "":
-            logger.warning("Database password is empty — this may be insecure")
+            _logger.warning("Database password is empty — this may be insecure")
 
         return len(errors) == 0, errors
 

@@ -19,10 +19,10 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from database.connection_manager import DatabaseConnection
-from database.schema_manager import SchemaManager
-from auth.user_manager import UserManager
-from config import DatabaseConfig
+from src.database.connection_manager import DatabaseConnection
+from src.database.schema_manager import SchemaManager
+from src.auth.user_manager import UserManager
+from src.config import DatabaseConfig
 
 # ---------------------------------------------------------------------------
 # Logging

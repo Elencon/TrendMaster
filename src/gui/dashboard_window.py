@@ -11,7 +11,7 @@ current_dir = Path(__file__).parent.parent
 if str(current_dir) not in sys.path:
     sys.path.insert(0, str(current_dir))
 
-from dashboard_window import main
+from src.guidashboard_window import main
 
 
 if __name__ == "__main__":

@@ -2,8 +2,6 @@
 Create User Widget - Form for creating new user accounts
 """
 
-import sys
-from pathlib import Path
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QLabel,
     QLineEdit, QPushButton, QComboBox, QGroupBox, QTextEdit,
@@ -12,268 +10,186 @@ from PySide6.QtCore import Qt, Signal
 
 from auth.password_policy import PasswordPolicyValidator
 
-# Add src to path for password policy
-gui_path = Path(__file__).parent.parent.parent
-src_path = gui_path / "src"
-sys.path.insert(0, str(src_path))
 
 class CreateUserWidget(QWidget):
-    """Widget for creating new user accounts"""
+    """Widget for creating new user accounts."""
 
-    user_created = Signal(str, str, str)  # username, password, role
+    user_created = Signal(dict)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.password_validator = PasswordPolicyValidator()
+
+        self._password_validator = PasswordPolicyValidator()
         self._setup_ui()
 
-        # Connect password field to strength checker
-        self.password_input.textChanged.connect(self._update_password_strength)
+        self._password_input.textChanged.connect(self._update_password_strength)
+
+    # ================= UI =================
 
     def _setup_ui(self):
-        """Set up the user interface"""
         layout = QVBoxLayout(self)
 
-        # Title
         title = QLabel("Create New User Account")
         title.setObjectName("section_title")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
 
-        # Form
         self._create_form(layout)
-
-        # Password requirements
         self._create_password_requirements(layout)
-
-        # Role descriptions
         self._create_role_descriptions(layout)
 
         layout.addStretch()
-
-        # Create button
         self._create_button(layout)
 
     def _create_form(self, layout):
-        """Create the user input form"""
         form_group = QGroupBox("User Information")
-        form_group.setObjectName("form_group")
         form_layout = QFormLayout()
 
-        # Set consistent width for all inputs
         input_width = 300
 
-        self.username_input = QLineEdit()
-        self.username_input.setObjectName("username_input")
-        self.username_input.setPlaceholderText("Enter username")
-        self.username_input.setMaximumWidth(input_width)
+        self._username_input = QLineEdit()
+        self._username_input.setPlaceholderText("Enter username")
+        self._username_input.setMaximumWidth(input_width)
 
-        # Password field with eye button in horizontal layout
-        password_layout = QHBoxLayout()
-        self.password_input = QLineEdit()
-        self.password_input.setObjectName("password_input")
-        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_input.setPlaceholderText("Enter strong password")
-        self.password_input.setMaximumWidth(input_width - 30)
+        self._password_input = QLineEdit()
+        self._password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self._password_input.setPlaceholderText("Enter strong password")
+        self._password_input.setMaximumWidth(input_width)
 
-        self.password_toggle_btn = QPushButton("👁")
-        self.password_toggle_btn.setObjectName("password_toggle_btn")
-        self.password_toggle_btn.setFixedSize(30, 25)
-        self.password_toggle_btn.setToolTip("Hold to show password")
-        self.password_toggle_btn.pressed.connect(lambda: self._show_password(True))
-        self.password_toggle_btn.released.connect(lambda: self._show_password(False))
+        self._confirm_password_input = QLineEdit()
+        self._confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self._confirm_password_input.setPlaceholderText("Confirm password")
+        self._confirm_password_input.setMaximumWidth(input_width)
 
-        password_layout.addWidget(self.password_input)
-        password_layout.addWidget(self.password_toggle_btn)
-        password_layout.addStretch()
+        self._strength_label = QLabel("Password Strength: Not entered")
 
-        # Confirm password field with eye button in horizontal layout
-        confirm_layout = QHBoxLayout()
-        self.confirm_password_input = QLineEdit()
-        self.confirm_password_input.setObjectName("confirm_password_input")
-        self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.confirm_password_input.setPlaceholderText("Confirm password")
-        self.confirm_password_input.setMaximumWidth(input_width - 30)
+        self._role_combo = QComboBox()
+        self._role_combo.addItems(["Employee", "Manager", "Administrator"])
+        self._role_combo.setMaximumWidth(input_width)
 
-        self.confirm_toggle_btn = QPushButton("👁")
-        self.confirm_toggle_btn.setObjectName("confirm_toggle_btn")
-        self.confirm_toggle_btn.setFixedSize(30, 25)
-        self.confirm_toggle_btn.setToolTip("Hold to show password")
-        self.confirm_toggle_btn.pressed.connect(lambda: self._show_confirm(True))
-        self.confirm_toggle_btn.released.connect(lambda: self._show_confirm(False))
+        self._staff_id_input = QLineEdit()
+        self._staff_id_input.setPlaceholderText("Optional: link to staff member")
+        self._staff_id_input.setMaximumWidth(input_width)
 
-        confirm_layout.addWidget(self.confirm_password_input)
-        confirm_layout.addWidget(self.confirm_toggle_btn)
-        confirm_layout.addStretch()
-
-        # Password strength indicator
-        self.strength_label = QLabel("Password Strength: Not entered")
-        self.strength_label.setObjectName("strength_label")
-
-        self.role_combo = QComboBox()
-        self.role_combo.setObjectName("role_combo")
-        self.role_combo.addItems(["Employee", "Manager", "Administrator"])
-        self.role_combo.setMaximumWidth(input_width)
-
-        self.staff_id_input = QLineEdit()
-        self.staff_id_input.setObjectName("staff_id_input")
-        self.staff_id_input.setPlaceholderText("Optional: link to staff member")
-        self.staff_id_input.setMaximumWidth(input_width)
-
-        # Add rows to form
-        form_layout.addRow("Username:", self.username_input)
-        form_layout.addRow("Password:", password_layout)
-        form_layout.addRow("", self.strength_label)
-        form_layout.addRow("Confirm Password:", confirm_layout)
-        form_layout.addRow("Role:", self.role_combo)
-        form_layout.addRow("Staff ID:", self.staff_id_input)
+        form_layout.addRow("Username:", self._username_input)
+        form_layout.addRow("Password:", self._password_input)
+        form_layout.addRow("", self._strength_label)
+        form_layout.addRow("Confirm Password:", self._confirm_password_input)
+        form_layout.addRow("Role:", self._role_combo)
+        form_layout.addRow("Staff ID:", self._staff_id_input)
 
         form_group.setLayout(form_layout)
         layout.addWidget(form_group)
 
     def _create_password_requirements(self, layout):
-        """Create password requirements display"""
-        req_group = QGroupBox("Password Requirements")
-        req_group.setObjectName("password_req_group")
-        req_layout = QVBoxLayout()
+        group = QGroupBox("Password Requirements")
+        box = QVBoxLayout()
 
-        req_text = QTextEdit()
-        req_text.setObjectName("password_requirements")
-        req_text.setReadOnly(True)
-        req_text.setMaximumHeight(120)
-        req_text.setPlainText(self.password_validator.get_requirements_text())
+        text = QTextEdit()
+        text.setReadOnly(True)
+        text.setMaximumHeight(120)
+        text.setPlainText(self._password_validator.get_requirements_text())
 
-        req_layout.addWidget(req_text)
-        req_group.setLayout(req_layout)
-        layout.addWidget(req_group)
+        box.addWidget(text)
+        group.setLayout(box)
+        layout.addWidget(group)
 
     def _create_role_descriptions(self, layout):
-        """Create role permissions description"""
-        desc_group = QGroupBox("Role Permissions")
-        desc_group.setObjectName("role_desc_group")
-        desc_layout = QVBoxLayout()
+        group = QGroupBox("Role Permissions")
+        box = QVBoxLayout()
 
         roles = [
             "• Employee: View and export data",
             "• Manager: View, export, import, and modify data",
-            "• Administrator: Full system access including user management"
+            "• Administrator: Full system access including user management",
         ]
 
-        for role_text in roles:
-            label = QLabel(role_text)
-            label.setObjectName("role_description")
-            desc_layout.addWidget(label)
+        for r in roles:
+            box.addWidget(QLabel(r))
 
-        desc_group.setLayout(desc_layout)
-        layout.addWidget(desc_group)
+        group.setLayout(box)
+        layout.addWidget(group)
 
     def _create_button(self, layout):
-        """Create the submit button"""
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
 
-        self.create_btn = QPushButton("Create User")
-        self.create_btn.setObjectName("create_user_btn")
-        self.create_btn.clicked.connect(self._on_create_clicked)
-        btn_layout.addWidget(self.create_btn)
+        self._create_btn = QPushButton("Create User")
+        self._create_btn.clicked.connect(self._on_create_clicked)
 
+        btn_layout.addWidget(self._create_btn)
         layout.addLayout(btn_layout)
 
+    # ================= Logic =================
+
     def _on_create_clicked(self):
-        """Emit signal with form data"""
-        username = self.username_input.text().strip()
-        password = self.password_input.text()
-        confirm = self.confirm_password_input.text()
-        role = self.role_combo.currentText()
-        staff_id = self.staff_id_input.text().strip()
+        data = self.get_form_data()
 
-        # Validation is done in parent dialog
-        self.user_created.emit(username, password, confirm)
+        if not data["username"]:
+            self._show_error("Username cannot be empty")
+            return
 
-    def get_form_data(self):
-        """Get all form data"""
+        if not data["password"]:
+            self._show_error("Password cannot be empty")
+            return
+
+        if data["password"] != data["confirm_password"]:
+            self._show_error("Passwords do not match")
+            return
+
+        is_valid, errors = self._password_validator.validate(data["password"])
+        if not is_valid:
+            self._show_error("\n".join(errors))
+            return
+
+        self.user_created.emit(data)
+
+    def get_form_data(self) -> dict:
         return {
-            'username': self.username_input.text().strip(),
-            'password': self.password_input.text(),
-            'confirm_password': self.confirm_password_input.text(),
-            'role': self.role_combo.currentText(),
-            'staff_id': self.staff_id_input.text().strip()
+            "username": self._username_input.text().strip(),
+            "password": self._password_input.text(),
+            "confirm_password": self._confirm_password_input.text(),
+            "role": self._role_combo.currentText(),
+            "staff_id": self._staff_id_input.text().strip(),
         }
 
     def clear_form(self):
-        """Clear all form inputs"""
-        self.username_input.clear()
-        self.password_input.clear()
-        self.confirm_password_input.clear()
-        self.staff_id_input.clear()
-        self.role_combo.setCurrentIndex(0)
-        self.strength_label.setText("Password Strength: Not entered")
-        self.strength_label.setStyleSheet("")
+        self._username_input.clear()
+        self._password_input.clear()
+        self._confirm_password_input.clear()
+        self._staff_id_input.clear()
+        self._role_combo.setCurrentIndex(0)
+
+        self._strength_label.setText("Password Strength: Not entered")
+        self._strength_label.setStyleSheet("")
 
     def _update_password_strength(self, password):
-        """Update password strength indicator"""
         if not password:
-            self.strength_label.setText("Password Strength: Not entered")
-            self.strength_label.setStyleSheet("")
+            self._strength_label.setText("Password Strength: Not entered")
+            self._strength_label.setStyleSheet("")
             return
 
-        # Calculate strength
-        strength_label, strength_score = self.password_validator.calculate_strength(password)
+        strength_label, strength_score = self._password_validator.calculate_strength(password)
+        is_valid, _ = self._password_validator.validate(password)
 
-        # Validate against policy
-        is_valid, errors = self.password_validator.validate(password)
-
-        # Set color based on strength
         if strength_score >= 80:
-            color = "#27ae60"  # Green
+            color = "#27ae60"
         elif strength_score >= 60:
-            color = "#2ecc71"  # Light green
+            color = "#2ecc71"
         elif strength_score >= 40:
-            color = "#f39c12"  # Orange
+            color = "#f39c12"
         elif strength_score >= 20:
-            color = "#e67e22"  # Dark orange
+            color = "#e67e22"
         else:
-            color = "#e74c3c"  # Red
+            color = "#e74c3c"
 
-        # Show validation status
-        if is_valid:
-            status = "✓ Valid"
-        else:
-            status = "✗ Does not meet requirements"
+        status = "✓ Valid" if is_valid else "✗ Does not meet requirements"
 
-        self.strength_label.setText(f"Password Strength: {strength_label} ({strength_score}%) - {status}")
-        self.strength_label.setStyleSheet(f"color: {color}; font-weight: bold;")
+        self._strength_label.setText(
+            f"Password Strength: {strength_label} ({strength_score}%) - {status}"
+        )
+        self._strength_label.setStyleSheet(f"color: {color}; font-weight: bold;")
 
-    def validate_password(self):
-        """
-        Validate password against policy
-
-        Returns:
-            Tuple of (is_valid, error_message)
-        """
-        password = self.password_input.text()
-
-        if not password:
-            return False, "Password cannot be empty"
-
-        is_valid, errors = self.password_validator.validate(password)
-
-        if not is_valid:
-            error_msg = "Password does not meet requirements:\n\n" + "\n".join(f"• {err}" for err in errors)
-            return False, error_msg
-
-        return True, ""
-
-    def _show_password(self, show: bool):
-        """Show/hide password while button is held"""
-        if show:
-            self.password_input.setEchoMode(QLineEdit.EchoMode.Normal)
-        else:
-            self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-
-    def _show_confirm(self, show: bool):
-        """Show/hide confirm password while button is held"""
-        if show:
-            self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Normal)
-        else:
-            self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
+    def _show_error(self, message: str):
+        self._strength_label.setText(f"Error: {message}")
+        self._strength_label.setStyleSheet("color: red; font-weight: bold;")

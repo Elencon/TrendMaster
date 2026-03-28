@@ -6,11 +6,7 @@ Abstract base for all theme implementations
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
-try:
-    from qt_material import apply_stylesheet
-    QT_MATERIAL_AVAILABLE = True
-except ImportError:
-    QT_MATERIAL_AVAILABLE = False
+from qt_material import apply_stylesheet
 
 
 class BaseTheme(ABC):
@@ -18,7 +14,7 @@ class BaseTheme(ABC):
 
     def __init__(self, name: str):
         self.name = name
-        self.qt_material_available = QT_MATERIAL_AVAILABLE
+        self.qt_material_available = True
 
     @abstractmethod
     def get_qt_material_theme(self) -> str:

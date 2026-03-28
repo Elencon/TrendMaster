@@ -1,245 +1,192 @@
 """
-Two-Factor Authentication Setup Dialog
-Allows users to enable/disable 2FA with QR code scanning
+Two-Factor Authentication Verification Dialog
+Shown after password login to verify TOTP code
 """
 
-import sys
-from pathlib import Path
-
-# Add src to path
-gui_path = Path(__file__).parent.parent
-src_path = gui_path / "src"
-sys.path.insert(0, str(src_path))
-
+import logging
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QLineEdit, QTextEdit, QGroupBox, QMessageBox
+    QLineEdit, QMessageBox, QInputDialog
 )
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap, QImage
 
 from auth.two_factor_auth import TwoFactorAuth
-import logging
 
 logger = logging.getLogger(__name__)
 
 
-class TwoFactorSetupDialog(QDialog):
-    """Dialog for setting up two-factor authentication."""
+# ---------------------------------------------------------
+# Centralized style constants
+# ---------------------------------------------------------
+TITLE_STYLE = "font-size: 14pt; font-weight: bold; color: #0d6efd;"
+CODE_STYLE = "font-size: 16pt; font-family: monospace;"
+BACKUP_HINT_STYLE = "color: #666; font-style: italic;"
 
-    setup_completed = Signal(bool)  # Emits True if 2FA was enabled
+
+class TwoFactorVerifyDialog(QDialog):
+    """Dialog for verifying 2FA code during login."""
+
+    verification_successful = Signal()
 
     def __init__(self, user_id: int, username: str, db_connection, parent=None):
         super().__init__(parent)
-        self.user_id = user_id
-        self.username = username
-        self.db_connection = db_connection
-        self.two_factor = TwoFactorAuth(db_connection)
-        self.secret = None
-        self.backup_codes = None
 
-        self.setWindowTitle("Two-Factor Authentication Setup")
-        self.setMinimumWidth(500)
+        # Protected internal state
+        self._user_id = user_id
+        self._username = username
+        self._db_connection = db_connection
+        self._two_factor = TwoFactorAuth(db_connection)
+
+        self.setWindowTitle("Two-Factor Authentication")
+        self.setMinimumWidth(400)
         self.setModal(True)
 
         self._setup_ui()
-        self._check_2fa_status()
 
+    # ---------------------------------------------------------
+    # UI Setup
+    # ---------------------------------------------------------
     def _setup_ui(self):
-        """Set up the user interface."""
         layout = QVBoxLayout(self)
 
         # Title
-        title = QLabel("Two-Factor Authentication (2FA)")
-        title.setObjectName("section_title")
-        title.setStyleSheet("font-size: 16pt; font-weight: bold; color: #0d6efd;")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title = QLabel("Two-Factor Authentication Required")
+        title.setStyleSheet(TITLE_STYLE)
+        title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
 
-        # Status group
-        self.status_group = QGroupBox("Current Status")
-        status_layout = QVBoxLayout()
+        layout.addSpacing(20)
 
-        self.status_label = QLabel("Checking status...")
-        self.status_label.setWordWrap(True)
-        status_layout.addWidget(self.status_label)
-
-        self.status_group.setLayout(status_layout)
-        layout.addWidget(self.status_group)
-
-        # Setup group (shown when enabling 2FA)
-        self.setup_group = QGroupBox("Enable Two-Factor Authentication")
-        setup_layout = QVBoxLayout()
-
-        info_label = QLabel(
-            "Scan this QR code with your authenticator app:\n"
-            "• Google Authenticator\n"
-            "• Microsoft Authenticator\n"
-            "• Authy\n"
-            "• Or any TOTP-compatible app"
+        # Instructions
+        info = QLabel(
+            f"Enter the 6-digit verification code from your authenticator app.\n\n"
+            f"Username: {self._username}"
         )
-        info_label.setWordWrap(True)
-        setup_layout.addWidget(info_label)
+        info.setWordWrap(True)
+        info.setAlignment(Qt.AlignCenter)
+        layout.addWidget(info)
 
-        # QR code display
-        self.qr_label = QLabel()
-        self.qr_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.qr_label.setMinimumSize(250, 250)
-        self.qr_label.setStyleSheet("border: 1px solid #ccc; background-color: white;")
-        setup_layout.addWidget(self.qr_label)
+        layout.addSpacing(20)
 
-        # Verification code input
-        verify_layout = QHBoxLayout()
-        verify_layout.addWidget(QLabel("Enter verification code:"))
-        self.code_input = QLineEdit()
-        self.code_input.setPlaceholderText("6-digit code")
-        self.code_input.setMaxLength(6)
-        self.code_input.setMaximumWidth(150)
-        verify_layout.addWidget(self.code_input)
-        verify_layout.addStretch()
-        setup_layout.addLayout(verify_layout)
+        # Code input
+        code_layout = QHBoxLayout()
+        code_layout.addStretch()
 
-        # Backup codes display
-        backup_label = QLabel("Backup Codes (save these in a safe place):")
-        backup_label.setStyleSheet("font-weight: bold; margin-top: 10px;")
-        setup_layout.addWidget(backup_label)
+        code_label = QLabel("Verification Code:")
+        code_label.setStyleSheet("font-weight: bold;")
+        code_layout.addWidget(code_label)
 
-        self.backup_codes_text = QTextEdit()
-        self.backup_codes_text.setReadOnly(True)
-        self.backup_codes_text.setMaximumHeight(120)
-        self.backup_codes_text.setStyleSheet("font-family: monospace; background-color: #f8f9fa;")
-        setup_layout.addWidget(self.backup_codes_text)
+        self._code_input = QLineEdit()
+        self._code_input.setPlaceholderText("000000")
+        self._code_input.setMaxLength(6)
+        self._code_input.setMinimumWidth(120)
+        self._code_input.setAlignment(Qt.AlignCenter)
+        self._code_input.setStyleSheet(CODE_STYLE)
+        self._code_input.returnPressed.connect(self._verify_code)
+        code_layout.addWidget(self._code_input)
 
-        self.setup_group.setLayout(setup_layout)
-        self.setup_group.setVisible(False)
-        layout.addWidget(self.setup_group)
+        code_layout.addStretch()
+        layout.addLayout(code_layout)
+
+        layout.addSpacing(20)
+
+        # Backup code option
+        backup_label = QLabel("Lost your device? Use a backup code instead.")
+        backup_label.setStyleSheet(BACKUP_HINT_STYLE)
+        backup_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(backup_label)
+
+        self._use_backup_btn = QPushButton("Use Backup Code")
+        self._use_backup_btn.clicked.connect(self._use_backup_code)
+        layout.addWidget(self._use_backup_btn)
+
+        layout.addSpacing(20)
 
         # Buttons
         button_layout = QHBoxLayout()
 
-        self.enable_btn = QPushButton("Enable 2FA")
-        self.enable_btn.clicked.connect(self._start_2fa_setup)
-        button_layout.addWidget(self.enable_btn)
+        self._verify_btn = QPushButton("Verify")
+        self._verify_btn.clicked.connect(self._verify_code)
+        self._verify_btn.setDefault(True)
+        button_layout.addWidget(self._verify_btn)
 
-        self.disable_btn = QPushButton("Disable 2FA")
-        self.disable_btn.clicked.connect(self._disable_2fa)
-        button_layout.addWidget(self.disable_btn)
-
-        self.verify_btn = QPushButton("Verify & Complete Setup")
-        self.verify_btn.clicked.connect(self._verify_and_enable)
-        self.verify_btn.setVisible(False)
-        button_layout.addWidget(self.verify_btn)
-
-        button_layout.addStretch()
-
-        self.close_btn = QPushButton("Close")
-        self.close_btn.clicked.connect(self.accept)
-        button_layout.addWidget(self.close_btn)
+        self._cancel_btn = QPushButton("Cancel")
+        self._cancel_btn.clicked.connect(self.reject)
+        button_layout.addWidget(self._cancel_btn)
 
         layout.addLayout(button_layout)
 
-    def _check_2fa_status(self):
-        """Check if 2FA is currently enabled."""
-        is_enabled = self.two_factor.is_2fa_enabled(self.user_id)
+        # Focus on code input
+        self._code_input.setFocus()
 
-        if is_enabled:
-            self.status_label.setText("✅ Two-Factor Authentication is ENABLED")
-            self.status_label.setStyleSheet("color: green; font-weight: bold;")
-            self.enable_btn.setEnabled(False)
-            self.disable_btn.setEnabled(True)
-        else:
-            self.status_label.setText("❌ Two-Factor Authentication is DISABLED")
-            self.status_label.setStyleSheet("color: #666; font-weight: bold;")
-            self.enable_btn.setEnabled(True)
-            self.disable_btn.setEnabled(False)
+    # ---------------------------------------------------------
+    # Verification Logic
+    # ---------------------------------------------------------
+    def _verify_code(self):
+        code = self._code_input.text().strip()
 
-    def _start_2fa_setup(self):
-        """Start the 2FA setup process."""
-        try:
-            # Generate secret and QR code
-            self.secret = self.two_factor.generate_secret()
-            qr_bytes = self.two_factor.generate_qr_code(self.username, self.secret)
-
-            # Display QR code
-            qimage = QImage.fromData(qr_bytes)
-            pixmap = QPixmap.fromImage(qimage)
-            scaled_pixmap = pixmap.scaled(250, 250, Qt.AspectRatioMode.KeepAspectRatio)
-            self.qr_label.setPixmap(scaled_pixmap)
-
-            # Generate backup codes
-            self.backup_codes = self.two_factor.generate_backup_codes()
-            backup_text = "\n".join([f"{i+1}. {code}" for i, code in enumerate(self.backup_codes)])
-            self.backup_codes_text.setPlainText(backup_text)
-
-            # Show setup UI
-            self.setup_group.setVisible(True)
-            self.enable_btn.setVisible(False)
-            self.verify_btn.setVisible(True)
-
-            logger.info(f"2FA setup started for user: {self.username}")
-
-        except Exception as e:
-            logger.error(f"Error starting 2FA setup: {e}")
-            QMessageBox.critical(self, "Error", f"Failed to start 2FA setup:\n{str(e)}")
-
-    def _verify_and_enable(self):
-        """Verify the code and enable 2FA."""
-        code = self.code_input.text().strip()
-
-        if not code or len(code) != 6:
-            QMessageBox.warning(self, "Invalid Code", "Please enter a 6-digit verification code.")
+        if len(code) != 6:
+            self._warn("Please enter a 6-digit code.")
             return
 
-        # Verify the code
-        if not self.two_factor.verify_code(self.secret, code):
-            QMessageBox.warning(
-                self,
-                "Verification Failed",
-                "The code you entered is incorrect. Please try again."
-            )
+        secret = self._two_factor.get_user_secret(self._user_id)
+        if not secret:
+            self._error("2FA configuration error. Please contact administrator.")
+            self.reject()
             return
 
-        # Enable 2FA in database
-        if self.two_factor.enable_2fa(self.user_id, self.secret, self.backup_codes):
-            QMessageBox.information(
-                self,
-                "Success",
-                "Two-Factor Authentication has been enabled successfully!\n\n"
-                "⚠️ IMPORTANT: Save your backup codes in a secure location.\n"
-                "You'll need them if you lose access to your authenticator app."
-            )
+        if not self._two_factor.verify_code(secret, code):
+            self._warn("Incorrect verification code. Please try again.")
+            self._code_input.clear()
+            self._code_input.setFocus()
+            return
 
-            self._check_2fa_status()
-            self.setup_group.setVisible(False)
-            self.enable_btn.setVisible(True)
-            self.verify_btn.setVisible(False)
-            self.setup_completed.emit(True)
+        logger.info(f"2FA verification successful for user: {self._username}")
+        self.verification_successful.emit()
+        self.accept()
 
-            logger.info(f"2FA enabled successfully for user: {self.username}")
-        else:
-            QMessageBox.critical(self, "Error", "Failed to enable 2FA. Please try again.")
+    # ---------------------------------------------------------
+    # Backup Code Logic
+    # ---------------------------------------------------------
+    def _use_backup_code(self):
+        backup_code, ok = self._prompt_for_backup_code()
 
-    def _disable_2fa(self):
-        """Disable two-factor authentication."""
-        reply = QMessageBox.question(
+        if not ok or not backup_code:
+            return
+
+        if not self._two_factor.verify_backup_code(self._user_id, backup_code):
+            self._warn("Invalid or already used backup code.")
+            return
+
+        remaining = len(self._two_factor.get_remaining_backup_codes(self._user_id))
+
+        QMessageBox.information(
             self,
-            "Disable 2FA",
-            "Are you sure you want to disable Two-Factor Authentication?\n\n"
-            "This will make your account less secure.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            "Backup Code Accepted",
+            f"Backup code verified successfully!\n\n"
+            f"You have {remaining} backup codes remaining.\n"
+            f"Consider regenerating codes if you're running low."
         )
 
-        if reply == QMessageBox.StandardButton.Yes:
-            if self.two_factor.disable_2fa(self.user_id):
-                QMessageBox.information(
-                    self,
-                    "Success",
-                    "Two-Factor Authentication has been disabled."
-                )
+        logger.info(f"Backup code used for user: {self._username}")
+        self.verification_successful.emit()
+        self.accept()
 
-                self._check_2fa_status()
-                self.setup_completed.emit(False)
+    def _prompt_for_backup_code(self):
+        code, ok = QInputDialog.getText(
+            self,
+            "Enter Backup Code",
+            "Backup Code (8 characters):",
+            QLineEdit.Normal,
+            ""
+        )
+        return code.strip().upper(), ok
 
-                logger.info(f"2FA disabled for user: {self.username}")
-            else:
-                QMessageBox.critical(self, "Error", "Failed to disable 2FA. Please try again.")
+    # ---------------------------------------------------------
+    # Protected helpers
+    # ---------------------------------------------------------
+    def _error(self, message: str):
+        QMessageBox.critical(self, "Error", message)
+
+    def _warn(self, message: str):
+        QMessageBox.warning(self, "Warning", message)

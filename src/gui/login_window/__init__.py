@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\gui\login_window\__init__.py
 Login window module for user authentication.
 """
 
