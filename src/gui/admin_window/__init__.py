@@ -1,13 +1,20 @@
-"""Admin window module with component imports."""
+"""
+Admin window module with component imports.
+"""
 
 import sys
+import logging
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from qt_material import apply_stylesheet  # imported but intentionally unused
+# Imported but intentionally unused; ETLMainWindow handles theme selection.
+from qt_material import apply_stylesheet  # noqa: F401
+
 from .worker import ETLWorker
 from .window import ETLMainWindow
 
 __all__ = ["ETLWorker", "ETLMainWindow", "main"]
+
+logger = logging.getLogger(__name__)
 
 
 def main() -> int:
@@ -19,15 +26,17 @@ def main() -> int:
     app.setApplicationVersion("2.0")
     app.setStyle("Fusion")
 
-    # Theme is intentionally not applied here.
-    # ETLMainWindow handles theme selection to avoid double-application.
-
     try:
         window = ETLMainWindow()
         window.show()
         return app.exec()
+
     except Exception as e:
-        error_msg = f"Failed to start application:\n{e}"
-        print(f"Fatal error: {e}")
-        QMessageBox.critical(None, "Fatal Error", error_msg)
+        logger.exception("Fatal error during application startup")
+        QMessageBox.critical(
+            None,
+            "Fatal Error",
+            f"Failed to start application:\n{e}"
+        )
         return 1
+
