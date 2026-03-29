@@ -16,18 +16,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 SRC_PATH = PROJECT_ROOT / 'src'
 sys.path.insert(0, str(SRC_PATH))
 
-try:
-    from src.database.connection_manager import DatabaseConnection
-    from src.database import config
-except ImportError:
-    # Fallback for different directory structures if needed
-    try:
-        from database.connection_manager import DatabaseConnection
-        from database import config
-    except ImportError as e:
-        print(f"Error: Could not import connection modules: {e}")
-        sys.exit(1)
-
+from src.database.connection_manager import DatabaseConnection
+from src.database import config
 
 def fetch_live_schema():
     """Fetch all table structures and columns from the live database."""

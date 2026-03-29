@@ -7,14 +7,8 @@ from PySide6.QtCore import Signal
 
 from ..base_worker import BaseWorker
 import pymysql.cursors
-
-# Lazy import - only load DatabaseManager when actually needed
-MODULES_AVAILABLE = False
-try:
-    import src.database.db_manager
-    MODULES_AVAILABLE = True
-except ImportError:
-    pass
+from src.database.db_manager import DatabaseManager
+from src.database.pdf_generator import CustomerOrderPDFGenerator
 
 
 class DashboardWorker(BaseWorker):
@@ -42,18 +36,10 @@ class DashboardWorker(BaseWorker):
 
     def run(self):
         """Main execution method with module availability check"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
-
         super().run()
 
     def _fetch_tables(self):
         """Fetch list of database tables"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
-
         db_manager = None
         try:
             # Lazy import - only load when actually executing
@@ -91,10 +77,6 @@ class DashboardWorker(BaseWorker):
 
     def _fetch_sales(self):
         """Fetch total sales data"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
-
         db_manager = None
         try:
             from src.database.db_manager import DatabaseManager
@@ -113,9 +95,6 @@ class DashboardWorker(BaseWorker):
 
     def _fetch_customers(self):
         """Fetch customers list"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
 
         db_manager = None
         try:
@@ -129,9 +108,7 @@ class DashboardWorker(BaseWorker):
 
                 cursor.execute('''
                     SELECT customer_id, first_name, last_name, email 
-                    FROM customers 
-                    ORDER BY last_name, first_name
-                ''')
+                    FROM customers ORDER BY last_name, first_name''')
                 customers = cursor.fetchall()
                 cursor.close()
 
@@ -145,9 +122,6 @@ class DashboardWorker(BaseWorker):
 
     def _fetch_employees(self):
         """Fetch users with Employee role"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
 
         db_manager = None
         try:
@@ -193,9 +167,6 @@ class DashboardWorker(BaseWorker):
 
     def _fetch_my_manager(self):
         """Fetch current user's manager information"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
 
         try:
             from src.database.db_manager import DatabaseManager
@@ -257,9 +228,6 @@ class DashboardWorker(BaseWorker):
 
     def _generate_customer_pdf(self):
         """Generate PDF report for customer"""
-        if not MODULES_AVAILABLE:
-            self.error.emit("Database modules not available")
-            return
 
         customer_id = self.args[0] if self.args else None
         if not customer_id:
@@ -267,8 +235,6 @@ class DashboardWorker(BaseWorker):
             return
 
         try:
-            from src.database.db_manager import DatabaseManager
-            from src.database.pdf_generator import CustomerOrderPDFGenerator
 
             self.progress.emit(f"Fetching customer data for ID {customer_id}...")
             db_manager = DatabaseManager()

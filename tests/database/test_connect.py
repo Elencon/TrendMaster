@@ -106,6 +106,7 @@ def test_mysql_cursor_sync(mock_pymysql, mock_retry_handler):
 
 @pytest.mark.asyncio
 async def test_mysql_cursor_async(mock_pymysql, mock_retry_handler):
+    """Ensures that async cursor wrapper behaves like a proper async context manager."""
     mock_conn = MagicMock()
     mock_cursor = MagicMock()
     mock_pymysql.connect.return_value = mock_conn

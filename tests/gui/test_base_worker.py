@@ -1,4 +1,3 @@
-import pytest
 from PySide6.QtWidgets import QApplication
 import sys
 import time
@@ -33,13 +32,13 @@ def test_base_worker_success():
     """Test successful operation execution."""
     worker = DummyWorker("test_op", "hello")
     result = []
-    
+
     def on_finished(val):
         result.append(val)
-        
+
     worker.finished.connect(on_finished)
     worker.start()
-    
+
     wait_for_worker(worker)
     assert result == ["result: hello"]
 
@@ -47,39 +46,39 @@ def test_base_worker_unknown_operation():
     """Test behavior with an unknown operation."""
     worker = DummyWorker("unknown_op")
     result = []
-    
+
     def on_error(val):
         result.append(val)
-        
+
     worker.error.connect(on_error)
     worker.start()
-    
+
     wait_for_worker(worker)
     assert len(result) > 0
     assert "Unknown operation" in result[0]
-    
+
 def test_base_worker_exception():
     """Test exception handling during operation."""
     worker = DummyWorker("error_op")
     result = []
-    
+
     def on_error(val):
         result.append(val)
-        
+
     worker.error.connect(on_error)
     worker.start()
-    
+
     wait_for_worker(worker)
     assert len(result) > 0
     assert "Error in error_op" in result[0]
     assert "Simulated error" in result[0]
-    
+
 def test_base_worker_cancellation():
     """Test cancellation of worker."""
     worker = DummyWorker("test_op", "hello")
     worker.cancel()
-    
+
     assert worker._check_cancelled() is True
-    
+
     worker.start()
     wait_for_worker(worker)

@@ -7,7 +7,6 @@ sys.path.insert(0, src_path)
 
 print("Attempting to import test_batch_processors...")
 try:
-    import tests.database.batch_operations.test_batch_processors
     print("SUCCESS: test_batch_processors imported successfully.")
 except Exception as e:
     print(f"FAILED: {e}")

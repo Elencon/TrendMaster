@@ -1,4 +1,3 @@
-import pytest
 from datetime import datetime
 from src.api.api_models import APIRequest, APIResponse, RequestMethod
 

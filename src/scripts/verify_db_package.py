@@ -1,18 +1,16 @@
 """
 Smoke-test: verifies the database package exports the expected public API.
-Run from the project root:
-    python scripts/verify_database_package.py
+Run from anywhere:
+    python scripts/verify_db_package.py
 """
 
 import sys
 import importlib
 from pathlib import Path
-
+import path_config 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-
-_SRC_PATH = Path(__file__).parent.parent / "src"
 
 _REQUIRED_EXPORTS = [
     "DatabaseManager",
@@ -27,13 +25,29 @@ _REMOVED_EXPORTS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Path setup
+# Path resolution
 # ---------------------------------------------------------------------------
 
-def _ensure_src_on_path() -> None:
-    src = str(_SRC_PATH)
-    if src not in sys.path:
-        sys.path.insert(0, src)
+def _find_project_root() -> Path:
+    """
+    Walk upward from this file until we find a directory containing 'src'.
+    This makes the script runnable from ANY location.
+    """
+    p = Path(__file__).resolve()
+    for parent in p.parents:
+        if (parent / "src").exists():
+            return parent
+    raise RuntimeError("Could not locate project root containing 'src' directory")
+
+
+def _ensure_src_on_path() -> Path:
+    project_root = _find_project_root()
+    src_path = project_root / "src"
+
+    if str(src_path) not in sys.path:
+        sys.path.insert(0, str(src_path))
+
+    return src_path
 
 # ---------------------------------------------------------------------------
 # Checks
@@ -53,8 +67,8 @@ def _check_removed(module: object) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    _ensure_src_on_path()
-    print(f"Using src path: {_SRC_PATH}")
+    src_path = _ensure_src_on_path()
+    print(f"Using src path: {src_path}")
 
     try:
         database = importlib.import_module("database")

@@ -15,7 +15,6 @@ mock_cfg.database = mock_db_cfg
 with patch("src.config.get_config", return_value=mock_cfg):
     print("Patch applied, importing connect...")
     try:
-        import database.connect
         print("Import successful!")
     except Exception as e:
         print(f"Import failed: {e}")

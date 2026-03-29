@@ -1,5 +1,3 @@
-import pytest
-import pandas as pd
 
 import sys
 from pathlib import Path
@@ -17,7 +15,7 @@ def test_clean_records():
         {"id": 1, "name": "Alice ", "age": "NaN"},
         {"id": 2, "name": "Bob", "age": "15 "}
     ]
-    
+
     # Needs to strip strings and handle NaN-like
     if hasattr(DataUtils, "clean_records"):
         cleaned = DataUtils.clean_records(records)

@@ -21,7 +21,7 @@ def create_title_section(layout: QVBoxLayout):
 
 def create_manage_section(layout: QVBoxLayout, content: Union[QPushButton, QHBoxLayout]):
     """Create database management button section
-    
+
     Args:
         layout: Parent layout to add section to
         content: Either a single QPushButton or QHBoxLayout with multiple buttons

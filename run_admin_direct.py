@@ -24,7 +24,7 @@ def main():
     print("\nFor production use with login, run:")
     print("  python run_app.py")
     print("\n" + "=" * 60)
-    
+
     print("\nETL Pipeline GUI Demo")
     print("=" * 60)
 
@@ -93,20 +93,20 @@ if __name__ == "__main__":
         gui_path = os.path.join(current_dir, 'gui')
         if gui_path not in sys.path:
             sys.path.insert(0, gui_path)
-        
+
         # Try to launch the GUI
         print("Attempting to launch GUI interface...")
         from gui.admin_window import main as gui_main
-        
+
         # Show demo info first
         main()
         print("\n" + "="*60)
         print("LAUNCHING GUI INTERFACE...")
         print("="*60)
-        
+
         # Start the GUI
         gui_main()
-        
+
     except ImportError as e:
         main()
         print(f"\nERROR: Could not launch GUI: {e}")

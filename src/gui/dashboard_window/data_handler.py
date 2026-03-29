@@ -29,7 +29,7 @@ class DashboardDataHandler:
     def __init__(self, window):
         """
         Initialize the data handler.
-        
+
         Args:
             window: Reference to the parent DashboardMainWindow instance
         """
@@ -72,7 +72,7 @@ class DashboardDataHandler:
     def on_customers_loaded(self, customers: list):
         """
         Handle customers data loaded.
-        
+
         Args:
             customers: List of customer dictionaries
         """
@@ -112,7 +112,7 @@ class DashboardDataHandler:
     def on_employees_loaded(self, employees: list):
         """
         Handle employees data loaded.
-        
+
         Args:
             employees: List of employee dictionaries
         """
@@ -149,7 +149,7 @@ class DashboardDataHandler:
     def on_pdf_generated(self, filepath: str):
         """
         Handle PDF generation complete.
-        
+
         Args:
             filepath: Path to the generated PDF file
         """
@@ -183,7 +183,7 @@ class DashboardDataHandler:
     def on_sales_loaded(self, total_sales: float):
         """
         Handle sales data loaded.
-        
+
         Args:
             total_sales: Total sales amount
         """
@@ -196,7 +196,7 @@ class DashboardDataHandler:
     def _start_operation(self, operation: str):
         """
         Start background operation.
-        
+
         Args:
             operation: Name of the operation to start
         """
@@ -242,7 +242,7 @@ class DashboardDataHandler:
     def on_tables_loaded(self, tables: list):
         """
         Handle tables list loaded.
-        
+
         Args:
             tables: List of table names
         """
@@ -263,16 +263,13 @@ class DashboardDataHandler:
                 self.current_worker.error.disconnect()
                 if hasattr(self.current_worker, 'tables_loaded'):
                     self.current_worker.tables_loaded.disconnect()
-            except:
+            except Exception as e:
+                logger.debug(f"Signal disconnect failed: {e}")
                 pass
+
             self.current_worker.deleteLater()
             self.current_worker = None
 
-    def cleanup_on_close(self):
-            import logging as _logging
-            logger = _logging.getLogger(__name__)
-            if hasattr(self.window, 'employee_table'):
-                logger.debug(f"employee_table widget exists, current row count: {self.window.employee_table.rowCount()}")
     def cleanup_on_close(self):
         """Handle cleanup when window is closing"""
         if self.current_worker and self.current_worker.isRunning():

@@ -4,11 +4,6 @@ import sys
 import os
 import logging
 
-sys.dont_write_bytecode = True
-os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-
-logger = logging.getLogger(__name__)
-
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QMessageBox,
                                QApplication, QMenu)
 from PySide6.QtCore import QSettings, Signal, QPoint
@@ -19,6 +14,11 @@ from auth.session import SessionManager  # type: ignore
 from two_factor_setup_dialog import TwoFactorSetupDialog  # type: ignore
 from .ui_builder import DashboardUIBuilder
 from .data_handler import DashboardDataHandler
+
+sys.dont_write_bytecode = True
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+
+logger = logging.getLogger(__name__)
 
 
 class DashboardMainWindow(QMainWindow):

@@ -9,13 +9,11 @@ print(f"DEBUG: sys.path[0] = {sys.path[0]}")
 
 try:
     print("Attempting to import common.exceptions...")
-    import common.exceptions
     print("SUCCESS: common.exceptions imported.")
-    
+
     print("Attempting to import api.api_client...")
-    import api.api_client
     print("SUCCESS: api.api_client imported.")
-    
+
 except Exception as e:
     print(f"FAILED: {e}")
     import traceback

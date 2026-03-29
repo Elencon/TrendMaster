@@ -110,6 +110,12 @@ class PasswordPolicyValidator:
         Returns:
             (strength_label, strength_percentage)
         """
+
+        # --- Early classification for extremely weak passwords ---
+        if len(password) < 4:
+            return "Very Weak", 0
+
+        # --- Normal scoring ---
         score = (
             self._length_score(password)
             + self._variety_score(password)

@@ -40,7 +40,7 @@ class SessionManager:
             self._initialized = True
 
     def __repr__(self) -> str:
-        return f"<SessionManager user={self.get_username() or 'None'}>"
+        return f"<SessionManager user={self.get_username() or 'None'} logged_in={self.is_logged_in()}>"
 
     # ------------------------------------------------------------------
     # Internal helpers

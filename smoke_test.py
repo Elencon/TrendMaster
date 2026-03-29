@@ -7,11 +7,8 @@ project_root = Path(__file__).resolve().parent
 sys.path.append(str(project_root / "src"))
 
 try:
-    from database.batch_operations import BatchProcessor, BaseBatchProcessor
+    from database.batch_operations import BatchProcessor
     from database.batch_operations.insert_processor import InsertProcessor
-    from database.batch_operations.update_processor import UpdateProcessor
-    from database.batch_operations.upsert_processor import UpsertProcessor
-    from database.batch_operations.delete_processor import DeleteProcessor
 
     mock_cm = MagicMock()
     mock_engine = MagicMock()

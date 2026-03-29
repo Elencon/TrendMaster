@@ -20,7 +20,7 @@ class DashboardUIBuilder:
     def __init__(self, window):
         """
         Initialize the UI builder.
-        
+
         Args:
             window: Reference to the parent DashboardMainWindow instance
         """
@@ -29,7 +29,7 @@ class DashboardUIBuilder:
     def create_all_sections(self, layout: QVBoxLayout):
         """
         Create all UI sections in the dashboard.
-        
+
         Args:
             layout: Main vertical layout to add sections to
         """
@@ -172,7 +172,7 @@ class DashboardUIBuilder:
     def create_toolbar(self) -> QToolBar:
         """
         Create toolbar with title on left, settings on right.
-        
+
         Returns:
             QToolBar: The created toolbar
         """

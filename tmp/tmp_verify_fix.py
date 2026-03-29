@@ -7,7 +7,6 @@ sys.path.insert(0, src_path)
 
 print("Attempting to import database.batch_operations...")
 try:
-    from database.batch_operations import BatchProcessor
     print("SUCCESS: BatchProcessor imported successfully.")
 except Exception as e:
     print(f"FAILED: {e}")

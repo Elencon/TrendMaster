@@ -3,7 +3,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-from qt_material import apply_stylesheet  # intentionally unused here
 from .worker import DashboardWorker
 from .window import DashboardMainWindow
 

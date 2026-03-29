@@ -12,7 +12,7 @@ class User(msgspec.Struct):
 @pytest.mark.anyio
 async def test_data_processor_success():
     processor = APIDataProcessor(max_concurrent=10)
-    
+
     responses = [
         APIResponse(
             status=200,
@@ -23,9 +23,9 @@ async def test_data_processor_success():
             response_time=datetime.now()
         ) for i in range(5)
     ]
-    
+
     results = await processor.process_responses(responses, User)
-    
+
     assert len(results) == 5
     assert all(isinstance(r, User) for r in results)
     assert processor.stats.successful_responses == 5
@@ -34,7 +34,7 @@ async def test_data_processor_success():
 @pytest.mark.anyio
 async def test_data_processor_partial_failure():
     processor = APIDataProcessor(max_concurrent=10)
-    
+
     responses = [
         APIResponse(
             status=200,
@@ -61,9 +61,9 @@ async def test_data_processor_partial_failure():
             response_time=datetime.now()
         )
     ]
-    
+
     results = await processor.process_responses(responses, User)
-    
+
     assert len(results) == 1
     assert processor.stats.successful_responses == 1
     assert processor.stats.failed_responses == 2
@@ -82,5 +82,5 @@ async def test_data_processor_context_manager():
             )
         ]
         await processor.process_responses(responses, User)
-    
+
     assert processor.stats.processing_time > 0

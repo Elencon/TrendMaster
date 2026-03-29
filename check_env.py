@@ -1,5 +1,4 @@
 import sys
-import subprocess
 
 try:
     import pytest

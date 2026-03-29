@@ -7,7 +7,6 @@ pytest tests/database/batch_operations/test_batch_processors.py
 
 import pytest
 from unittest.mock import MagicMock, patch
-from pathlib import Path
 
 from src.database.batch_operations import (
     BatchProcessor,

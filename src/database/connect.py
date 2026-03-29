@@ -1,4 +1,5 @@
 r"""
+C:\Economy\Invest\TrendMaster\src\database\connect.py
 Production MySQL connection helpers with retry, transactions,
 sync/async support and DictCursor convenience.
 
@@ -18,7 +19,6 @@ import logging
 from contextlib import contextmanager, asynccontextmanager
 from typing import Any, Dict, Optional
 from copy import deepcopy
-
 import pymysql
 import pymysql.cursors
 
@@ -60,6 +60,8 @@ def _connect(cfg: Dict[str, Any]):
 
     core_keys = {"host", "user", "password", "database", "port", "autocommit"}
     connection_args = {k: params[k] for k in core_keys if k in params}
+
+    # Defaults
     connection_args["connect_timeout"] = params.get("connect_timeout", 30)
 
     return _connect_pymysql(params, connection_args)
@@ -67,13 +69,34 @@ def _connect(cfg: Dict[str, Any]):
 
 def _connect_pymysql(params: Dict[str, Any], connection_args: Dict[str, Any]):
     """Connect using PyMySQL."""
-    _logger.debug("Connecting via PyMySQL: %s@%s", params.get("user"), params.get("host"))
+    _logger.debug(
+        "Connecting via PyMySQL: user=%s host=%s db=%s",
+        params.get("user"),
+        params.get("host"),
+        params.get("database"),
+    )
+
+    # Simplified extras
+    extras = {
+        "charset": params.get("charset", "utf8mb4"),
+        "cursorclass": params.get(
+            "cursorclass",
+            pymysql.cursors.DictCursor,
+        ),
+    }
+
+    if params.get("init_command"):
+        extras["init_command"] = params["init_command"]
+
+    if "ssl" in params:
+        extras["ssl"] = params["ssl"]
+
+    if "unix_socket" in params:
+        extras["unix_socket"] = params["unix_socket"]
 
     return pymysql.connect(
         **connection_args,
-        charset=params.get("charset", "utf8mb4"),
-        init_command=params.get("init_command"),
-        cursorclass=pymysql.cursors.DictCursor,
+        **extras,
     )
 
 # ────────────────────────────────────────────────

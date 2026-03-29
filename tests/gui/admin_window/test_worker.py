@@ -46,11 +46,11 @@ def test_worker_unknown_operation():
     result = run_worker(worker)
     assert len(result["error"]) > 0
     assert "Unknown operation" in result["error"][0]
-    
+
 def test_worker_test_connection_success(mock_db_manager):
     """Test database connection success."""
     mock_db_manager.test_connection.return_value = True
-    
+
     worker = ETLWorker("test_connection")
     result = run_worker(worker)
     assert len(result["finished"]) > 0
@@ -59,7 +59,7 @@ def test_worker_test_connection_success(mock_db_manager):
 def test_worker_test_connection_failure(mock_db_manager):
     """Test database connection failure."""
     mock_db_manager.test_connection.return_value = False
-    
+
     worker = ETLWorker("test_connection")
     result = run_worker(worker)
     assert len(result["error"]) > 0
@@ -68,7 +68,7 @@ def test_worker_test_connection_failure(mock_db_manager):
 def test_worker_test_api_success(mock_api_client):
     """Test API connection success."""
     mock_api_client.fetch_data.return_value = [{"id": 1}]
-    
+
     worker = ETLWorker("test_api", "http://test.com/api")
     result = run_worker(worker)
     assert len(result["finished"]) > 0
@@ -77,7 +77,7 @@ def test_worker_test_api_success(mock_api_client):
 def test_worker_test_api_failure(mock_api_client):
     """Test API connection failure."""
     mock_api_client.fetch_data.return_value = None
-    
+
     worker = ETLWorker("test_api", "http://test.com/api")
     result = run_worker(worker)
     assert len(result["error"]) > 0
@@ -88,12 +88,12 @@ def test_worker_create_tables(mock_db_manager):
     mock_db_manager.create_database_if_not_exists.return_value = True
     mock_db_manager.create_all_tables_from_csv.return_value = True
     mock_db_manager.get_row_count.return_value = 0
-    
+
     worker = ETLWorker("create_tables")
     result = run_worker(worker)
     assert len(result["finished"]) > 0
     assert "All 9 database tables created successfully!" in result["finished"][0]
-    
+
 def test_worker_test_csv_access(mock_db_manager):
     """Test CSV file access testing."""
     mock_db_manager.csv_files = {"table1": "file1.csv"}
@@ -101,7 +101,7 @@ def test_worker_test_csv_access(mock_db_manager):
     mock_df.__len__.return_value = 10
     mock_df.columns = ["a", "b"]
     mock_db_manager.read_csv_file.return_value = mock_df
-    
+
     worker = ETLWorker("test_csv_access")
     result = run_worker(worker)
     assert len(result["finished"]) > 0
@@ -112,7 +112,7 @@ def test_worker_select_csv_files(mock_copy):
     """Test copying CSV files."""
     worker = ETLWorker("select_csv_files", ["file1.csv", "file2.csv"])
     result = run_worker(worker)
-        
+
     assert mock_copy.call_count == 2
     assert len(result["finished"]) > 0
     assert "Successfully copied 2 files" in result["finished"][0]

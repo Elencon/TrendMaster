@@ -5,8 +5,8 @@ User authentication and verification.
 
 import logging
 from contextlib import contextmanager
-from datetime import datetime
 from typing import Any, Dict, Optional
+from datetime import datetime, UTC
 
 _logger = logging.getLogger(__name__)
 
@@ -144,7 +144,7 @@ class UserAuthenticator:
         """Stamp last_login for user_id; logs but never raises on failure."""
         try:
             with _plain_cursor(self._db) as cur:
-                cur.execute(_UPDATE_LAST_LOGIN_QUERY, (datetime.utcnow(), user_id))
+                cur.execute(_UPDATE_LAST_LOGIN_QUERY, (datetime.now(UTC), user_id))
             self._db.commit()
         except Exception as e:
             _logger.error("Could not update last_login for user_id %s: %s", user_id, e)
