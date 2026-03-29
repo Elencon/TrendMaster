@@ -10,7 +10,7 @@ from typing import Dict, Any
 from PySide6.QtCore import QThread, Signal
 
 # Centralized paths
-from src.path_config import CSV_PATH, API_PATH
+from src import CSV_PATH, API_PATH
 
 # ETL modules (always available)
 from src.database.db_manager import DatabaseManager
