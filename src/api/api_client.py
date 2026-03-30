@@ -77,7 +77,7 @@ class AsyncAPIClient:
 
     async def request(self, request_info: APIRequest) -> APIResponse:
         try:
-            return await self.retry_handler.execute(self._execute_request, request_info)
+            return await self.retry_handler.execute_async(self._execute_request, request_info)
         except Exception:
             self._stats["failed_requests"] += 1
             raise

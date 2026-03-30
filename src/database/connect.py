@@ -54,8 +54,11 @@ def _default_retry() -> RetryHandler:
 # Connection creation
 # ────────────────────────────────────────────────
 
-def _connect(cfg: Dict[str, Any]):
-    """Create a MySQL connection using PyMySQL."""
+def _connect(cfg: Dict[str, Any], **kwargs):
+    """
+    Create a MySQL connection using PyMySQL.
+    **kwargs captures internal flags like run_sync_in_thread passed by RetryHandler.
+    """
     params = cfg.copy()
 
     core_keys = {"host", "user", "password", "database", "port", "autocommit"}
@@ -111,17 +114,25 @@ def _create_dict_cursor(conn: Any):
 # Sync / Async connect wrappers
 # ────────────────────────────────────────────────
 
-def connect_sync(config: Optional[Dict[str, Any]] = None,
-                 retry: Optional[RetryHandler] = None):
+def connect_sync(
+    config: Optional[Dict[str, Any]] = None,
+    retry: Optional[RetryHandler] = None,
+) -> Any:
+    """Synchronous database connection with retry support."""
     cfg = deepcopy(config or DEFAULT_CONFIG_DICT)
     handler = retry or _default_retry()
+    
     return handler.execute_sync(_connect, cfg)
 
 
-async def connect_async(config: Optional[Dict[str, Any]] = None,
-                        retry: Optional[RetryHandler] = None):
+async def connect_async(
+    config: Optional[Dict[str, Any]] = None,
+    retry: Optional[RetryHandler] = None,
+) -> Any:
+    """Asynchronous database connection with retry support."""
     cfg = deepcopy(config or DEFAULT_CONFIG_DICT)
     handler = retry or _default_retry()
+    
     return await handler.execute_async(
         _connect,
         cfg,
@@ -156,7 +167,7 @@ def mysql_connection(config: Optional[Dict[str, Any]] = None,
 
         yield conn
 
-        if not cfg.get("autocommit"):
+        if not cfg.get("autocommit") and conn:
             conn.commit()
 
     except Exception:
@@ -210,7 +221,7 @@ async def mysql_cursor_async(config: Optional[Dict[str, Any]] = None,
         cur = _create_dict_cursor(conn)
         yield cur
 
-        if not cfg.get("autocommit"):
+        if not cfg.get("autocommit") and conn:
             await asyncio.to_thread(conn.commit)
 
     except Exception:
