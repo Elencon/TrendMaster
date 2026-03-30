@@ -7,46 +7,125 @@ import threading
 import logging
 import re
 from contextlib import contextmanager
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Final
+from collections import deque
 
 import pymysql
 import pymysql.cursors
+from pymysql.connections import Connection
 
 _logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Helper functions (assumed to exist elsewhere - adjust as needed)
 # ---------------------------------------------------------------------------
+
+def _open_connection(config: Dict[str, Any]) -> Optional[Connection]:
+    """
+    Create a new PyMySQL connection.
+
+    Returns:
+        Connection object on success, None on any failure.
+        Failures are logged but do not raise (to keep pool compatible).
+    """
+    if not config or not isinstance(config, dict):
+        _logger.error("Invalid config passed to _open_connection")
+        return None
+
+    # Validate required fields
+    required = {"user", "database"}
+    missing = [k for k in required if k not in config or config[k] is None]
+    if missing:
+        _logger.error("Missing required database config fields: %s", missing)
+        return None
+
+    try:
+        params = config.copy()
+
+        connection_args: Dict[str, Any] = {
+            "host": params.get("host", "localhost"),
+            "user": params["user"],
+            "password": params.get("password", ""),
+            "database": params["database"],
+            "port": params.get("port", 3306),
+            "connect_timeout": params.get("connect_timeout", 30),
+            "charset": params.get("charset", "utf8mb4"),
+            "cursorclass": params.get("cursorclass", pymysql.cursors.DictCursor),
+        }
+
+        # Add optional parameters
+        optional_keys = {
+            "init_command", "ssl", "unix_socket",
+            "read_timeout", "write_timeout", "autocommit",
+        }
+
+        for key in optional_keys:
+            if key in params and params[key] is not None:
+                connection_args[key] = params[key]
+
+        # Establish connection
+        conn = pymysql.connect(**connection_args)
+        return conn
+
+    except pymysql.Error as e:
+        # Normal MySQL errors (wrong credentials, host down, etc.) — log cleanly
+        _logger.error("MySQL connection failed: %s", e)
+        return None
+    except Exception:
+        # Unexpected errors (programming bugs, import issues, etc.)
+        _logger.exception("Unexpected error while creating connection")
+        return None
+
+
+def _safe_close(conn: Optional[Any]) -> None:
+    if conn is None:
+        return
+
+    if not hasattr(conn, "close"):
+        return
+
+    try:
+        conn.close()
+    except Exception as exc:
+        _logger.debug(
+            "Ignored error while closing connection (%s): %s",
+            type(exc).__name__,
+            exc,
+        )
+
+
+def _test_alive(conn: Any) -> bool:
+    """Test if the connection is still alive."""
+    if conn is None:
+        return False
+
+    # Fast path: driver ping
+    if hasattr(conn, "ping"):
+        try:
+            conn.ping(reconnect=False)
+            return True
+        except Exception:
+            pass
+
+    # Fallback: simple query
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT 1")
+        return True
+    except Exception:
+        return False
 
 _NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$") # Shared regex pattern
 
-# ---------------------------------------------------------------------------
-# Validator
-# ---------------------------------------------------------------------------
-
 def _validate_name(name: str, kind: str = "name") -> str:
     """
-    Validate a database or table name to prevent SQL injection.
-
-    Args:
-        name: the name to validate
-        kind: descriptive type, e.g., 'database' or 'table'
-
-    Rules:
-    - Must be a string
-    - Must start with a letter or underscore
-    - Can contain letters, digits, underscores
-    - No spaces, dots, or special characters
-
-    Returns:
-        Lowercased validated name (optional normalization)
-
-    Raises:
-        TypeError: if name is not a string
-        ValueError: if name is invalid
+    Validate a SQL identifier (e.g., table or database name).
     """
     if not isinstance(name, str):
         raise TypeError(f"{kind.capitalize()} name must be a string")
+
+    if not name:
+        raise ValueError(f"{kind.capitalize()} name cannot be empty")
 
     if not _NAME_RE.fullmatch(name):
         raise ValueError(
@@ -55,92 +134,6 @@ def _validate_name(name: str, kind: str = "name") -> str:
         )
 
     return name.lower()  # optional normalization
-
-
-def _safe_close(conn) -> None:
-    if conn is None:
-        return
-    try:
-        conn.close()
-    except Exception as exc:
-        _logger.debug("Ignored error while closing connection: %s", exc)
-
-
-def _open_connection(config: Dict):
-    try:
-        params = config.copy()
-
-        core_keys = {"host", "user", "password", "database", "port", "autocommit"}
-        connection_args = {k: params[k] for k in core_keys if k in params}
-        connection_args["connect_timeout"] = params.get("connect_timeout", 30)
-
-        return pymysql.connect(
-            **connection_args,
-            charset=params.get("charset", "utf8mb4"),
-            init_command=params.get("init_command"),
-            cursorclass=pymysql.cursors.DictCursor,
-        )
-    except Exception as exc:
-        _logger.error("Connection creation failed: %s", exc)
-        return None
-
-
-def _test_alive(conn) -> bool:
-    try:
-        if hasattr(conn, "ping"):
-            conn.ping(reconnect=False)
-            return True
-    except Exception:
-        pass
-    return False
-
-
-# ---------------------------------------------------------------------------
-# Helper functions (assumed to exist elsewhere - adjust as needed)
-# ---------------------------------------------------------------------------
-def _open_connection(config: Dict) -> Optional[Any]:
-    """Open a new MySQL connection. Replace with your actual implementation (pymysql, mysqlclient, etc.)."""
-    # Example with PyMySQL:
-    # import pymysql
-    # return pymysql.connect(**config)
-    raise NotImplementedError("Implement _open_connection using your MySQL driver")
-
-
-def _safe_close(conn: Optional[Any]) -> None:
-    """Safely close a connection."""
-    if conn is None:
-        return
-    try:
-        conn.close()
-    except Exception:
-        pass  # Best effort
-
-
-def _test_alive(conn: Any) -> bool:
-    """Test if the connection is still alive. Preferred: use driver-specific ping if available."""
-    if conn is None:
-        return False
-    try:
-        # PyMySQL: conn.ping(reconnect=False) is very efficient
-        conn.ping(reconnect=False)
-        return True
-    except Exception:
-        # Fallback
-        try:
-            with conn.cursor() as cur:
-                cur.execute("SELECT 1")
-            return True
-        except Exception:
-            return False
-
-
-def _validate_name(name: Optional[str]) -> None:
-    """Basic name validation to prevent SQL injection in identifiers."""
-    if not name or not isinstance(name, str):
-        raise ValueError("Invalid name")
-    if not name.replace("_", "").replace("-", "").isalnum():
-        raise ValueError(f"Invalid name: {name}")
-
 
 # ---------------------------------------------------------------------------
 # ConnectionPool

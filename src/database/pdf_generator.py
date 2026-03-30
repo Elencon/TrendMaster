@@ -32,19 +32,16 @@ class CustomerOrderPDFGenerator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def generate_customer_report(self, customer_data: Dict, orders_data: List[Dict]) -> str:
-        """Generate PDF report for a customer
+        """Generate PDF report for a customer"""
 
-        Args:
-            customer_data: Dictionary with customer info (customer_id, first_name, last_name, email, phone, street, city, state, zip_code)
-            orders_data: List of order dictionaries (order_id, order_date, order_status, staff_id, store_id, items)
+        # Safely extract customer name with defaults
+        first_name = customer_data.get('first_name', 'Unknown')
+        last_name = customer_data.get('last_name', 'Unknown')
+        customer_name = f"{first_name}_{last_name}"
 
-        Returns:
-            str: Path to generated PDF file
-        """
         # Create filename
-        customer_name = f"{customer_data['first_name']}_{customer_data['last_name']}"
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"customer_report_{customer_data['customer_id']}_{customer_name}_{timestamp}.pdf"
+        filename = f"customer_report_{customer_data.get('customer_id', 'N_A')}_{customer_name}_{timestamp}.pdf"
         filepath = self.output_dir / filename
 
         # Create PDF document
@@ -84,8 +81,8 @@ class CustomerOrderPDFGenerator:
         elements.append(Paragraph("Customer Information", heading_style))
 
         customer_info = [
-            ['Customer ID:', str(customer_data['customer_id'])],
-            ['Name:', f"{customer_data['first_name']} {customer_data['last_name']}"],
+            ['Customer ID:', str(customer_data.get('customer_id', 'N/A'))],
+            ['Name:', f"{first_name} {last_name}"],
             ['Email:', customer_data.get('email', 'N/A')],
             ['Phone:', customer_data.get('phone', 'N/A')],
             ['Address:', f"{customer_data.get('street', 'N/A')}, {customer_data.get('city', 'N/A')}, {customer_data.get('state', 'N/A')} {customer_data.get('zip_code', 'N/A')}"]
@@ -111,12 +108,9 @@ class CustomerOrderPDFGenerator:
         elements.append(Paragraph(f"Order History ({len(orders_data)} orders)", heading_style))
 
         if orders_data:
-            # Calculate totals
             total_orders = len(orders_data)
-            # Handle None values in total_amount
             total_amount = sum(order.get('total_amount') or 0 for order in orders_data)
 
-            # Summary
             summary_data = [
                 ['Total Orders:', str(total_orders)],
                 ['Total Amount:', f"{total_amount:,.2f} kr"]
@@ -136,7 +130,6 @@ class CustomerOrderPDFGenerator:
             elements.append(summary_table)
             elements.append(Spacer(1, 16))
 
-            # Orders table
             order_table_data = [['Order ID', 'Date', 'Status', 'Items', 'Total']]
 
             for order in orders_data:
@@ -168,13 +161,22 @@ class CustomerOrderPDFGenerator:
 
         elements.append(Spacer(1, 24))
 
-        # Footer
         footer_text = f"Report generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         footer = Paragraph(footer_text, styles['Italic'])
         elements.append(footer)
 
-        # Build PDF
-        doc.build(elements)
+        # Build PDF with PermissionError handling and retry
+        try:
+            doc.build(elements)
+        except PermissionError:
+            logger.warning(f"PermissionError writing file: {filepath}. Retrying with modified filename.")
+            new_filename = filepath.stem + "_NEW" + filepath.suffix
+            new_filepath = filepath.with_name(new_filename)
+            doc = SimpleDocTemplate(str(new_filepath), pagesize=A4,
+                                   rightMargin=72, leftMargin=72,
+                                   topMargin=72, bottomMargin=18)
+            doc.build(elements)
+            filepath = new_filepath
 
         logger.info(f"Generated customer report: {filepath}")
         return str(filepath)
@@ -188,17 +190,11 @@ if __name__ == "__main__":
 
     print("Running local CustomerOrderPDFGenerator tests...")
 
-    # -----------------------------
-    # Setup temp output directory
-    # -----------------------------
     temp_dir = Path(tempfile.mkdtemp())
     print(f"Using temp dir: {temp_dir}")
 
     generator = CustomerOrderPDFGenerator(output_dir=temp_dir)
 
-    # -----------------------------
-    # Mock test data
-    # -----------------------------
     customer_data = {
         "customer_id": 1,
         "first_name": "John",
@@ -228,14 +224,10 @@ if __name__ == "__main__":
         },
     ]
 
-    # -----------------------------
-    # Test: generate PDF
-    # -----------------------------
     try:
         pdf_path = generator.generate_customer_report(customer_data, orders_data)
         print("✅ PDF generated:", pdf_path)
 
-        # Verify file exists
         path_obj = Path(pdf_path)
         assert path_obj.exists(), "PDF file was not created"
         assert path_obj.stat().st_size > 0, "PDF file is empty"
@@ -245,9 +237,6 @@ if __name__ == "__main__":
     except Exception as e:
         print("❌ Failed to generate PDF:", e)
 
-    # -----------------------------
-    # Test: empty orders
-    # -----------------------------
     try:
         pdf_path = generator.generate_customer_report(customer_data, [])
         print("✅ PDF generated with empty orders:", pdf_path)

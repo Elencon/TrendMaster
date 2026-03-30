@@ -15,7 +15,7 @@ from database.db_manager import DatabaseManager
 def manager_mocks():
     """Mock internal dependencies of DatabaseManager."""
     with patch("database.db_manager.DatabaseManager") as mock_cm, \
-         patch("database.db_manager.SchemaManager") as mock_sm:
+         patch("database.schema_manager.SchemaManager") as mock_sm:
 
         # Setup basic mock engine and connection
         instance_cm = mock_cm.return_value

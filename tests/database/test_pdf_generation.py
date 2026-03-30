@@ -4,6 +4,7 @@ from pathlib import Path
 # Correct: Since 'src' is in the pythonpath, start from the subfolder name
 from src.database.pdf_generator import CustomerOrderPDFGenerator
 
+
 # -----------------------------
 # Fixtures
 # -----------------------------
@@ -46,7 +47,10 @@ def test_pdf_generation_creates_file(temp_output_dir, sample_data):
     result_file = Path(result_path)
     assert result_file.exists()
     assert result_path.endswith(".pdf")
-    assert f"Report_{customer['customer_id']}" in result_path
+    
+    # Updated assertion to match actual filename prefix: customer_report_
+    assert f"customer_report_{customer['customer_id']}" in result_path
+    
     assert result_file.stat().st_size > 0  # Optional: file is not empty
 
 
@@ -87,8 +91,6 @@ def test_permission_error_fallback(temp_output_dir, sample_data, monkeypatch):
             raise PermissionError("File locked")
 
         # On the second attempt, call the original build method.
-        # Since 'doc.build(elements)' was called,
-        # args[0] is the 'doc' instance and args[1] is the 'elements' list.
         return real_build(*args, **kwargs)
 
     # Patch the class method with our logic
@@ -101,6 +103,7 @@ def test_permission_error_fallback(temp_output_dir, sample_data, monkeypatch):
     assert "_NEW.pdf" in result_path
     assert Path(result_path).exists()
     assert state["call_count"] == 2
+
 
 # -----------------------------
 # Test missing keys in input data

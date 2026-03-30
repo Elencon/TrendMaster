@@ -49,7 +49,7 @@ class DatabaseUtils:
     @staticmethod
     def generate_insert_sql(
         table_name: str,
-        sample_record: dict,
+        sample_record: dict | list,
         ignore_duplicates: bool = True,
     ) -> str:
         """
@@ -57,16 +57,28 @@ class DatabaseUtils:
 
         Args:
             table_name: Target table name.
-            sample_record: Record whose keys determine the column list.
+            sample_record: Record whose keys (if dict) or elements (if list) 
+                           determine the column list.
             ignore_duplicates: Use INSERT IGNORE to skip duplicate rows.
 
         Returns:
             Parameterised INSERT SQL string.
         """
         table = _safe_identifier(table_name)
-        columns = [_safe_identifier(c) for c in sample_record.keys()]
+
+        # Support both dict (use keys) and list (use elements as column names)
+        if isinstance(sample_record, dict):
+            columns = [_safe_identifier(c) for c in sample_record.keys()]
+        elif isinstance(sample_record, (list, tuple)):
+            columns = [_safe_identifier(c) for c in sample_record]
+        else:
+            raise TypeError(
+                f"sample_record must be dict or list/tuple, got {type(sample_record).__name__}"
+            )
+
         placeholders = ", ".join(["%s"] * len(columns))
         insert_type = "INSERT IGNORE" if ignore_duplicates else "INSERT"
+
         return f"{insert_type} INTO {table} ({', '.join(columns)}) VALUES ({placeholders})"
 
     @staticmethod

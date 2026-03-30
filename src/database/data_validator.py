@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\data_validator.py
 Compact data validation pipeline using utility-driven approach.
 """
 
@@ -288,3 +289,78 @@ def validate_csv_file(
 def create_data_validator() -> DataValidator:
     """Factory for backward compatibility."""
     return DataValidator()
+
+
+# ---------------------------------------------------------------------------
+# Local self-tests (run only when executed directly)
+# ---------------------------------------------------------------------------
+
+def _run_local_tests() -> None:
+    """Basic sanity tests for DataValidator."""
+
+    print("Running local tests...")
+
+    # Test 1: Empty DataFrame
+    validator = DataValidator()
+    df_empty = pd.DataFrame()
+
+    result = validator.validate_dataframe(df_empty)
+
+    assert result.is_valid is False
+    assert any(i["type"] == "empty_dataframe" for i in result.issues)
+    assert validator.stats["validation_runs"] == 1
+    assert validator.stats["validated_rows"] == 0
+
+    print("✔ Empty DataFrame test passed")
+
+    # Test 2: Valid DataFrame
+    validator = DataValidator()
+    validator.add_rule(ValidationRule("id", DataType.INTEGER, required=True))
+    validator.add_rule(ValidationRule("email", DataType.EMAIL, required=False))
+
+    df_valid = pd.DataFrame({
+        "id": [1, 2, 3],
+        "email": ["a@test.com", "b@test.com", "c@test.com"],
+    })
+
+    result = validator.validate_dataframe(df_valid)
+
+    assert result.is_valid is True
+    assert validator.stats["validation_runs"] == 1
+    assert validator.stats["validated_rows"] == 3
+
+    print("✔ Valid DataFrame test passed")
+
+    # Test 3: Missing column
+    validator = DataValidator()
+    validator.add_rule(ValidationRule("id", DataType.INTEGER, required=True))
+
+    df_missing = pd.DataFrame({"other": [1, 2, 3]})
+
+    result = validator.validate_dataframe(df_missing)
+
+    assert result.is_valid is False
+    assert any(i["type"] == "missing_column" for i in result.issues)
+
+    print("✔ Missing column test passed")
+
+    # Test 4: Invalid email
+    validator = DataValidator()
+    validator.add_rule(ValidationRule("email", DataType.EMAIL, required=True))
+
+    df_invalid_email = pd.DataFrame({
+        "email": ["valid@test.com", "invalid-email"]
+    })
+
+    result = validator.validate_dataframe(df_invalid_email)
+
+    assert result.is_valid is False
+    assert any(i["type"] == "invalid_email" for i in result.issues)
+
+    print("✔ Invalid email test passed")
+
+    print("✅ All local tests passed!")
+
+
+if __name__ == "__main__":
+    _run_local_tests()
