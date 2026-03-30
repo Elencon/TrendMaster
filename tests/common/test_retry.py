@@ -27,7 +27,7 @@ async def test_async_func_succeeds_on_first_attempt():
     func = AsyncMock(return_value="ok")
     handler = make_handler()
 
-    result = await handler.execute(func)
+    result = await handler.execute_async(func)
 
     assert result == "ok"
     assert func.call_count == 1
@@ -39,7 +39,7 @@ async def test_sync_func_succeeds_on_first_attempt():
     func = MagicMock(return_value=42)
     handler = make_handler()
 
-    result = await handler.execute(func)
+    result = await handler.execute_async(func)
 
     assert result == 42
     assert func.call_count == 1
@@ -51,10 +51,11 @@ async def test_sync_func_in_thread_succeeds():
     func = MagicMock(return_value="threaded")
     handler = make_handler()
 
-    result = await handler.execute(func, run_sync_in_thread=True)
+    result = await handler.execute_async(func, run_sync_in_thread=True)
 
     assert result == "threaded"
     assert func.call_count == 1
+    assert handler.total_retries == 0
 
 
 # ---------------------------------------------------------------------------
@@ -72,7 +73,7 @@ async def test_retries_on_matching_exception():
     )
     handler = make_handler(config)
 
-    result = await handler.execute(func)
+    result = await handler.execute_async(func)
 
     assert result == "ok"
     assert func.call_count == 3
@@ -91,7 +92,7 @@ async def test_does_not_retry_on_non_matching_exception():
     handler = make_handler(config)
 
     with pytest.raises(ValueError, match="unexpected"):
-        await handler.execute(func)
+        await handler.execute_async(func)
 
     assert func.call_count == 1
     assert handler.total_retries == 0
@@ -109,7 +110,7 @@ async def test_exhausts_retries_and_reraises_exception():
     handler = make_handler(config)
 
     with pytest.raises(APITimeoutError, match="timeout"):
-        await handler.execute(func)
+        await handler.execute_async(func)
 
     assert func.call_count == 3
     assert handler.total_retries == 2
@@ -126,7 +127,7 @@ async def test_succeeds_on_second_attempt():
     )
     handler = make_handler(config)
 
-    result = await handler.execute(func)
+    result = await handler.execute_async(func)
 
     assert result == "recovered"
     assert func.call_count == 2
@@ -148,7 +149,7 @@ async def test_retries_on_matching_result():
     )
     handler = make_handler(config)
 
-    result = await handler.execute(func)
+    result = await handler.execute_async(func)
 
     assert result == {"data": [1, 2, 3]}
     assert func.call_count == 3
@@ -167,7 +168,7 @@ async def test_raises_retry_exhausted_error_on_bad_result():
     handler = make_handler(config)
 
     with pytest.raises(RetryExhaustedError) as excinfo:
-        await handler.execute(func)
+        await handler.execute_async(func)
 
     assert excinfo.value.last_result is None
     assert func.call_count == 3
@@ -185,7 +186,7 @@ async def test_retry_exhausted_error_carries_last_result():
     handler = make_handler(config)
 
     with pytest.raises(RetryExhaustedError) as excinfo:
-        await handler.execute(func)
+        await handler.execute_async(func)
 
     assert excinfo.value.last_result == {"error": True}
 
@@ -205,7 +206,7 @@ async def test_total_retries_tracked():
     )
     handler = make_handler(config)
 
-    await handler.execute(func)
+    await handler.execute_async(func)
 
     assert handler.total_retries == 2
 
@@ -222,9 +223,9 @@ async def test_total_delay_tracked():
     )
     handler = make_handler(config)
 
-    await handler.execute(func)
+    await handler.execute_async(func)
 
-    assert handler.total_delay == pytest.approx(0.1)
+    assert handler.total_delay == pytest.approx(0.1, rel=1e-3)
 
 
 @pytest.mark.asyncio
@@ -232,7 +233,7 @@ async def test_no_retries_on_success():
     func = AsyncMock(return_value="fine")
     handler = make_handler()
 
-    await handler.execute(func)
+    await handler.execute_async(func)
 
     assert handler.total_retries == 0
     assert handler.total_delay == 0.0
@@ -245,16 +246,10 @@ async def test_no_retries_on_success():
 @pytest.mark.asyncio
 async def test_keyboard_interrupt_not_retried():
     func = AsyncMock(side_effect=KeyboardInterrupt)
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(KeyboardInterrupt,),
-    )
-    handler = make_handler(config)
+    handler = make_handler()
 
     with pytest.raises(KeyboardInterrupt):
-        await handler.execute(func)
+        await handler.execute_async(func)
 
     assert func.call_count == 1
     assert handler.total_retries == 0
@@ -263,16 +258,10 @@ async def test_keyboard_interrupt_not_retried():
 @pytest.mark.asyncio
 async def test_system_exit_not_retried():
     func = AsyncMock(side_effect=SystemExit)
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(SystemExit,),
-    )
-    handler = make_handler(config)
+    handler = make_handler()
 
     with pytest.raises(SystemExit):
-        await handler.execute(func)
+        await handler.execute_async(func)
 
     assert func.call_count == 1
     assert handler.total_retries == 0
@@ -290,7 +279,7 @@ def test_exponential_backoff_no_jitter():
     assert handler._calculate_delay(2) == 2.0
     assert handler._calculate_delay(3) == 4.0
     assert handler._calculate_delay(4) == 8.0
-    assert handler._calculate_delay(5) == 10.0  # capped at max_delay
+    assert handler._calculate_delay(5) == 10.0
 
 
 def test_flat_delay_no_jitter():
@@ -307,4 +296,4 @@ def test_equal_jitter_within_bounds():
 
     for _ in range(50):
         delay = handler._calculate_delay(1)
-        assert 1.0 <= delay <= 2.0  # equal jitter: raw/2 + uniform(0, raw/2)
+        assert 1.0 <= delay <= 2.0

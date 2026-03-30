@@ -1,4 +1,4 @@
-r"""
+"""
 Path: src/common/retry.py
 TrendMaster Universal Retry Handler.
 """
@@ -46,7 +46,10 @@ class RetryConfig:
     max_delay: float = 10.0
     exponential: bool = True
     jitter: bool = True
+
+    # FIX 1: restore default retry_on_exception
     retry_on_exception: Optional[tuple[Type[Exception], ...]] = (Exception,)
+
     retry_on_result: Optional[Callable[[Any], bool]] = None
 
 
@@ -61,32 +64,44 @@ class RetryHandler:
         self.total_delay = 0.0
 
     def _log_structured(self, level: int, message: str, **fields):
-        """Standardized JSON-style logging."""
         log_entry = {"message": message, **fields}
         logger.log(level, json.dumps(log_entry))
 
+    # ────────────────────────────────────────────
+    # Public API (Async)
+    # ────────────────────────────────────────────
+
     async def execute_async(
         self,
-        func: Union[Callable[..., T], Callable[..., Awaitable[T]], Awaitable[T]],
+        func: Union[Callable[..., T], Callable[..., Awaitable[T]]],
         *args,
         run_sync_in_thread: bool = False,
         **kwargs,
     ) -> T:
-        """Execute a function with retry logic (Async)."""
+
+        # FIX 2: prevent leaking internal kwarg into user functions
+        kwargs.pop("run_sync_in_thread", None)
+
         func_name = getattr(func, "__name__", "anonymous_func")
         cancelled_exc = anyio.get_cancelled_exc_class()
 
         for attempt in range(1, self.config.max_attempts + 1):
             try:
+                # Execute function
                 if inspect.iscoroutinefunction(func):
                     result = await func(*args, **kwargs)
-                elif inspect.isawaitable(func):
-                    result = await func
+
                 elif run_sync_in_thread:
-                    result = await anyio.to_thread.run_sync(functools.partial(func, *args, **kwargs))
+                    result = await anyio.to_thread.run_sync(
+                        functools.partial(func, *args, **kwargs)
+                    )
+
                 else:
                     result = func(*args, **kwargs)
+                    if inspect.isawaitable(result):
+                        result = await result
 
+                # Result-based retry
                 if self.config.retry_on_result and self.config.retry_on_result(result):
                     raise _ResultRetryTrigger("Result-based retry triggered", result=result)
 
@@ -95,15 +110,38 @@ class RetryHandler:
             except Exception as e:
                 if isinstance(e, (KeyboardInterrupt, SystemExit, cancelled_exc)):
                     raise
+
                 self._handle_failure(e, attempt, func_name, is_async=True)
 
-                delay = self._calculate_delay(attempt)
-                self.total_retries += 1
-                self.total_delay += delay
-                await anyio.sleep(delay)
+                if attempt < self.config.max_attempts:
+                    delay = self._calculate_delay(attempt)
+                    self.total_retries += 1
+                    self.total_delay += delay
+                    await anyio.sleep(delay)
+
+    # ────────────────────────────────────────────
+    # Public API (Sync wrapper if needed)
+    # ────────────────────────────────────────────
+
+    async def execute(
+        self,
+        func,
+        *args,
+        run_sync_in_thread: bool = False,
+        **kwargs,
+    ) -> T:
+        return await self.execute_async(
+            func,
+            *args,
+            run_sync_in_thread=run_sync_in_thread,
+            **kwargs,
+        )
+
+    # ────────────────────────────────────────────
+    # Internal helpers
+    # ────────────────────────────────────────────
 
     def execute_sync(self, func: Callable[..., T], *args, **kwargs) -> T:
-        """Execute a function with retry logic (Sync)."""
         func_name = getattr(func, "__name__", "anonymous_func")
 
         for attempt in range(1, self.config.max_attempts + 1):
@@ -118,16 +156,18 @@ class RetryHandler:
             except Exception as e:
                 if isinstance(e, (KeyboardInterrupt, SystemExit)):
                     raise
+
                 self._handle_failure(e, attempt, func_name, is_async=False)
 
-                delay = self._calculate_delay(attempt)
-                self.total_retries += 1
-                self.total_delay += delay
-                time.sleep(delay)
+                if attempt < self.config.max_attempts:
+                    delay = self._calculate_delay(attempt)
+                    self.total_retries += 1
+                    self.total_delay += delay
+                    time.sleep(delay)
 
     def _handle_failure(self, e: Exception, attempt: int, func_name: str, is_async: bool):
-        """Common logic for checking if we should retry or raise."""
         is_result_retry = isinstance(e, _ResultRetryTrigger)
+
         is_exception_retry = (
             self.config.retry_on_exception
             and isinstance(e, self.config.retry_on_exception)
@@ -138,14 +178,20 @@ class RetryHandler:
 
         if attempt == self.config.max_attempts:
             mode = "async" if is_async else "sync"
+
             self._log_structured(
                 logging.ERROR,
                 f"Retry exhausted ({mode})",
                 function=func_name,
-                attempts=attempt
+                attempts=attempt,
             )
+
             if is_result_retry:
-                raise RetryExhaustedError(f"Max attempts reached for {func_name}", last_result=e.result) from e
+                raise RetryExhaustedError(
+                    f"Max attempts reached for {func_name}",
+                    last_result=e.result
+                ) from e
+
             raise e
 
         self._log_structured(
@@ -153,18 +199,21 @@ class RetryHandler:
             "Failure detected, retrying...",
             function=func_name,
             attempt=attempt,
-            exception=type(e).__name__
+            exception=type(e).__name__,
         )
 
     def _calculate_delay(self, attempt: int) -> float:
-        """Compute exponential backoff with optional jitter."""
         if self.config.exponential:
-            raw = min(self.config.base_delay * (2 ** (attempt - 1)), self.config.max_delay)
+            raw = min(
+                self.config.base_delay * (2 ** (attempt - 1)),
+                self.config.max_delay
+            )
         else:
             raw = self.config.base_delay
 
         if self.config.jitter:
             return raw / 2 + random.uniform(0, raw / 2)
+
         return raw
 
 
@@ -173,27 +222,23 @@ class RetryHandler:
 # ────────────────────────────────────────────────
 
 def retryable_sync(config: Optional[RetryConfig] = None):
-    """Decorator to make a synchronous function retryable."""
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            # handler instance per call
             return RetryHandler(config).execute_sync(func, *args, **kwargs)
         return wrapper
     return decorator
 
 
 def retryable_async(config: Optional[RetryConfig] = None, run_sync_in_thread: bool = False):
-    """Decorator to make an asynchronous function retryable."""
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
-            # handler instance per call
             return await RetryHandler(config).execute_async(
                 func,
                 *args,
                 run_sync_in_thread=run_sync_in_thread,
-                **kwargs
+                **kwargs,
             )
         return wrapper
     return decorator
