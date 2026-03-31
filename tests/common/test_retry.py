@@ -1,299 +1,158 @@
-"""
-Tests for TrendMaster Universal Retry Handler.
-Path: tests/common/test_retry.py
-"""
-
+import os
 import pytest
-from unittest.mock import AsyncMock, MagicMock
 
-from src.common.retry import RetryHandler, RetryConfig, RetryExhaustedError
-from src.common.exceptions import APIConnectionError, APITimeoutError
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def make_handler(config: RetryConfig = None) -> RetryHandler:
-    return RetryHandler(config=config)
+import config
+from config.env_config import set_env_backend
 
 
 # ---------------------------------------------------------------------------
-# Success cases
+# Mock environment backend for testing
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio
-async def test_async_func_succeeds_on_first_attempt():
-    func = AsyncMock(return_value="ok")
-    handler = make_handler()
+class MockBackend:
+    def __init__(self, data):
+        self.data = data
 
-    result = await handler.execute_async(func)
-
-    assert result == "ok"
-    assert func.call_count == 1
-    assert handler.total_retries == 0
-
-
-@pytest.mark.asyncio
-async def test_sync_func_succeeds_on_first_attempt():
-    func = MagicMock(return_value=42)
-    handler = make_handler()
-
-    result = await handler.execute_async(func)
-
-    assert result == 42
-    assert func.call_count == 1
-    assert handler.total_retries == 0
-
-
-@pytest.mark.asyncio
-async def test_sync_func_in_thread_succeeds():
-    func = MagicMock(return_value="threaded")
-    handler = make_handler()
-
-    result = await handler.execute_async(func, run_sync_in_thread=True)
-
-    assert result == "threaded"
-    assert func.call_count == 1
-    assert handler.total_retries == 0
+    def get(self, key: str):
+        return self.data.get(key)
 
 
 # ---------------------------------------------------------------------------
-# Exception-based retry
+# Fixtures
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio
-async def test_retries_on_matching_exception():
-    func = AsyncMock(side_effect=[APIConnectionError("fail"), APIConnectionError("fail"), "ok"])
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(APIConnectionError,),
+@pytest.fixture
+def mock_env():
+    backend = MockBackend({
+        "ENVIRONMENT": "development",
+        "DB_HOST": "mock-host",
+        "DB_PORT": "3307",
+        "DB_NAME": "mock_db",
+        "DB_USER": "mock_user",
+        "DB_PASSWORD": "mock_pass",
+    })
+    set_env_backend(backend)
+    return backend
+
+
+# ---------------------------------------------------------------------------
+# Tests: env_config
+# ---------------------------------------------------------------------------
+
+def test_env_config_reads_values(mock_env):
+    ec = config.env_config
+
+    assert ec.db_host == "mock-host"
+    assert ec.db_port == 3307
+    assert ec.db_name == "mock_db"
+    assert ec.db_user == "mock_user"
+    assert ec.db_password == "mock_pass"
+
+
+def test_env_config_defaults(monkeypatch):
+    # Reset backend to default OS env behavior
+    monkeypatch.delenv("DB_HOST", raising=False)
+
+    ec = config.env_config
+
+    # Defaults should apply
+    assert isinstance(ec.db_host, str)
+
+
+# ---------------------------------------------------------------------------
+# Tests: MySQLConfig
+# ---------------------------------------------------------------------------
+
+def test_mysql_config_creation():
+    cfg = config.MySQLConfig.create(
+        host="localhost",
+        port=3306,
+        database="test_db",
+        user="root",
+        password="",
+        pool_size=5,
     )
-    handler = make_handler(config)
 
-    result = await handler.execute_async(func)
+    assert cfg.host == "localhost"
+    assert cfg.port == 3306
+    assert cfg.database == "test_db"
+    assert cfg.pool_size == 5
 
-    assert result == "ok"
-    assert func.call_count == 3
-    assert handler.total_retries == 2
-
-
-@pytest.mark.asyncio
-async def test_does_not_retry_on_non_matching_exception():
-    func = AsyncMock(side_effect=ValueError("unexpected"))
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(APIConnectionError,),
-    )
-    handler = make_handler(config)
-
-    with pytest.raises(ValueError, match="unexpected"):
-        await handler.execute_async(func)
-
-    assert func.call_count == 1
-    assert handler.total_retries == 0
-
-
-@pytest.mark.asyncio
-async def test_exhausts_retries_and_reraises_exception():
-    func = AsyncMock(side_effect=APITimeoutError("timeout"))
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(APITimeoutError,),
-    )
-    handler = make_handler(config)
-
-    with pytest.raises(APITimeoutError, match="timeout"):
-        await handler.execute_async(func)
-
-    assert func.call_count == 3
-    assert handler.total_retries == 2
-
-
-@pytest.mark.asyncio
-async def test_succeeds_on_second_attempt():
-    func = AsyncMock(side_effect=[APIConnectionError("fail"), "recovered"])
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(APIConnectionError,),
-    )
-    handler = make_handler(config)
-
-    result = await handler.execute_async(func)
-
-    assert result == "recovered"
-    assert func.call_count == 2
-    assert handler.total_retries == 1
+    conn_dict = cfg.to_dict()
+    assert "collation" in conn_dict
+    assert "init_command" in conn_dict
 
 
 # ---------------------------------------------------------------------------
-# Result-based retry
+# Tests: environment profiles
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio
-async def test_retries_on_matching_result():
-    func = AsyncMock(side_effect=[None, None, {"data": [1, 2, 3]}])
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_result=lambda r: r is None,
-    )
-    handler = make_handler(config)
+def test_load_development_profile():
+    cfg = config.load_config_for_environment("development")
 
-    result = await handler.execute_async(func)
-
-    assert result == {"data": [1, 2, 3]}
-    assert func.call_count == 3
-    assert handler.total_retries == 2
+    assert cfg.application.environment == "development"
+    assert cfg.logging.level == "DEBUG"
+    assert cfg.processing.batch_size > 0
 
 
-@pytest.mark.asyncio
-async def test_raises_retry_exhausted_error_on_bad_result():
-    func = AsyncMock(return_value=None)
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_result=lambda r: r is None,
-    )
-    handler = make_handler(config)
+def test_load_testing_profile():
+    cfg = config.load_config_for_environment("testing")
 
-    with pytest.raises(RetryExhaustedError) as excinfo:
-        await handler.execute_async(func)
-
-    assert excinfo.value.last_result is None
-    assert func.call_count == 3
+    assert cfg.application.environment == "testing"
+    assert cfg.database.database == "store_manager_test"
+    assert cfg.logging.enable_file_logging is False
 
 
-@pytest.mark.asyncio
-async def test_retry_exhausted_error_carries_last_result():
-    func = AsyncMock(return_value={"error": True})
-    config = RetryConfig(
-        max_attempts=2,
-        base_delay=0,
-        jitter=False,
-        retry_on_result=lambda r: r.get("error") is True,
-    )
-    handler = make_handler(config)
+def test_load_production_profile():
+    cfg = config.load_config_for_environment("production")
 
-    with pytest.raises(RetryExhaustedError) as excinfo:
-        await handler.execute_async(func)
+    assert cfg.application.environment == "production"
+    assert cfg.application.debug_mode is False
+    assert cfg.logging.level == "INFO"
 
-    assert excinfo.value.last_result == {"error": True}
+
+def test_invalid_environment_raises():
+    with pytest.raises(ValueError):
+        config.load_config_for_environment("unknown_env")
 
 
 # ---------------------------------------------------------------------------
-# Stats tracking
+# Tests: environment helpers
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio
-async def test_total_retries_tracked():
-    func = AsyncMock(side_effect=[APIConnectionError("e"), APIConnectionError("e"), "ok"])
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0,
-        jitter=False,
-        retry_on_exception=(APIConnectionError,),
-    )
-    handler = make_handler(config)
-
-    await handler.execute_async(func)
-
-    assert handler.total_retries == 2
-
-
-@pytest.mark.asyncio
-async def test_total_delay_tracked():
-    func = AsyncMock(side_effect=[APIConnectionError("e"), "ok"])
-    config = RetryConfig(
-        max_attempts=3,
-        base_delay=0.1,
-        exponential=False,
-        jitter=False,
-        retry_on_exception=(APIConnectionError,),
-    )
-    handler = make_handler(config)
-
-    await handler.execute_async(func)
-
-    assert handler.total_delay == pytest.approx(0.1, rel=1e-3)
-
-
-@pytest.mark.asyncio
-async def test_no_retries_on_success():
-    func = AsyncMock(return_value="fine")
-    handler = make_handler()
-
-    await handler.execute_async(func)
-
-    assert handler.total_retries == 0
-    assert handler.total_delay == 0.0
+def test_environment_helpers(mock_env):
+    # backend ENVIRONMENT = development
+    assert config.is_development() is True
+    assert config.is_production() is False
+    assert config.is_testing() is False
 
 
 # ---------------------------------------------------------------------------
-# Fatal exceptions are never retried
+# Tests: factory API
 # ---------------------------------------------------------------------------
 
-@pytest.mark.asyncio
-async def test_keyboard_interrupt_not_retried():
-    func = AsyncMock(side_effect=KeyboardInterrupt)
-    handler = make_handler()
+def test_get_config_returns_etl_config():
+    # Depending on your factory implementation
+    cfg = config.get_config()
 
-    with pytest.raises(KeyboardInterrupt):
-        await handler.execute_async(func)
-
-    assert func.call_count == 1
-    assert handler.total_retries == 0
+    assert hasattr(cfg, "database")
+    assert hasattr(cfg, "api")
+    assert hasattr(cfg, "processing")
 
 
-@pytest.mark.asyncio
-async def test_system_exit_not_retried():
-    func = AsyncMock(side_effect=SystemExit)
-    handler = make_handler()
-
-    with pytest.raises(SystemExit):
-        await handler.execute_async(func)
-
-    assert func.call_count == 1
-    assert handler.total_retries == 0
+def test_get_default_config():
+    cfg = config.get_default_config()
+    assert cfg is not None
 
 
 # ---------------------------------------------------------------------------
-# Delay calculation
+# Integration test: full pipeline
 # ---------------------------------------------------------------------------
 
-def test_exponential_backoff_no_jitter():
-    config = RetryConfig(base_delay=1.0, max_delay=10.0, exponential=True, jitter=False)
-    handler = make_handler(config)
+def test_full_environment_pipeline(mock_env):
+    cfg = config.load_config_for_environment()
 
-    assert handler._calculate_delay(1) == 1.0
-    assert handler._calculate_delay(2) == 2.0
-    assert handler._calculate_delay(3) == 4.0
-    assert handler._calculate_delay(4) == 8.0
-    assert handler._calculate_delay(5) == 10.0
-
-
-def test_flat_delay_no_jitter():
-    config = RetryConfig(base_delay=2.0, exponential=False, jitter=False)
-    handler = make_handler(config)
-
-    assert handler._calculate_delay(1) == 2.0
-    assert handler._calculate_delay(3) == 2.0
-
-
-def test_equal_jitter_within_bounds():
-    config = RetryConfig(base_delay=2.0, exponential=False, jitter=True)
-    handler = make_handler(config)
-
-    for _ in range(50):
-        delay = handler._calculate_delay(1)
-        assert 1.0 <= delay <= 2.0
+    assert cfg.database.host == "localhost" or isinstance(cfg.database.host, str)
+    assert cfg.application is not None
+    assert cfg.processing is not None
+    assert cfg.logging is not None

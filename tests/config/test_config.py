@@ -1,325 +1,620 @@
 """
-Test suite for the config package.
+Tests for the config package.
 
-Covers:
-    - DatabaseConfig
-    - APIConfig
-    - ProcessingConfig
-    - LoggingConfig
-    - ApplicationConfig
-    - ETLConfig
-    - EnvConfig / _env helpers
-    - Environment profiles
-    - load_config_for_environment / get_current_environment / is_* helpers
-    - Factory functions: load_config_from_env, load_config_from_dict,
-                         get_default_config, get_config, set_config, reset_config
-
-No live database, filesystem writes, or real env files required.
-Run with:
-    pytest tests/config/test_config.py -v
+Run with:  pytest test_config.py -v
 """
 
 import pytest
+from unittest.mock import patch
 from pathlib import Path
-from typing import Optional, Dict
+
 
 # ---------------------------------------------------------------------------
-# Shared test backend — injected instead of DotEnvBackend for all tests
+# Helpers / fixtures
 # ---------------------------------------------------------------------------
 
 class DictBackend:
-    """In-memory EnvBackend backed by a plain dict."""
+    """Simple in-memory EnvBackend for test isolation."""
+    def __init__(self, vars: dict):
+        self._vars = vars
 
-    def __init__(self, data: Dict[str, str] = None) -> None:
-        self._data = data or {}
-
-    def get(self, key: str) -> Optional[str]:
-        return self._data.get(key)
-
-
-def _install_backend(data: Dict[str, str] = None):
-    """Install a DictBackend into env_config and return it."""
-    import config.env_config as ec
-    backend = DictBackend(data or {})
-    ec.set_env_backend(backend)
-    return backend
+    def get(self, key: str):
+        return self._vars.get(key)
 
 
 # ---------------------------------------------------------------------------
-# Fixtures
+# etl_config.py — DatabaseConfig
 # ---------------------------------------------------------------------------
-
-@pytest.fixture(autouse=True)
-def clean_backend():
-    """Reset to an empty backend before every test."""
-    _install_backend({})
-    yield
-    _install_backend({})
-
-
-@pytest.fixture(autouse=True)
-def clean_global_config():
-    """Reset the global ETLConfig singleton before every test."""
-    from config import reset_config
-    reset_config()
-    yield
-    reset_config()
-
-
-# ========================================================================
-# _env helpers
-# ========================================================================
-
-class TestEnvHelpers:
-
-    def test_env_returns_value(self):
-        _install_backend({"FOO": "bar"})
-        from config.env_config import _env
-        assert _env("FOO") == "bar"
-
-    def test_env_returns_default_when_missing(self):
-        from config.env_config import _env
-        assert _env("MISSING", "default") == "default"
-
-    def test_env_returns_empty_string_default(self):
-        from config.env_config import _env
-        assert _env("MISSING") == ""
-
-    def test_env_int_valid(self):
-        _install_backend({"PORT": "5432"})
-        from config.env_config import _env_int
-        assert _env_int("PORT", 3306) == 5432
-
-    def test_env_int_missing_returns_default(self):
-        from config.env_config import _env_int
-        assert _env_int("MISSING", 42) == 42
-
-    def test_env_int_invalid_returns_default(self):
-        _install_backend({"PORT": "not_a_number"})
-        from config.env_config import _env_int
-        assert _env_int("PORT", 3306) == 3306
-
-    def test_env_int_whitespace_only_returns_default(self):
-        _install_backend({"PORT": "   "})
-        from config.env_config import _env_int
-        assert _env_int("PORT", 3306) == 3306
-
-    def test_env_bool_true_variants(self):
-        from config.env_config import _env_bool
-        for val in ("true", "1", "yes", "on", "TRUE", "Yes", " on "):
-            _install_backend({"FLAG": val})
-            assert _env_bool("FLAG", False) is True, f"Failed for '{val}'"
-
-    def test_env_bool_false_variants(self):
-        from config.env_config import _env_bool
-        for val in ("false", "0", "no", "off", "FALSE"):
-            _install_backend({"FLAG": val})
-            assert _env_bool("FLAG", True) is False, f"Failed for '{val}'"
-
-    def test_env_bool_missing_returns_default(self):
-        from config.env_config import _env_bool
-        assert _env_bool("MISSING", True) is True
-        assert _env_bool("MISSING", False) is False
-
-
-# ========================================================================
-# DatabaseConfig
-# ========================================================================
 
 class TestDatabaseConfig:
+    def _make(self, **kw):
+        from config.etl_config import DatabaseConfig
+        return DatabaseConfig(**kw)
 
     def test_defaults(self):
-        from config import DatabaseConfig
-        cfg = DatabaseConfig()
+        cfg = self._make()
         assert cfg.host == "127.0.0.1"
         assert cfg.port == 3306
         assert cfg.pool_size == 5
         assert cfg.autocommit is False
-        assert cfg.raise_on_warnings is True
 
-    def test_to_dict_keys(self):
-        from config import DatabaseConfig
-        d = DatabaseConfig().to_dict()
-        assert set(d.keys()) == {
-            "user", "password", "host", "port", "database",
-            "raise_on_warnings", "autocommit", "connect_timeout",
-        }
+    def test_valid_custom(self):
+        cfg = self._make(host="db.example.com", user="admin", port=5432)
+        assert cfg.port == 5432
 
-    def test_get_connection_string_no_password(self):
-        from config import DatabaseConfig
-        cfg = DatabaseConfig(user="alice", host="db.example.com", port=3306, database="mydb")
-        s = cfg.get_connection_string()
-        assert "alice" in s
-        assert "db.example.com" in s
-        assert cfg.password not in s or cfg.password == ""
+    def test_invalid_port_zero(self):
+        with pytest.raises(ValueError, match="port"):
+            self._make(port=0)
 
-    def test_validate_passes(self):
-        from config import DatabaseConfig
-        assert DatabaseConfig().validate() is True
+    def test_invalid_port_too_high(self):
+        with pytest.raises(ValueError, match="port"):
+            self._make(port=99999)
 
-    def test_validate_failures(self):
-        from config import DatabaseConfig
-        assert DatabaseConfig(host="").validate() is False
-        assert DatabaseConfig(user="").validate() is False
-        assert DatabaseConfig(port=0).validate() is False
-        assert DatabaseConfig(port=99999).validate() is False
-        assert DatabaseConfig(pool_size=0).validate() is False
+    def test_invalid_pool_size(self):
+        with pytest.raises(ValueError, match="pool_size"):
+            self._make(pool_size=0)
+
+    def test_empty_host_raises(self):
+        with pytest.raises(ValueError, match="host"):
+            self._make(host="")
+
+    def test_empty_user_raises(self):
+        with pytest.raises(ValueError, match="user"):
+            self._make(user="")
+
+    def test_to_dict_excludes_pooling(self):
+        cfg = self._make()
+        d = cfg.to_dict()
+        # to_dict() should expose connection keys but NOT internal pool settings
+        assert "host" in d
+        assert "user" in d
+        assert "password" in d
+
+    def test_to_dict_includes_autocommit(self):
+        cfg = self._make(autocommit=True)
+        assert cfg.to_dict()["autocommit"] is True
+
+    def test_frozen(self):
+        cfg = self._make()
+        with pytest.raises((AttributeError, TypeError)):
+            cfg.host = "other"
 
 
-# ========================================================================
-# APIConfig
-# ========================================================================
+# ---------------------------------------------------------------------------
+# etl_config.py — APIConfig
+# ---------------------------------------------------------------------------
 
 class TestAPIConfig:
+    def _make(self, **kw):
+        from config.etl_config import APIConfig
+        return APIConfig(**kw)
 
     def test_defaults(self):
-        from config import APIConfig
-        cfg = APIConfig()
+        cfg = self._make()
         assert cfg.timeout == 30
         assert cfg.retries == 3
-        assert cfg.max_concurrent_requests == 10
 
-    def test_get_headers_basic(self):
-        from config import APIConfig
-        headers = APIConfig().get_headers()
-        assert headers["Accept"] == "application/json"
-        assert headers["Content-Type"] == "application/json"
+    def test_empty_base_url_raises(self):
+        with pytest.raises(ValueError, match="base_url"):
+            self._make(base_url="")
 
-    def test_get_headers_with_auth(self):
-        from config import APIConfig
-        cfg = APIConfig(api_key="my-key", bearer_token="tok")
+    def test_zero_timeout_raises(self):
+        with pytest.raises(ValueError, match="timeout"):
+            self._make(timeout=0)
+
+    def test_negative_retries_raises(self):
+        with pytest.raises(ValueError, match="retries"):
+            self._make(retries=-1)
+
+    def test_zero_concurrent_requests_raises(self):
+        with pytest.raises(ValueError, match="max_concurrent_requests"):
+            self._make(max_concurrent_requests=0)
+
+    def test_get_headers_default(self):
+        cfg = self._make()
         h = cfg.get_headers()
-        assert h["X-API-Key"] == "my-key"
-        assert h["Authorization"] == "Bearer tok"
+        assert h["Accept"] == "application/json"
+        assert "X-API-Key" not in h
+        assert "Authorization" not in h
 
-    def test_validate_passes(self):
-        from config import APIConfig
-        assert APIConfig().validate() is True
+    def test_get_headers_api_key(self):
+        cfg = self._make(api_key="secret")
+        assert cfg.get_headers()["X-API-Key"] == "secret"
 
-    def test_validate_failures(self):
-        from config import APIConfig
-        assert APIConfig(base_url="").validate() is False
-        assert APIConfig(timeout=0).validate() is False
-        assert APIConfig(retries=-1).validate() is False
-        assert APIConfig(max_concurrent_requests=0).validate() is False
+    def test_get_headers_bearer(self):
+        cfg = self._make(bearer_token="tok123")
+        assert cfg.get_headers()["Authorization"] == "Bearer tok123"
 
 
-# ========================================================================
-# ProcessingConfig
-# ========================================================================
+# ---------------------------------------------------------------------------
+# etl_config.py — ProcessingConfig
+# ---------------------------------------------------------------------------
 
 class TestProcessingConfig:
+    def _make(self, **kw):
+        from config.etl_config import ProcessingConfig
+        return ProcessingConfig(**kw)
 
     def test_defaults(self):
-        from config import ProcessingConfig
-        cfg = ProcessingConfig()
+        cfg = self._make()
         assert cfg.batch_size == 1000
-        assert cfg.max_batch_size == 10_000
         assert cfg.max_workers == 4
 
-    def test_validate_passes(self):
-        from config import ProcessingConfig
-        assert ProcessingConfig().validate() is True
+    def test_batch_size_exceeds_max(self):
+        with pytest.raises(ValueError, match="batch_size"):
+            self._make(batch_size=20000, max_batch_size=10000)
 
-    def test_validate_failures(self):
-        from config import ProcessingConfig
-        assert ProcessingConfig(batch_size=0).validate() is False
-        assert ProcessingConfig(batch_size=20_000, max_batch_size=10_000).validate() is False
-        assert ProcessingConfig(chunk_size=0).validate() is False
-        assert ProcessingConfig(max_workers=0).validate() is False
+    def test_zero_batch_size_raises(self):
+        with pytest.raises(ValueError, match="batch_size"):
+            self._make(batch_size=0)
+
+    def test_zero_chunk_size_raises(self):
+        with pytest.raises(ValueError, match="chunk_size"):
+            self._make(chunk_size=0)
+
+    def test_zero_max_workers_raises(self):
+        with pytest.raises(ValueError, match="max_workers"):
+            self._make(max_workers=0)
 
 
-# ========================================================================
-# LoggingConfig
-# ========================================================================
+# ---------------------------------------------------------------------------
+# etl_config.py — LoggingConfig
+# ---------------------------------------------------------------------------
 
 class TestLoggingConfig:
+    def _make(self, **kw):
+        from config.etl_config import LoggingConfig
+        return LoggingConfig(**kw)
 
     def test_defaults(self):
-        from config import LoggingConfig
-        cfg = LoggingConfig()
+        cfg = self._make()
         assert cfg.level == "INFO"
         assert cfg.backup_count == 5
-        assert cfg.enable_console_logging is True
+
+    def test_invalid_level_raises(self):
+        with pytest.raises(ValueError, match="logging level"):
+            self._make(level="VERBOSE")
+
+    def test_invalid_console_level_raises(self):
+        with pytest.raises(ValueError, match="console level"):
+            self._make(console_level="TRACE")
+
+    def test_zero_max_file_size_raises(self):
+        with pytest.raises(ValueError, match="log file"):
+            self._make(max_file_size=0)
+
+    def test_negative_backup_count_raises(self):
+        with pytest.raises(ValueError, match="log file"):
+            self._make(backup_count=-1)
 
     def test_get_log_directory(self):
-        from config import LoggingConfig
-        cfg = LoggingConfig(log_file="logs/etl.log")
+        cfg = self._make(log_file="logs/etl.log")
         assert cfg.get_log_directory() == Path("logs")
 
-    def test_validate_failures(self):
-        from config import LoggingConfig
-        assert LoggingConfig(level="VERBOSE").validate() is False
-        assert LoggingConfig(console_level="TRACE").validate() is False
-        assert LoggingConfig(max_file_size=0).validate() is False
-        assert LoggingConfig(backup_count=-1).validate() is False
+    def test_case_insensitive_level(self):
+        # Level is stored as-is; validation uppercases before checking
+        cfg = self._make(level="debug")
+        assert cfg.level == "debug"
 
 
-# ========================================================================
-# ApplicationConfig
-# ========================================================================
+# ---------------------------------------------------------------------------
+# etl_config.py — ApplicationConfig
+# ---------------------------------------------------------------------------
 
 class TestApplicationConfig:
+    def _make(self, **kw):
+        from config.etl_config import ApplicationConfig
+        return ApplicationConfig(**kw)
 
     def test_defaults(self):
-        from config import ApplicationConfig
-        cfg = ApplicationConfig()
+        cfg = self._make()
         assert cfg.name == "ETL Pipeline Manager"
-        assert cfg.version == "2.0.0"
-        assert cfg.debug_mode is False
+        assert cfg.environment == "development"
 
-    def test_derived_dirs_set_in_post_init(self):
-        from config import ApplicationConfig
-        cfg = ApplicationConfig()
-        assert cfg.csv_dir   == cfg.data_dir / "CSV"
-        assert cfg.api_dir   == cfg.data_dir / "API"
-        assert cfg.cache_dir == cfg.data_dir / "cache"
+    def test_empty_name_raises(self):
+        with pytest.raises(ValueError, match="name"):
+            self._make(name="")
 
-    def test_is_production_and_development_helpers(self):
-        from config import ApplicationConfig
-        cfg = ApplicationConfig(environment="production")
+    def test_empty_version_raises(self):
+        with pytest.raises(ValueError, match="version"):
+            self._make(version="")
+
+    def test_empty_environment_raises(self):
+        with pytest.raises(ValueError, match="environment"):
+            self._make(environment="")
+
+    def test_is_production(self):
+        cfg = self._make(environment="production")
         assert cfg.is_production() is True
         assert cfg.is_development() is False
-        cfg = ApplicationConfig(environment="development")
-        assert cfg.is_production() is False
+
+    def test_is_development(self):
+        cfg = self._make(environment="development")
         assert cfg.is_development() is True
+        assert cfg.is_production() is False
 
-    def test_validate_failures(self):
-        from config import ApplicationConfig
-        assert ApplicationConfig(name="").validate() is False
-        assert ApplicationConfig(version="").validate() is False
+    def test_subdirs_derived_from_data_dir(self):
+        cfg = self._make(data_dir=Path("/tmp/data"))
+        assert cfg.csv_dir == Path("/tmp/data/CSV")
+        assert cfg.api_dir == Path("/tmp/data/API")
+        assert cfg.cache_dir == Path("/tmp/data/cache")
+
+    def test_subdirs_overridable(self):
+        cfg = self._make(
+            data_dir=Path("/tmp/data"),
+            csv_dir=Path("/custom/csv"),
+        )
+        assert cfg.csv_dir == Path("/custom/csv")
+        assert cfg.api_dir == Path("/tmp/data/API")  # default still used
 
 
-# ========================================================================
-# ETLConfig and factory functions
-# ========================================================================
+# ---------------------------------------------------------------------------
+# etl_config.py — ETLConfig (composite root)
+# ---------------------------------------------------------------------------
 
-class TestETLConfigAndFactory:
+class TestETLConfig:
+    def test_default_construction(self):
+        from config.etl_config import ETLConfig
+        cfg = ETLConfig()
+        assert cfg.database.port == 3306
+        assert cfg.api.timeout == 30
+        assert cfg.processing.batch_size == 1000
 
-    def test_load_config_from_env_returns_etlconfig(self):
-        from config import load_config_from_env, ETLConfig
-        cfg = load_config_from_env()
-        assert isinstance(cfg, ETLConfig)
+    def test_from_dict_roundtrip(self):
+        from config.etl_config import ETLConfig
+        data = {
+            "database": {"host": "mydb", "user": "admin"},
+            "api": {"base_url": "https://example.com"},
+            "processing": {},
+            "logging": {},
+            "application": {},
+        }
+        cfg = ETLConfig.from_dict(data)
+        assert cfg.database.host == "mydb"
+        assert cfg.api.base_url == "https://example.com"
 
-    def test_load_config_from_dict_applies(self):
-        from config import load_config_from_dict
-        cfg = load_config_from_dict({"database": {"pool_size": 99}})
-        assert cfg.database.pool_size == 99
-        cfg = load_config_from_dict({"api": {"timeout": 42}})
-        assert cfg.api.timeout == 42
-        cfg = load_config_from_dict({"processing": {"batch_size": 101}})
-        assert cfg.processing.batch_size == 101
+    def test_get_summary_keys(self):
+        from config.etl_config import ETLConfig
+        summary = ETLConfig().get_summary()
+        assert "application" in summary
+        assert "database" in summary
+        assert "api" in summary
+        assert "processing" in summary
 
-    def test_get_default_config_and_singleton(self):
-        from config import get_default_config, get_config, set_config, reset_config, ETLConfig
-        cfg = get_default_config()
-        assert cfg.database.pool_size == 10
-        # Singleton
-        reset_config()
-        a = get_config()
-        b = get_config()
-        assert a is b
-        # Replace singleton
-        custom = ETLConfig(database=a.database)
-        set_config(custom)
-        assert get_config() is custom
+    def test_get_summary_no_secrets(self):
+        """Password must not appear in the summary."""
+        from config.etl_config import ETLConfig
+        cfg = ETLConfig()
+        summary = cfg.get_summary()
+        assert "password" not in str(summary)
+
+
+# ---------------------------------------------------------------------------
+# database.py — MySQLConfig
+# ---------------------------------------------------------------------------
+
+class TestMySQLConfig:
+    def _make(self, **kw):
+        from config.database import MySQLConfig
+        return MySQLConfig.create(**kw)
+
+    def test_defaults(self):
+        cfg = self._make()
+        assert cfg.max_connections == 151
+        assert "utf8mb4" in cfg.collation
+
+    def test_sql_mode_deduplication(self):
+        cfg = self._make(sql_mode="STRICT_TRANS_TABLES,STRICT_TRANS_TABLES")
+        parts = cfg.sql_mode.split(",")
+        assert len(parts) == len(set(parts))
+
+    def test_charset_fallback(self):
+        cfg = self._make(charset=None)
+        assert cfg.charset == "utf8mb4"
+
+    def test_charset_empty_string_fallback(self):
+        cfg = self._make(charset="")
+        assert cfg.charset == "utf8mb4"
+
+    def test_mysql5_key_rejected(self):
+        with pytest.raises(ValueError, match="query_cache_size"):
+            self._make(query_cache_size=0)
+
+    def test_collation_empty_raises(self):
+        with pytest.raises(ValueError):
+            from config.database import MySQLConfig
+            MySQLConfig(collation="")
+
+    def test_max_connections_zero_raises(self):
+        with pytest.raises(ValueError, match="max_connections"):
+            from config.database import MySQLConfig
+            MySQLConfig(max_connections=0)
+
+    def test_charset_collation_mismatch_raises(self):
+        """utf8mb4 charset must not be paired with a non-utf8mb4 collation."""
+        with pytest.raises(ValueError, match="Collation"):
+            from config.database import MySQLConfig
+            MySQLConfig(charset="utf8mb4", collation="latin1_swedish_ci")
+
+    def test_to_dict_has_init_command(self):
+        cfg = self._make()
+        d = cfg.to_dict()
+        assert "init_command" in d
+        assert "sql_mode" in d["init_command"]
+
+    def test_frozen(self):
+        cfg = self._make()
+        with pytest.raises((AttributeError, TypeError)):
+            cfg.max_connections = 999
+
+
+# ---------------------------------------------------------------------------
+# database.py — preset factories
+# ---------------------------------------------------------------------------
+
+class TestMySQLPresets:
+    def test_development_config(self):
+        from config.database import get_mysql_development_config
+        cfg = get_mysql_development_config()
+        assert cfg.database == "store_manager_dev"
+        assert cfg.pool_size == 3
+
+    def test_production_config(self):
+        from config.database import get_mysql_production_config
+        cfg = get_mysql_production_config()
+        assert cfg.pool_size == 20
+        assert cfg.max_connections == 500
+
+    def test_testing_config(self):
+        from config.database import get_mysql_testing_config
+        cfg = get_mysql_testing_config()
+        assert cfg.autocommit is True
+        assert cfg.raise_on_warnings is False
+
+
+# ---------------------------------------------------------------------------
+# api.py — RESTAPIConfig
+# ---------------------------------------------------------------------------
+
+class TestRESTAPIConfig:
+    def _make(self, **kw):
+        from config.api import RESTAPIConfig
+        return RESTAPIConfig(**kw)
+
+    def test_default_endpoints_populated(self):
+        cfg = self._make()
+        assert cfg.endpoints is not None
+        assert "customers" in cfg.endpoints
+
+    def test_instances_do_not_share_endpoints(self):
+        """Mutable default bug — each instance must have its own dict."""
+        from config.api import RESTAPIConfig
+        a = RESTAPIConfig()
+        b = RESTAPIConfig()
+        a.endpoints["new_key"] = "/new"
+        assert "new_key" not in b.endpoints
+
+    def test_get_endpoint_url_named(self):
+        cfg = self._make(base_url="https://api.example.com")
+        url = cfg.get_endpoint_url("customers")
+        assert url == "https://api.example.com/api/customers"
+
+    def test_get_endpoint_url_unknown(self):
+        cfg = self._make(base_url="https://api.example.com")
+        url = cfg.get_endpoint_url("widgets")
+        assert url == "https://api.example.com/widgets"
+
+    def test_get_endpoint_url_no_double_slash(self):
+        cfg = self._make(base_url="https://api.example.com/")
+        url = cfg.get_endpoint_url("customers")
+        assert "//" not in url.replace("https://", "")
+
+
+# ---------------------------------------------------------------------------
+# api.py — AsyncAPIConfig
+# ---------------------------------------------------------------------------
+
+class TestAsyncAPIConfig:
+    def _make(self, **kw):
+        from config.api import AsyncAPIConfig
+        return AsyncAPIConfig(**kw)
+
+    def test_defaults(self):
+        cfg = self._make()
+        assert cfg.connector_limit == 100
+        assert cfg.enable_circuit_breaker is True
+
+    def test_per_host_exceeds_total_raises(self):
+        with pytest.raises(ValueError, match="connector_limit_per_host"):
+            self._make(connector_limit=10, connector_limit_per_host=20)
+
+    def test_exception_types_not_shared(self):
+        """Mutable default bug guard."""
+        a = self._make()
+        b = self._make()
+        a.expected_exception_types.append("custom.Error")
+        assert "custom.Error" not in b.expected_exception_types
+
+
+# ---------------------------------------------------------------------------
+# api.py — preset factories
+# ---------------------------------------------------------------------------
+
+class TestAPIPresets:
+    def test_etl_server_config(self):
+        from config.api import get_etl_server_config
+        cfg = get_etl_server_config()
+        assert "etl-server" in cfg.base_url
+        assert cfg.pagination_limit == 500
+
+    def test_jsonplaceholder_config(self):
+        from config.api import get_jsonplaceholder_config
+        cfg = get_jsonplaceholder_config()
+        assert "jsonplaceholder" in cfg.base_url
+        assert "posts" in cfg.endpoints
+
+    def test_local_dev_config(self):
+        from config.api import get_local_dev_config
+        cfg = get_local_dev_config()
+        assert "localhost" in cfg.base_url
+
+    def test_async_production_config(self):
+        from config.api import get_async_production_config
+        cfg = get_async_production_config()
+        assert cfg.connector_limit_per_host <= cfg.connector_limit
+
+
+# ---------------------------------------------------------------------------
+# env_config.py — EnvConfig
+# ---------------------------------------------------------------------------
+
+class TestEnvConfig:
+    def setup_method(self):
+        from config import env_config as ec
+        self._ec_module = ec
+
+    def test_db_host_default(self):
+        self._inject_backend({})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.db_host == "localhost"
+
+    def test_db_host_from_env(self):
+        self._inject_backend({"DB_HOST": "myserver"})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.db_host == "myserver"
+
+    def test_db_port_int_coercion(self):
+        self._inject_backend({"DB_PORT": "5432"})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.db_port == 5432
+
+    def test_db_port_invalid_falls_back(self):
+        self._inject_backend({"DB_PORT": "not_a_number"})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.db_port == 3306  # default
+
+    def test_debug_bool_true(self):
+        self._inject_backend({"DEBUG": "true"})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.debug is True
+
+    def test_debug_bool_false(self):
+        self._inject_backend({"DEBUG": "false"})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.debug is False
+
+    def test_api_key_none_when_missing(self):
+        self._inject_backend({})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.api_key is None
+
+    def test_api_key_returned_when_present(self):
+        self._inject_backend({"API_KEY": "abc123"})
+        from config.env_config import EnvConfig
+        cfg = EnvConfig()
+        assert cfg.api_key == "abc123"
+
+
+# ---------------------------------------------------------------------------
+# environments.py — load_config_for_environment
+# ---------------------------------------------------------------------------
+
+class TestLoadConfigForEnvironment:
+    def setup_method(self):
+        from config.environments import set_env
+        self._set_backend = set_env_backend
+
+    def teardown_method(self):
+        from config.environments import set_env, DotEnvBackend
+        set_env_backend(DotEnvBackend())
+
+    def test_development(self):
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment("development")
+        assert cfg.application.environment == "development"
+        assert cfg.application.debug_mode is True
+
+    def test_dev_alias(self):
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment("dev")
+        assert cfg.application.environment == "development"
+
+    def test_production(self):
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment("production")
+        assert cfg.application.is_production() is True
+        assert cfg.application.debug_mode is False
+
+    def test_testing(self):
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment("testing")
+        assert cfg.database.autocommit is True
+
+    def test_staging(self):
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment("staging")
+        assert cfg.processing.strict_validation is True
+
+    def test_unknown_environment_raises(self):
+        from config.environments import load_config_for_environment
+        with pytest.raises(ValueError, match="Unknown environment"):
+            load_config_for_environment("unknown_env")
+
+    def test_env_var_used_when_no_arg(self):
+        self._set_backend(DictBackend({"ENVIRONMENT": "testing"}))
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment()
+        assert cfg.application.environment == "testing"
+
+    def test_invalid_env_var_raises(self):
+        self._set_backend(DictBackend({"ENVIRONMENT": "garbage"}))
+        from config.environments import load_config_for_environment
+        with pytest.raises(ValueError, match="ENVIRONMENT"):
+            load_config_for_environment()
+
+    def test_defaults_to_development_when_no_env_var(self):
+        self._set_backend(DictBackend({}))
+        from config.environments import load_config_for_environment
+        cfg = load_config_for_environment()
+        assert cfg.application.environment == "development"
+
+
+# ---------------------------------------------------------------------------
+# environments.py — is_* helpers
+# ---------------------------------------------------------------------------
+
+class TestEnvironmentHelpers:
+    def setup_method(self):
+        from config.env_config import set_env_backend
+        self._set_backend = set_env_backend
+
+    def teardown_method(self):
+        from config.env_config import set_env_backend, DotEnvBackend
+        set_env_backend(DotEnvBackend())
+
+    def test_is_production_true(self):
+        self._set_backend(DictBackend({"ENVIRONMENT": "production"}))
+        from config.environments import is_production
+        assert is_production() is True
+
+    def test_is_production_false(self):
+        self._set_backend(DictBackend({"ENVIRONMENT": "development"}))
+        from config.environments import is_production
+        assert is_production() is False
+
+    def test_is_development_true(self):
+        self._set_backend(DictBackend({"ENVIRONMENT": "dev"}))
+        from config.environments import is_development
+        assert is_development() is True
+
+    def test_is_testing_true(self):
+        self._set_backend(DictBackend({"ENVIRONMENT": "test"}))
+        from config.environments import is_testing
+        assert is_testing() is True

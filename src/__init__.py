@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\__init__.py
 Centralized path configuration for the TrendMaster project.
 
 This module provides reliable project paths with minimal side effects.

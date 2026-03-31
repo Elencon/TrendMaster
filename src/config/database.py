@@ -2,82 +2,126 @@
 Database-specific configuration utilities and presets.
 """
 
-from dataclasses import dataclass
-from typing import Any, Dict
-
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional
 from . import DatabaseConfig
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
 
-_DEFAULT_SQL_MODE = (
-    "STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO"
-)
-
-# ---------------------------------------------------------------------------
-# MySQLConfig
-# ---------------------------------------------------------------------------
-
-@dataclass(frozen=True)
+@dataclass
 class MySQLConfig(DatabaseConfig):
     """
-    MySQL-specific configuration extending DatabaseConfig.
-
-    - Does NOT redeclare charset (inherited from DatabaseConfig)
-    - Applies MySQL-specific defaults in __post_init__
-    - Adds collation + sql_mode cleanly
+    MySQL-specific configuration with optimized defaults.
+    Extends DatabaseConfig while remaining fully compatible with its interface.
     """
 
-    collation: str = "utf8mb4_unicode_ci"
-    sql_mode: str = _DEFAULT_SQL_MODE
+    # MySQL-specific settings
+    charset: str = field(default='utf8mb4')
+    collation: str = field(default='utf8mb4_unicode_ci')
+    sql_mode: str = (
+        "STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO"
+    )
 
-    # Server-level tuning (documented, not included in to_dict)
+    # InnoDB settings
     innodb_buffer_pool_size: str = "128M"
     innodb_log_file_size: str = "64M"
+
+    # Performance settings
     max_connections: int = 151
     query_cache_size: str = "16M"
     tmp_table_size: str = "16M"
     max_heap_table_size: str = "16M"
 
+    # Allow DatabaseConfig to accept extra MySQL-specific kwargs safely
+    extra: Dict[str, Any] = field(default_factory=dict)
+
     def __post_init__(self):
-        # Run parent validation first
-        super().__post_init__()
+        """
+        Finalize MySQL configuration after initialization.
+        Handles type coercion for environment variables and ensures
+        derived connection properties are set.
+        """
 
-        # MySQL-specific validation
-        if not self.collation:
-            raise ValueError("MySQL collation cannot be empty")
+        # --- 1. Type Coercion: Convert numeric strings safely ---
+        for attr, default in [
+            ("port", 3306),
+            ("pool_size", None),
+            ("connect_timeout", None),
+        ]:
+            value = getattr(self, attr, None)
+            if isinstance(value, str):
+                try:
+                    setattr(self, attr, int(value))
+                except ValueError:
+                    if default is not None:
+                        setattr(self, attr, default)
 
-        if not isinstance(self.sql_mode, str) or not self.sql_mode.strip():
-            raise ValueError("sql_mode must be a non-empty string")
+        # --- 2. Boolean Coercion: Convert string booleans safely ---
+        truthy = {"true", "1", "yes", "on"}
+        falsey = {"false", "0", "no", "off"}
 
-        # Override charset ONLY if user did not specify one
-        if self.charset is None or self.charset.strip() == "":
-            object.__setattr__(self, "charset", "utf8mb4")
+        for attr in ["enable_pooling", "pool_reset_session", "autocommit", "use_pure"]:
+            value = getattr(self, attr, None)
+            if isinstance(value, str):
+                v = value.strip().lower()
+                if v in truthy:
+                    setattr(self, attr, True)
+                elif v in falsey:
+                    setattr(self, attr, False)
+                # else: leave as original default
+
+        # --- 3. Normalize charset/collation safely ---
+        if isinstance(self.charset, str):
+            self.charset = self.charset.lower()
+
+        if isinstance(self.collation, str):
+            self.collation = self.collation.lower()
+
+        # --- 4. Validate port range ---
+        if not (1 <= self.port <= 65535):
+            self.port = 3306
+
+        # --- 5. Unix socket precedence ---
+        unix_socket = getattr(self, "unix_socket", None)
+        if unix_socket:
+            # In real apps you might log a warning here
+            pass
+
 
     def to_dict(self) -> Dict[str, Any]:
         """
-        Return a dict for mysql.connector or PyMySQL.
-        Only client-side options are included.
+        Convert to dictionary including MySQL-specific settings.
+        Fully compatible with MySQL Python clients.
         """
-        base = super().to_dict()
+        base_dict = super().to_dict()
 
-        base.update(
-            {
-                "charset": self.charset,
-                "collation": self.collation,
-                "init_command": f"SET sql_mode='{self.sql_mode}'",
-            }
-        )
+        # Safely escape SQL mode
+        safe_sql_mode = self.sql_mode.replace("'", "\\'")
 
-        return base
+        mysql_settings = {
+            "charset": self.charset,
+            "collation": self.collation,
+            "init_command": f"SET sql_mode='{safe_sql_mode}'",
+            "max_connections": self.max_connections,
+            "query_cache_size": self.query_cache_size,
+            "tmp_table_size": self.tmp_table_size,
+            "max_heap_table_size": self.max_heap_table_size,
+            "innodb_buffer_pool_size": self.innodb_buffer_pool_size,
+            "innodb_log_file_size": self.innodb_log_file_size,
+        }
+
+        # Merge everything
+        base_dict.update(mysql_settings)
+        base_dict.update(self.extra)
+
+        return base_dict
+
 
 # ---------------------------------------------------------------------------
-# Preset factories
+# Preset factory functions
 # ---------------------------------------------------------------------------
 
 def get_mysql_development_config() -> MySQLConfig:
-    """Return a MySQLConfig optimized for local development."""
+    """Get MySQL configuration optimized for development."""
     return MySQLConfig(
         host="localhost",
         port=3306,
@@ -89,7 +133,7 @@ def get_mysql_development_config() -> MySQLConfig:
 
 
 def get_mysql_production_config() -> MySQLConfig:
-    """Return a MySQLConfig optimized for production workloads."""
+    """Get MySQL configuration optimized for production."""
     return MySQLConfig(
         pool_size=20,
         connect_timeout=30,
@@ -101,11 +145,11 @@ def get_mysql_production_config() -> MySQLConfig:
 
 
 def get_mysql_testing_config() -> MySQLConfig:
-    """Return a MySQLConfig suitable for automated test environments."""
+    """Get MySQL configuration for testing environments."""
     return MySQLConfig(
         database="store_manager_test",
         pool_size=2,
         connect_timeout=5,
-        autocommit=True,
-        raise_on_warnings=False,
+        autocommit=True,          # Faster test cleanup
+        raise_on_warnings=False,  # Less strict for testing
     )

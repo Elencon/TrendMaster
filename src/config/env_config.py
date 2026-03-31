@@ -1,183 +1,205 @@
+r"""
+C:\Economy\Invest\TrendMaster\src\config\env_config.py
+Centralized environment configuration using .env file.
+Provides secure access to environment variables with fallback defaults.
+python -m config.env_config
 """
-Centralised environment configuration using .env file.
-Provides typed access to environment variables with fallback defaults.
 
-This module no longer depends directly on `os` outside of the backend adapter.
-Environment access is abstracted through a backend protocol.
-"""
-
-import logging
-import os
+from .path_config import PROJECT_ROOT, DATA_PATH, CSV_PATH, API_PATH, ENV_PATH
 from pathlib import Path
-from typing import Dict, Optional, Protocol
+import os
+import logging
+from typing import Optional
 
-_logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Environment backend protocol
-# ---------------------------------------------------------------------------
+# ---------------------------------------------------------
+# Optional dotenv import
+# ---------------------------------------------------------
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+    logger.warning("python-dotenv not installed. Using system environment variables only.")
 
-class EnvBackend(Protocol):
-    """Protocol for environment variable providers."""
+# ---------------------------------------------------------
+# Load .env from project root
+# ---------------------------------------------------------
+if load_dotenv and ENV_PATH.exists():
+    load_dotenv(ENV_PATH)
+    logger.info(f"Loaded environment variables from {ENV_PATH}")
+else:
+    logger.debug("No .env file loaded (missing file or python-dotenv)")
 
-    def get(self, key: str) -> Optional[str]:
-        ...
-
-# ---------------------------------------------------------------------------
-# Default backend using python-dotenv (if available)
-# ---------------------------------------------------------------------------
-
-class DotEnvBackend:
-    """Environment backend that loads variables from .env + system env."""
-
-    def __init__(self) -> None:
-        self._vars: Dict[str, str] = {}
-
-        # Load .env file first (lower priority)
-        try:
-            from dotenv import dotenv_values
-            env_path = Path(__file__).parent.parent / ".env"
-            if env_path.exists():
-                self._vars.update(dotenv_values(env_path))
-                _logger.info("Loaded environment variables from %s", env_path)
-            else:
-                _logger.info("No .env file found at %s", env_path)
-        except ImportError:
-            _logger.warning("python-dotenv not installed. Only system env will be used.")
-
-        # Merge system environment last (highest priority)
-        self._vars.update(os.environ)
-
-    def get(self, key: str) -> Optional[str]:
-        return self._vars.get(key)
-
-
-# Global backend instance — swap out in tests via set_env_backend()
-_backend: EnvBackend = DotEnvBackend()
-
-
-def set_env_backend(backend: EnvBackend) -> None:
-    """Replace the global environment backend (useful for testing)."""
-    global _backend
-    _backend = backend
-
-
-# ---------------------------------------------------------------------------
-# Helper functions (no direct os access)
-# ---------------------------------------------------------------------------
-
-def _env(key: str, default: str = "") -> str:
-    """Return an environment variable as a string, or *default*."""
-    value = _backend.get(key)
-    return value if value is not None else default
-
-
-def _env_int(key: str, default: int) -> int:
-    """Return an environment variable coerced to int, or *default*."""
-    raw = _backend.get(key)
-    if raw is None or raw.strip() == "":
-        return default
-    try:
-        return int(raw)
-    except ValueError:
-        _logger.warning(
-            "Env var %s='%s' is not a valid int; using default %s", key, raw, default
-        )
-        return default
-
-
-def _env_bool(key: str, default: bool) -> bool:
-    """Return an environment variable coerced to bool, or *default*."""
-    raw = _backend.get(key)
-    if raw is None:
-        return default
-    return raw.strip().lower() in ("true", "1", "yes", "on")
-
-
-# ---------------------------------------------------------------------------
-# EnvConfig — typed property-based access
-# ---------------------------------------------------------------------------
 
 class EnvConfig:
-    """Typed, centralised access to environment variables."""
+    """Centralized environment configuration"""
 
-    # Re-export helpers as static methods for callers that hold an
-    # EnvConfig reference rather than importing the module-level helpers.
-    get      = staticmethod(_env)
-    get_int  = staticmethod(_env_int)
-    get_bool = staticmethod(_env_bool)
-
-    # ------------------------------------------------------------------
-    # Database
-    # ------------------------------------------------------------------
+    # -----------------------------
+    # Path Accessors
+    # -----------------------------
+    @property
+    def project_root(self) -> Path:
+        return Path(self.get("PROJECT_ROOT", str(PROJECT_ROOT)))
 
     @property
+    def data_path(self) -> Path:
+        override = self.get("DATA_PATH")
+        return Path(override) if override else DATA_PATH
+
+    @property
+    def csv_path(self) -> Path:
+        override = self.get("DATA_PATH")
+        return Path(override) / "CSV" if override else CSV_PATH
+
+    @property
+    def api_data_path(self) -> Path:
+        override = self.get("DATA_PATH")
+        return Path(override) / "API" if override else API_PATH
+
+    # -----------------------------
+    # Generic Getters
+    # -----------------------------
+    @staticmethod
+    def get(key: str, default: Optional[str] = None) -> Optional[str]:
+        value = os.getenv(key, default)
+        if isinstance(value, str):
+            return value.strip()
+        return value
+
+    @staticmethod
+    def get_int(key: str, default: int) -> int:
+        raw = os.getenv(key)
+        if raw is None:
+            return default
+
+        raw = raw.strip()
+        try:
+            return int(raw)
+        except ValueError:
+            logger.warning(f"Invalid integer for {key}='{raw}', using default {default}")
+            return default
+
+    @staticmethod
+    def get_bool(key: str, default: bool) -> bool:
+        raw = os.getenv(key)
+        if raw is None:
+            return default
+
+        value = raw.strip().lower()
+
+        truthy = {"true", "1", "yes", "on"}
+        falsey = {"false", "0", "no", "off"}
+
+        if value in truthy:
+            return True
+        if value in falsey:
+            return False
+
+        logger.warning(f"Invalid boolean for {key}='{raw}', using default {default}")
+        return default
+
+    # -----------------------------
+    # Database Configuration
+    # -----------------------------
+    @property
     def db_host(self) -> str:
-        return _env("DB_HOST", "localhost")
+        return self.get("DB_HOST", "localhost")
 
     @property
     def db_port(self) -> int:
-        return _env_int("DB_PORT", 3306)
+        return self.get_int("DB_PORT", 3306)
 
     @property
     def db_name(self) -> str:
-        return _env("DB_NAME", "trend_master")
+        return self.get("DB_NAME", "store_manager")
 
     @property
     def db_user(self) -> str:
-        return _env("DB_USER", "root")
+        return self.get("DB_USER", "root")
 
     @property
     def db_password(self) -> str:
-        return _env("DB_PASSWORD", "")
+        return self.get("DB_PASSWORD", "")
 
-    # ------------------------------------------------------------------
-    # API
-    # ------------------------------------------------------------------
-
+    # -----------------------------
+    # API Configuration
+    # -----------------------------
     @property
     def api_url(self) -> str:
-        return _env("API_URL", "https://etl-server.fly.dev")
+        return self.get("API_URL", "https://etl-server.fly.dev")
 
     @property
     def api_key(self) -> Optional[str]:
-        return _env("API_KEY") or None
+        key = self.get("API_KEY")
+        return key or None
 
-    # ------------------------------------------------------------------
-    # Security
-    # ------------------------------------------------------------------
-
+    # -----------------------------
+    # Security Settings
+    # -----------------------------
     @property
     def session_timeout_minutes(self) -> int:
-        return _env_int("SESSION_TIMEOUT_MINUTES", 30)
+        return self.get_int("SESSION_TIMEOUT_MINUTES", 30)
 
     @property
     def max_login_attempts(self) -> int:
-        return _env_int("MAX_LOGIN_ATTEMPTS", 5)
+        return self.get_int("MAX_LOGIN_ATTEMPTS", 5)
 
     @property
     def lockout_duration_minutes(self) -> int:
-        return _env_int("LOCKOUT_DURATION_MINUTES", 15)
+        return self.get_int("LOCKOUT_DURATION_MINUTES", 15)
 
-    # ------------------------------------------------------------------
-    # Application
-    # ------------------------------------------------------------------
-
+    # -----------------------------
+    # Application Settings
+    # -----------------------------
     @property
     def environment(self) -> str:
-        return _env("ENVIRONMENT", "development")
+        env = self.get("ENVIRONMENT", "development")
+        return env.lower().strip()
 
     @property
     def debug(self) -> bool:
-        return _env_bool("DEBUG", False)
+        return self.get_bool("DEBUG", True)
 
     @property
     def log_level(self) -> str:
-        return _env("LOG_LEVEL", "INFO")
+        return self.get("LOG_LEVEL", "INFO").upper()
 
 
-# ---------------------------------------------------------------------------
-# Module-level singleton
-# ---------------------------------------------------------------------------
-
+# Singleton instance
 env_config = EnvConfig()
+
+# ---------------------------------------------------------
+# Basic self-tests (run only when executed directly)
+# ---------------------------------------------------------
+if __name__ == "__main__":
+    print("Running EnvConfig self-tests...\n")
+
+    cfg = EnvConfig()
+
+    # Test: project root exists
+    print("project_root:", cfg.project_root)
+    assert cfg.project_root.exists(), "Project root does not exist!"
+
+    # Test: data paths resolve correctly
+    print("data_path:", cfg.data_path)
+    print("csv_path:", cfg.csv_path)
+    print("api_data_path:", cfg.api_data_path)
+
+    # Test: environment getters
+    print("environment:", cfg.environment)
+    print("debug:", cfg.debug)
+    print("log_level:", cfg.log_level)
+
+    # Test: database config
+    print("db_host:", cfg.db_host)
+    print("db_port:", cfg.db_port)
+    print("db_name:", cfg.db_name)
+    print("db_user:", cfg.db_user)
+    print("db_password:", cfg.db_password)
+    
+    # Test: API config
+    print("api_url:", cfg.api_url)
+    print("api_key:", cfg.api_key)
+
+    print("\nAll EnvConfig self-tests completed.")
