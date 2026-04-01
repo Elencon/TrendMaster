@@ -17,7 +17,7 @@ from .pandas_optimizer import (
 from src.exceptions import ETLException, ErrorContext, create_database_error
 from .data_validator import DataValidator
 from src.logging_system import get_database_logger, performance_context
-from src.config import get_config
+from src.config import ETLConfig, get_config, env_config
 
 # ────────────────────────────────────────────────
 # Required imports (always present)
@@ -25,10 +25,6 @@ from src.config import get_config
 
 from .connection_manager import DatabaseConnection
 from .schema_manager import SCHEMA_DEFINITIONS, TABLE_COLUMNS
-
-# Legacy config (optional)
-
-legacy_config = get_config().database.to_dict()
 
 # ────────────────────────────────────────────────
 # Logger
@@ -312,8 +308,7 @@ class BatchProcessor:
 class DatabaseManager:
     """Enhanced Database Manager with batch processing and connection pooling."""
 
-    def __init__(self, config: Dict = None, data_dir: Path = None, logger_instance=None,
-                 enable_pooling: bool = True, pool_size: int = 5):
+    def __init__(self, config: Dict = None, enable_pooling: bool = True, pool_size: int = 5):
         """
         Initialize database manager with enhanced connection management.
 
@@ -327,18 +322,23 @@ class DatabaseManager:
 
         if config is None:
             etl_config = get_config()
-            self.config = etl_config.database.to_dict()
             self.etl_config = etl_config
-        elif isinstance(config, dict):
-            self.config = config
-            self.etl_config = None
-        else:
-            self.config = config.database.to_dict()
-            self.etl_config = config
+            self.config = etl_config.database.to_dict()
 
-        self.data_dir = data_dir or Path(__file__).parent.parent.parent / 'data'
-        self.csv_dir  = self.data_dir / 'CSV'
-        self.api_dir  = self.data_dir / 'API'
+        elif isinstance(config, ETLConfig):
+            self.etl_config = config
+            self.config = config.database.to_dict()
+
+        elif isinstance(config, dict):
+            self.etl_config = None
+            self.config = config
+
+        else:
+            raise TypeError("config must be None, dict, or ETLConfig")
+
+        self.data_dir = env_config.data_path
+        self.csv_dir  = env_config.csv_path
+        self.api_dir  = env_config.api_data_path
 
         self.db_connection = DatabaseConnection(
             config=self.config,
@@ -715,13 +715,9 @@ class DatabaseManager:
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def close_connections(self):
-        """Return connections to the pool. The pool itself manages its own lifecycle."""
-        pass
-
-    def __del__(self):
-        pass
-
+    # def close_connections(self):
+    #     """Return connections to the pool. The pool itself manages its own lifecycle."""
+    #     pass
 
 # Legacy compatibility
 def create_api_tables_and_csv():
@@ -779,5 +775,6 @@ if __name__ == "__main__":
         _logger.error("Error in database manager: %s", e)
         sys.exit(1)
     finally:
-        if 'db_manager' in locals():
-            db_manager.close_connections()
+        pass
+        # if 'db_manager' in locals():
+        #     db_manager.close_connections()

@@ -25,6 +25,13 @@ except ImportError:
 # ---------------------------------------------------------
 # Load .env from project root
 # ---------------------------------------------------------
+def load_env():
+    if load_dotenv and ENV_PATH.exists():
+        load_dotenv(ENV_PATH)
+        logger.info(f"Loaded environment variables from {ENV_PATH}")
+    else:
+        logger.debug("No .env file loaded (missing file or python-dotenv)")
+
 
 load_env()
 
@@ -171,13 +178,6 @@ class EnvConfig:
     @property
     def debug(self) -> bool:
         return self.get_bool("DEBUG", True)
-
-def load_env():
-    if load_dotenv and ENV_PATH.exists():
-        load_dotenv(ENV_PATH)
-        logger.info(f"Loaded environment variables from {ENV_PATH}")
-    else:
-        logger.debug("No .env file loaded (missing file or python-dotenv)")
 
 # Singleton instance
 env_config = EnvConfig()

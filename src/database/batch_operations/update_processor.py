@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\batch_operations\update_processor.py
 Specialized processor for batch update operations.
 """
 

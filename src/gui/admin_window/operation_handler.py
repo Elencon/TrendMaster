@@ -13,7 +13,7 @@ from PySide6.QtWidgets import QMessageBox, QFileDialog
 from PySide6.QtGui import QTextCursor
 from PySide6.QtCore import QObject
 
-from .worker import ETLWorker, MODULES_AVAILABLE
+from .worker import ETLWorker
 
 logger = logging.getLogger(__name__)
 
@@ -75,12 +75,8 @@ class AdminOperationHandler(QObject):
         for msg in status_messages:
             self.append_output(msg)
 
-        if MODULES_AVAILABLE:
-            self.append_output("ETL modules loaded - All features available")
-            self.append_output("Ready for CSV import, API processing, and database operations.")
-        else:
-            self.append_output("WARNING: ETL modules not available - limited functionality")
-            self.disable_etl_buttons()
+        self.append_output("ETL modules loaded - All features available")
+        self.append_output("Ready for CSV import, API processing, and database operations.")
 
         if hasattr(self._window, 'load_api_data_btn'):
             self._window.load_api_data_btn.setEnabled(True)
@@ -147,7 +143,7 @@ class AdminOperationHandler(QObject):
         """Toggle UI buttons based on availability and operation state."""
         buttons = getattr(self._window, 'operation_buttons', {})
         for btn_name, button in buttons.items():
-            if MODULES_AVAILABLE or btn_name == "select_csv_btn":
+            if btn_name == "select_csv_btn":
                 button.setEnabled(enabled)
 
         load_btn = getattr(self._window, 'load_selected_files_btn', None)

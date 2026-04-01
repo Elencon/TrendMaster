@@ -2,7 +2,7 @@
 Environment-specific configuration profiles.
 """
 
-from typing import Dict
+from typing import Dict, Type
 from pathlib import Path
 from .env_config import env_config
 
@@ -32,7 +32,6 @@ class ConfigProfile:
     @staticmethod
     def load_config() -> ETLConfig:
         raise NotImplementedError("Subclasses must implement load_config()")
-
 
 # ---------------------------------------------------------------------------
 # DEVELOPMENT

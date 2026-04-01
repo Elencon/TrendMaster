@@ -9,9 +9,9 @@ from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QMessageBox,
 from PySide6.QtCore import QSettings, Signal, QPoint
 from PySide6.QtGui import QAction
 
-from themes import ThemeManager
-from auth.session import SessionManager  # type: ignore
-from two_factor_setup_dialog import TwoFactorSetupDialog  # type: ignore
+from src.gui.themes import ThemeManager
+from src.auth.session import SessionManager  # type: ignore
+from src.gui.two_factor_setup_dialog import TwoFactorSetupDialog  # type: ignore
 from .ui_builder import DashboardUIBuilder
 from .data_handler import DashboardDataHandler
 

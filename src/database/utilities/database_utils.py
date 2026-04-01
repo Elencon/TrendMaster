@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\utilities\database_utils.py
 Core database operation utilities.
 """
 

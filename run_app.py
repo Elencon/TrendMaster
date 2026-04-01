@@ -21,7 +21,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from PySide6.QtGui import QIcon
 
 import logging
-from src.connect import connect_to_mysql
+from src.database import connect_to_mysql
 from src.auth.user_manager import UserManager
 from src.auth.session import SessionManager
 from src.auth.permissions import PermissionManager

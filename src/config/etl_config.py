@@ -330,6 +330,7 @@ def load_config_from_dict(config_dict: Dict[str, Any]) -> ETLConfig:
     return config
 
 
+
 def get_default_config() -> ETLConfig:
     """Get default configuration with sensible defaults."""
     config = ETLConfig()
@@ -341,6 +342,7 @@ def get_default_config() -> ETLConfig:
     
     return config
 
+_global_config: Optional[ETLConfig] = None
 
 def get_config() -> ETLConfig:
     """Get global configuration instance."""
@@ -349,21 +351,15 @@ def get_config() -> ETLConfig:
         _global_config = load_config_from_env()
     return _global_config
 
-
 def set_config(config: ETLConfig) -> None:
     """Set global configuration instance."""
     global _global_config
     _global_config = config
 
-
 def reset_config() -> None:
     """Reset global configuration to None."""
     global _global_config
     _global_config = None
-
-
-# Global configuration instance
-_global_config: Optional[ETLConfig] = None
 
 
 if __name__ == "__main__":

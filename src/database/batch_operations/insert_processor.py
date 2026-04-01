@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\batch_operations\insert_processor.py
 Specialized processor for batch insert operations.
 """
 

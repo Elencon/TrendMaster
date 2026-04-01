@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\batch_operations\batch_processor.py
 Main batch processor that coordinates all specialized batch operations.
 Provides a unified interface while delegating to specialized processors.
 """

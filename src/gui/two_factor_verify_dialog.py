@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, Signal
 
-from auth.two_factor_auth import TwoFactorAuth
+from src.auth.two_factor_auth import TwoFactorAuth
 
 logger = logging.getLogger(__name__)
 

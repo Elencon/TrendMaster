@@ -11,8 +11,8 @@ from typing import Optional
 
 from PySide6.QtWidgets import QMessageBox, QTableWidgetItem
 
-from .worker import DashboardWorker, MODULES_AVAILABLE
-from auth.session import SessionManager  # type: ignore
+from .worker import DashboardWorker
+from src.auth.session import SessionManager  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -38,28 +38,25 @@ class DashboardDataHandler:
 
     def initialize_dashboard(self):
         """Initialize dashboard and load table list"""
-        if MODULES_AVAILABLE:
-            self.window.statusBar().showMessage("Loading database tables...")
-            self._start_operation("fetch_tables")
 
-            # Load customers for dropdown
-            self.load_customers()
+        self.window.statusBar().showMessage("Loading database tables...")
+        self._start_operation("fetch_tables")
 
-            # Ensure session and pool are ready before loading employees
-            from PySide6.QtCore import QTimer
-            session = SessionManager()
-            user_role = session.get_role()
-            def delayed_employee_load():
-                logger.info("Attempting to load employees after session/pool ready.")
-                if user_role in ["Manager", "Administrator"]:
-                    self.load_employees()
-            QTimer.singleShot(300, delayed_employee_load)
+        # Load customers for dropdown
+        self.load_customers()
 
-            # Delay sales data fetch slightly to ensure UI is ready
-            QTimer.singleShot(500, self.fetch_sales_data)
-        else:
-            self.window.tables_list.addItem("⚠️ Database modules not available")
-            self.window.statusBar().showMessage("Database modules not available")
+        # Ensure session and pool are ready before loading employees
+        from PySide6.QtCore import QTimer
+        session = SessionManager()
+        user_role = session.get_role()
+        def delayed_employee_load():
+            logger.info("Attempting to load employees after session/pool ready.")
+            if user_role in ["Manager", "Administrator"]:
+                self.load_employees()
+        QTimer.singleShot(300, delayed_employee_load)
+
+        # Delay sales data fetch slightly to ensure UI is ready
+        QTimer.singleShot(500, self.fetch_sales_data)
 
     def load_customers(self):
         """Load customers into dropdown"""

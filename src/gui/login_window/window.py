@@ -11,8 +11,8 @@ from PySide6.QtCore import Signal
 
 from .login_form import LoginForm
 from .worker import LoginWorker
-from two_factor_verify_dialog import TwoFactorVerifyDialog  # type: ignore
-from auth.two_factor_auth import TwoFactorAuth  # type: ignore
+from ..two_factor_verify_dialog import TwoFactorVerifyDialog  # type: ignore
+from src.auth.two_factor_auth import TwoFactorAuth  # type: ignore
 
 logger = logging.getLogger(__name__)
 

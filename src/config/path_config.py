@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\config\path_config.py
 Centralized path configuration for the entire TrendMaster project.
 
 Features:

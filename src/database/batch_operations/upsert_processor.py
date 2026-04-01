@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\batch_operations\upsert_processor.py
 Specialized processor for batch upsert operations.
 """
 

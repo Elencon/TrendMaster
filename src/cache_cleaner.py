@@ -1,119 +1,219 @@
-r"""
-C:\Economy\Invest\TrendMaster\src\cache_cleaner.py
-Modern cache cleaner for TrendMaster.
-Uses Typer for CLI and Rich for beautiful terminal feedback.
+"""
+Cache Cleaner Utility
+Automatically clears application cache when run
 """
 
+import os
 import shutil
+import sys
 from pathlib import Path
-from typing import Optional
-
-import typer
-from rich.console import Console
-from rich.table import Table
-from rich.progress import track
-
-app = typer.Typer(help="Clean Python project cache files safely.")
-console = Console()
-
-CACHE_PATTERNS = {
-    "dirs": {"__pycache__", ".pytest_cache", ".ipynb_checkpoints", ".mypy_cache", ".ruff_cache"},
-    "files": {"*.pyc", "*.pyo", "*.pyd", ".coverage", ".DS_Store"},
-    "logs": {"*.log", "*.log.*"}
-}
-
-PROTECTED = {".git", "venv", ".venv", "env", "node_modules", "dist", "build"}
 
 
-def find_project_root(start: Optional[Path] = None) -> Path:
-    current = (start or Path.cwd()).resolve()
-    markers = {".git", "pyproject.toml", "setup.py", "README.md"}
-
-    for _ in range(12):
-        if any((current / m).exists() for m in markers):
-            return current
-        if current.parent == current:
-            break
-        current = current.parent
-
-    return Path.cwd().resolve()
-
-
-def is_protected(path: Path) -> bool:
-    return any(part in PROTECTED for part in path.parts)
-
-
-@app.command()
-def main(
-    root: Optional[Path] = typer.Option(None, help="Custom project root path"),
-    dry_run: bool = typer.Option(False, "--dry-run", help="Only show what would be deleted"),
-    include_logs: bool = typer.Option(False, "--logs", help="Include log files in cleaning"),
-    quiet: bool = typer.Option(False, "--quiet", help="Minimal output"),
-):
-    target_root = find_project_root(root)
-    stats = {"dirs": 0, "files": 0, "logs": 0}
-
-    if not quiet:
-        console.print(f"[bold blue]Scanning:[/bold blue] {target_root}")
-        if dry_run:
-            console.print("[bold yellow]DRY-RUN MODE:[/bold yellow] No files will be deleted.\n")
-
-    all_items = list(target_root.rglob("*"))
-
-    for item in track(all_items, description="Cleaning...", disable=quiet):
-        if is_protected(item):
-            continue
-
-        # Skip symlinked directories (B)
-        if item.is_dir() and item.is_symlink():
-            continue
-
-        # Directory deletion with safe handling (C)
-        if item.is_dir() and item.name in CACHE_PATTERNS["dirs"]:
-            try:
-                if not dry_run:
-                    shutil.rmtree(item)
-                stats["dirs"] += 1
-            except Exception as e:
-                if not quiet:
-                    console.print(f"[red]Failed to remove directory:[/red] {item} ({e})")
-            continue
-
-        # File deletion with missing_ok=True (A)
-        if item.is_file():
-            if any(item.match(p) for p in CACHE_PATTERNS["files"]):
-                if not dry_run:
-                    item.unlink(missing_ok=True)
-                stats["files"] += 1
-
-            elif include_logs and any(item.match(p) for p in CACHE_PATTERNS["logs"]):
+class CacheCleaner:
+    def __init__(self):
+        # Get the root project directory (parent of gui folder)
+        self.project_root = Path(__file__).parent.parent
+        
+        # Cache directories to clean
+        self.cache_dirs = [
+            self.project_root / "__pycache__",
+            self.project_root / "gui" / "__pycache__",
+            self.project_root / "src" / "__pycache__",
+            self.project_root / "src" / "database" / "__pycache__",
+            self.project_root / "tests" / "__pycache__",
+        ]
+        
+        # Cache file patterns to remove
+        self.cache_patterns = [
+            "*.pyc",
+            "*.pyo",
+            "*.pyd",
+            ".pytest_cache",
+            ".coverage"
+        ]
+        
+        # Log file patterns (handled separately with better error handling)
+        self.log_patterns = ["*.log"]
+    
+    def clear_pycache_dirs(self):
+        """Remove __pycache__ directories"""
+        removed_dirs = []
+        
+        for cache_dir in self.cache_dirs:
+            if cache_dir.exists():
                 try:
-                    if not dry_run:
-                        item.unlink(missing_ok=True)
-                    stats["logs"] += 1
-                except PermissionError:
-                    if not quiet:
-                        console.print(f"[dim red]Locked:[/dim red] {item.name}")
+                    shutil.rmtree(cache_dir)
+                    removed_dirs.append(str(cache_dir))
+                except Exception as e:
+                    print(f"Warning: Could not remove {cache_dir}: {e}")
+        
+        return removed_dirs
+    
+    def clear_cache_files(self):
+        """Remove cache files by pattern"""
+        removed_files = []
+        
+        # Search recursively through project
+        for pattern in self.cache_patterns:
+            for file_path in self.project_root.rglob(pattern):
+                try:
+                    if file_path.is_file():
+                        file_path.unlink()
+                        removed_files.append(str(file_path))
+                    elif file_path.is_dir():
+                        shutil.rmtree(file_path)
+                        removed_files.append(str(file_path))
+                except Exception as e:
+                    print(f"Warning: Could not remove {file_path}: {e}")
+        
+        return removed_files
+    
+    def clear_log_files(self, force=False):
+        """Remove log files with better error handling"""
+        removed_files = []
+        locked_files = []
+        
+        # Try to close any active logging handlers first
+        if force:
+            try:
+                import logging
+                # Get all loggers and close their handlers
+                for name in logging.Logger.manager.loggerDict:
+                    logger = logging.getLogger(name)
+                    for handler in logger.handlers[:]:
+                        try:
+                            handler.close()
+                            logger.removeHandler(handler)
+                        except:
+                            pass
+                
+                # Also close root logger handlers
+                root_logger = logging.getLogger()
+                for handler in root_logger.handlers[:]:
+                    try:
+                        handler.close()
+                        root_logger.removeHandler(handler)
+                    except:
+                        pass
+            except:
+                pass
+        
+        # Now try to remove log files
+        for pattern in self.log_patterns:
+            for file_path in self.project_root.rglob(pattern):
+                if file_path.is_file():
+                    try:
+                        file_path.unlink()
+                        removed_files.append(str(file_path))
+                    except OSError as e:
+                        if e.winerror == 32:  # File in use
+                            locked_files.append(str(file_path))
+                        else:
+                            print(f"Warning: Could not remove {file_path}: {e}")
+        
+        return removed_files, locked_files
+    
+    def clean_all(self, verbose=True, clean_logs=False, force_logs=False):
+        """Clean all cache files and directories"""
+        if verbose:
+            print("Starting cache cleanup...")
+        
+        # Clear __pycache__ directories
+        removed_dirs = self.clear_pycache_dirs()
+        
+        # Clear cache files
+        removed_files = self.clear_cache_files()
+        
+        # Handle log files separately
+        removed_logs = []
+        locked_logs = []
+        if clean_logs:
+            removed_logs, locked_logs = self.clear_log_files(force=force_logs)
+        
+        total_removed = len(removed_dirs) + len(removed_files) + len(removed_logs)
+        
+        if verbose:
+            if total_removed > 0:
+                print(f"Cache cleanup completed: {total_removed} items removed")
+                if removed_dirs:
+                    print(f"Directories removed: {len(removed_dirs)}")
+                if removed_files:
+                    print(f"Cache files removed: {len(removed_files)}")
+                if removed_logs:
+                    print(f"Log files removed: {len(removed_logs)}")
+            else:
+                print("Cache cleanup completed: No cache files found")
+            
+            if locked_logs:
+                print(f"Note: {len(locked_logs)} log files are in use and couldn't be removed")
+                if verbose and len(locked_logs) <= 5:  # Only show details for a few files
+                    for log_file in locked_logs:
+                        print(f"  - {Path(log_file).name}")
+        
+        return total_removed
+    
+    @staticmethod
+    def close_logging_handlers():
+        """Close all active logging handlers to release log files"""
+        try:
+            import logging
+            
+            # Get all loggers and close their handlers
+            logger_dict = logging.Logger.manager.loggerDict.copy()
+            for name in logger_dict:
+                logger = logging.getLogger(name)
+                handlers = logger.handlers[:]
+                for handler in handlers:
+                    try:
+                        handler.close()
+                        logger.removeHandler(handler)
+                    except:
+                        pass
+            
+            # Also close root logger handlers
+            root_logger = logging.getLogger()
+            handlers = root_logger.handlers[:]
+            for handler in handlers:
+                try:
+                    handler.close()
+                    root_logger.removeHandler(handler)
+                except:
+                    pass
+            
+            return True
+        except Exception:
+            return False
 
-    if not quiet:
-        show_summary(stats, dry_run)
 
-
-def show_summary(stats: dict, dry_run: bool):
-    table = Table(title="Cleaning Summary", show_header=True, header_style="bold magenta")
-    table.add_column("Category", style="dim")
-    table.add_column("Count", justify="right")
-
-    table.add_row("Directories", str(stats["dirs"]))
-    table.add_row("Cache Files", str(stats["files"]))
-    if stats["logs"] > 0:
-        table.add_row("Log Files", str(stats["logs"]))
-
-    console.print(table)
-    total = sum(stats.values())
-    status = "would be deleted" if dry_run else "deleted"
-    console.print(f"[bold green]Success![/bold green] {total} items {status}.")
+def main():
+    """Run cache cleaner from command line"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Clean ETL project cache files')
+    parser.add_argument('--logs', action='store_true', help='Also attempt to clean log files')
+    parser.add_argument('--force-logs', action='store_true', help='Force close logging handlers before cleaning log files')
+    parser.add_argument('--close-loggers', action='store_true', help='Just close logging handlers without cleaning')
+    
+    args = parser.parse_args()
+    
+    cleaner = CacheCleaner()
+    
+    if args.close_loggers:
+        print("Closing all logging handlers...")
+        success = CacheCleaner.close_logging_handlers()
+        print(f"Logging handlers closed: {'Success' if success else 'Failed'}")
+        return
+    
+    # Regular cleanup
+    total_removed = cleaner.clean_all(
+        verbose=True, 
+        clean_logs=args.logs or args.force_logs, 
+        force_logs=args.force_logs
+    )
+    
+    if total_removed == 0:
+        print("No cache files found to remove.")
 
 
 if __name__ == "__main__":
-    app()
+    main()

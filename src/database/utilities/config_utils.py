@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\database\utilities\config_utils.py
 Configuration management and validation utilities.
 """
 

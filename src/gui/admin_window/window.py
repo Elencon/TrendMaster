@@ -9,8 +9,8 @@ from typing import Dict
 from PySide6.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QApplication
 from PySide6.QtCore import QSettings
 
-from cache_cleaner import CacheCleaner
-from themes import ThemeManager
+from src.cache_cleaner import CacheCleaner
+from src.gui.themes import ThemeManager
 from .ui_builder import AdminUIBuilder
 from .operation_handler import AdminOperationHandler
 
