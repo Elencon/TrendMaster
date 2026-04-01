@@ -134,6 +134,11 @@ class EnvConfig:
         key = self.get("API_KEY")
         return key or None
 
+    @property
+    def api_bearer_token(self) -> Optional[str]:
+        token = self.get("API_BEARER_TOKEN","")      # ????
+        return token
+
     # -----------------------------
     # Security Settings
     # -----------------------------
@@ -150,8 +155,17 @@ class EnvConfig:
         return self.get_int("LOCKOUT_DURATION_MINUTES", 15)
 
     # -----------------------------
+    # Logging Settings
+    # -----------------------------
+
+    @property
+    def log_level(self) -> str:
+        return self.get("LOG_LEVEL", "INFO").upper()
+
+    # -----------------------------
     # Application Settings
     # -----------------------------
+
     @property
     def environment(self) -> str:
         env = self.get("ENVIRONMENT", "development")
@@ -160,10 +174,6 @@ class EnvConfig:
     @property
     def debug(self) -> bool:
         return self.get_bool("DEBUG", True)
-
-    @property
-    def log_level(self) -> str:
-        return self.get("LOG_LEVEL", "INFO").upper()
 
 
 # Singleton instance

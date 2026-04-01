@@ -49,6 +49,7 @@ GUI_PATH: Path = SRC_PATH / "gui"
 DATA_PATH: Path = PROJECT_ROOT / "data"
 CSV_PATH: Path = DATA_PATH / "CSV"
 API_PATH: Path = DATA_PATH / "API"
+CACHE_PATH: Path = DATA_PATH / "cache"
 
 ENV_PATH: Path = PROJECT_ROOT / ".env"
 

@@ -6,23 +6,29 @@ Provides structured configuration classes using dataclasses for type safety and 
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any, List
 from pathlib import Path
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from .env_config import env_config
+# Import your centralized path definitions
+from .path_config import (
+    DATA_PATH,
+    CSV_PATH,
+    API_PATH,
+    CACHE_PATH,
+    LOGS_PATH,
+    CONFIG_PATH,
+)
 
 
 @dataclass
 class DatabaseConfig:
     """Database connection configuration with validation."""
     
-    user: str = field(default_factory=lambda: os.getenv('DB_USER', 'root'))
-    password: str = field(default_factory=lambda: os.getenv('DB_PASSWORD', ''))
-    host: str = field(default_factory=lambda: os.getenv('DB_HOST', '127.0.0.1'))
-    port: int = field(default_factory=lambda: int(os.getenv('DB_PORT', '3306')))
-    database: str = field(default_factory=lambda: os.getenv('DB_NAME', 'store_manager'))
-    
+    user: str = field(default_factory=lambda: env_config.db_user)
+    password: str = field(default_factory=lambda: env_config.db_password)
+    host: str = field(default_factory=lambda: env_config.db_host)
+    port: int = field(default_factory=lambda: env_config.db_port)
+    database: str = field(default_factory=lambda: env_config.db_name)
+
+
     # Connection pool settings
     pool_size: int = field(default=5)
     enable_pooling: bool = field(default=True)
@@ -64,12 +70,11 @@ class DatabaseConfig:
             return False
         return True
 
-
 @dataclass
 class APIConfig:
     """API configuration for external data sources."""
     
-    base_url: str = field(default_factory=lambda: os.getenv('API_BASE_URL', 'https://etl-server.fly.dev'))
+    base_url: str = field(default_factory=lambda: env_config.api_url)
     timeout: int = field(default=30)
     retries: int = field(default=3)
     retry_delay: float = field(default=1.0)
@@ -79,8 +84,8 @@ class APIConfig:
     rate_limit_period: int = field(default=60)  # seconds
     
     # Authentication
-    api_key: Optional[str] = field(default_factory=lambda: os.getenv('API_KEY'))
-    bearer_token: Optional[str] = field(default_factory=lambda: os.getenv('API_BEARER_TOKEN'))
+    api_key: Optional[str] = field(default_factory=lambda: env_config.api_key)
+    bearer_token: Optional[str] = field(default_factory=lambda: env_config.api_bearer_token)
     
     # Headers
     user_agent: str = field(default="ETL-Pipeline/1.0")
@@ -115,7 +120,6 @@ class APIConfig:
         if self.max_concurrent_requests <= 0:
             return False
         return True
-
 
 @dataclass
 class ProcessingConfig:
@@ -156,12 +160,11 @@ class ProcessingConfig:
             return False
         return True
 
-
 @dataclass
 class LoggingConfig:
     """Logging configuration."""
     
-    level: str = field(default_factory=lambda: os.getenv('LOG_LEVEL', 'INFO'))
+    level: str = field(default_factory=lambda: env_config.log_level)
     format: str = field(default='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     date_format: str = field(default='%Y-%m-%d %H:%M:%S')
     
@@ -202,58 +205,55 @@ class LoggingConfig:
 @dataclass
 class ApplicationConfig:
     """Main application configuration."""
-    
+
     # Application metadata
-    name: str = field(default="ETL Pipeline Manager")
-    version: str = field(default="2.0.0")
-    environment: str = field(default_factory=lambda: os.getenv('ENVIRONMENT', 'development'))
-    
-    # Data directories
-    data_dir: Path = field(default_factory=lambda: Path(__file__).parent.parent.parent / 'data')
-    csv_dir: Optional[Path] = field(default=None)
-    api_dir: Optional[Path] = field(default=None)
-    cache_dir: Optional[Path] = field(default=None)
-    
+    name: str = "ETL Pipeline Manager"
+    version: str = "2.0.0"
+    environment: str = field(default_factory=lambda: env_config.environment)
+
+    # Data directories (sourced from path_config)
+    data_dir: Path = DATA_PATH
+    csv_dir: Path = CSV_PATH
+    api_dir: Path = API_PATH
+    cache_dir: Path = CACHE_PATH
+
     # Feature flags
-    enable_caching: bool = field(default=True)
-    enable_monitoring: bool = field(default=True)
-    enable_api_mode: bool = field(default=True)
-    
+    enable_caching: bool = True
+    enable_monitoring: bool = True
+    enable_api_mode: bool = True
+
     # Security
-    debug_mode: bool = field(default_factory=lambda: os.getenv('DEBUG', 'False').lower() == 'true')
-    allow_data_export: bool = field(default=True)
-    
-    def __post_init__(self):
-        """Initialize derived paths after creation."""
-        if self.csv_dir is None:
-            self.csv_dir = self.data_dir / 'CSV'
-        if self.api_dir is None:
-            self.api_dir = self.data_dir / 'API'
-        if self.cache_dir is None:
-            self.cache_dir = self.data_dir / 'cache'
-    
+    debug_mode: bool = field(default_factory=lambda: env_config.debug)
+    allow_data_export: bool = True
+
+    def __post_init__(self) -> None:
+        """
+        Automatically called after initialization.
+        Ensures all required application directories exist.
+        """
+        self.create_directories()
+
     def create_directories(self) -> None:
         """Create necessary directories if they don't exist."""
-        directories = [self.data_dir, self.csv_dir, self.api_dir, self.cache_dir]
+        directories = [
+            self.data_dir, 
+            self.csv_dir, 
+            self.api_dir, 
+            self.cache_dir
+        ]
         for directory in directories:
-            if directory:
-                directory.mkdir(parents=True, exist_ok=True)
-    
+            # parents=True creates missing intermediate parents
+            # exist_ok=True prevents errors if the folder already exists
+            directory.mkdir(parents=True, exist_ok=True)
+
     def is_production(self) -> bool:
-        """Check if running in production environment."""
-        return self.environment.lower() == 'production'
-    
+        return self.environment.lower() == "production"
+
     def is_development(self) -> bool:
-        """Check if running in development environment."""
-        return self.environment.lower() == 'development'
-    
+        return self.environment.lower() == "development"
+
     def validate(self) -> bool:
-        """Validate application configuration."""
-        if not self.name or not self.version:
-            return False
-        if not self.data_dir:
-            return False
-        return True
+        return bool(self.name and self.version and self.data_dir)
 
 
 @dataclass
@@ -352,10 +352,6 @@ def get_default_config() -> ETLConfig:
     return config
 
 
-# Global configuration instance
-_global_config: Optional[ETLConfig] = None
-
-
 def get_config() -> ETLConfig:
     """Get global configuration instance."""
     global _global_config
@@ -374,6 +370,10 @@ def reset_config() -> None:
     """Reset global configuration to None."""
     global _global_config
     _global_config = None
+
+
+# Global configuration instance
+_global_config: Optional[ETLConfig] = None
 
 
 if __name__ == "__main__":
