@@ -28,12 +28,6 @@ class DatabaseConfig:
     port: int = field(default_factory=lambda: env_config.db_port)
     database: str = field(default_factory=lambda: env_config.db_name)
 
-
-    # Connection pool settings
-    pool_size: int = field(default=5)
-    enable_pooling: bool = field(default=True)
-    pool_reset_session: bool = field(default=True)
-    
     # Connection behavior
     raise_on_warnings: bool = field(default=True)
     autocommit: bool = field(default=False)
@@ -57,16 +51,14 @@ class DatabaseConfig:
         }
     
     def get_connection_string(self) -> str:
-        """Get connection string for logging (without password)."""
-        return f"mysql://{self.user}@{self.host}:{self.port}/{self.database}"
+        raise NotImplementedError
+
     
     def validate(self) -> bool:
         """Validate configuration parameters."""
         if not self.host or not self.user:
             return False
         if not (1 <= self.port <= 65535):
-            return False
-        if self.pool_size < 1:
             return False
         return True
 
@@ -292,8 +284,6 @@ class ETLConfig:
                 'host': self.database.host,
                 'port': self.database.port,
                 'database': self.database.database,
-                'pooling': self.database.enable_pooling,
-                'pool_size': self.database.pool_size
             },
             'api': {
                 'base_url': self.api.base_url,
