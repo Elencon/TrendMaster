@@ -140,15 +140,27 @@ class AdminOperationHandler(QObject):
         self._current_worker.start()
 
     def set_buttons_enabled(self, enabled: bool):
-        """Toggle UI buttons based on availability and operation state."""
+        """Toggle UI buttons based on operation state.
+        
+        - 'Select CSV Files' button is always enabled.
+        - All other operation buttons are enabled/disabled based on the 'enabled' parameter.
+        - 'Load CSV Files' button has special logic: enabled only when operation is allowed 
+          AND at least one file has been selected.
+        """
         buttons = getattr(self._window, 'operation_buttons', {})
+
+        # Handle all buttons in the operation_buttons dictionary
         for btn_name, button in buttons.items():
             if btn_name == "select_csv_btn":
+                button.setEnabled(True)                    # Always allow selecting files
+            else:
                 button.setEnabled(enabled)
 
+        # Special handling for "Load Selected Files" button
         load_btn = getattr(self._window, 'load_selected_files_btn', None)
         if load_btn:
-            load_btn.setEnabled(enabled and len(self._selected_csv_files) > 0)
+            can_load = enabled and len(self._selected_csv_files) > 0
+            load_btn.setEnabled(can_load)                
 
     def on_operation_finished(self, operation_name: str, message: str):
         """Handle successful operation completion."""
@@ -235,8 +247,8 @@ class AdminOperationHandler(QObject):
             file_paths = file_dialog.selectedFiles()
             self._selected_csv_files = file_paths or []
 
-            label = getattr(self._window, "_selected_files_label", None)
-            load_btn = getattr(self._window, "_load_selected_files_btn", None)
+            label = getattr(self._window, "selected_files_label", None)
+            load_btn = getattr(self._window, "load_selected_files_btn", None)
 
             if self._selected_csv_files and label:
                 file_names = [Path(fp).name for fp in self._selected_csv_files]
@@ -263,7 +275,8 @@ class AdminOperationHandler(QObject):
         if not self._selected_csv_files:
             self.show_error("No Files Selected", "Please select CSV files first")
             return
-        self.start_operation("select_csv_files", self._selected_csv_files, operation_name="Loading Selected Files")
+        self.start_operation("load_selected_csv_files", self._selected_csv_files, 
+                     operation_name="Loading Selected Files")
 
     def test_csv_access(self):
         self.start_operation("test_csv_access", operation_name="CSV Access Test")

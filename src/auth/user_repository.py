@@ -6,8 +6,10 @@ User data access and CRUD operations.
 import logging
 from contextlib import contextmanager
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 import pymysql.cursors
+
+from .session import UserData
 
 _logger = logging.getLogger(__name__)
 
@@ -22,8 +24,11 @@ _USER_BASE_SELECT = """
     LEFT JOIN staffs s ON u.staff_id = s.staff_id
 """
 
-_GET_USER_BY_ID_QUERY = _USER_BASE_SELECT + """
-    , s.phone
+_GET_USER_BY_ID_QUERY = """
+    SELECT u.user_id, u.username, u.role, u.staff_id, u.active, u.last_login, u.created_at,
+           s.name, s.last_name, s.email, s.phone
+    FROM users u
+    LEFT JOIN staffs s ON u.staff_id = s.staff_id
     WHERE u.user_id = %s
 """
 
@@ -103,7 +108,7 @@ class UserRepository:
         try:
             password_hash = self._password_handler.hash_password(password)
             with _plain_cursor(self._db) as cur:
-                cur.execute(_CREATE_USER_QUERY, (username, password_hash, role, staff_id, datetime.now()))
+                cur.execute(_CREATE_USER_QUERY, (username, password_hash, role, staff_id, datetime.now(timezone.utc)))
             self._db.commit()
             _logger.info("Created user '%s' with role '%s'", username, role)
             return True
@@ -118,7 +123,7 @@ class UserRepository:
     # Read
     # ------------------------------------------------------------------
 
-    def get_user_by_id(self, user_id: int) -> Optional[Dict[str, Any]]:
+    def get_user_by_id(self, user_id: int) -> Optional[UserData]:
         try:
             with _dict_cursor(self._db) as cur:
                 cur.execute(_GET_USER_BY_ID_QUERY, (user_id,))
@@ -127,7 +132,7 @@ class UserRepository:
             _logger.error("Error getting user %s: %s", user_id, e)
             return None
 
-    def get_all_users(self) -> List[Dict[str, Any]]:
+    def get_all_users(self) -> List[UserData]:
         try:
             with _dict_cursor(self._db) as cur:
                 cur.execute(_GET_ALL_USERS_QUERY)

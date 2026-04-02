@@ -6,11 +6,13 @@ User authentication and verification.
 import logging
 from contextlib import contextmanager
 from typing import Any, Dict, Optional
-from datetime import datetime, UTC
+from datetime import datetime, timezone
+
+from .password_handler import PasswordHandler   # for type clarity (optional)
 
 _logger = logging.getLogger(__name__)
 
-_SENSITIVE_FIELDS = {"password_hash"}
+_SENSITIVE_FIELDS = frozenset({"password_hash"})
 
 _AUTH_QUERY = """
     SELECT
@@ -37,33 +39,38 @@ _UPDATE_LAST_LOGIN_QUERY = "UPDATE users SET last_login = %s WHERE user_id = %s"
 
 @contextmanager
 def _dict_cursor(db_connection):
-    """Context manager for a dictionary cursor (mysql.connector and PyMySQL compatible)."""
+    """Context manager for a dictionary cursor (supports mysql.connector and PyMySQL)."""
+    cursor = None
     try:
-        cur = db_connection.cursor(dictionary=True)
-    except TypeError:
+        # mysql.connector style
+        cursor = db_connection.cursor(dictionary=True)
+    except (TypeError, AttributeError):
+        # PyMySQL style
         import pymysql.cursors
-        cur = db_connection.cursor(pymysql.cursors.DictCursor)
+        cursor = db_connection.cursor(pymysql.cursors.DictCursor)
 
     try:
-        yield cur
+        yield cursor
     finally:
-        try:
-            cur.close()
-        except Exception:
-            pass
+        if cursor:
+            try:
+                cursor.close()
+            except Exception:
+                pass
 
 
 @contextmanager
 def _plain_cursor(db_connection):
-    """Context manager for a plain cursor."""
-    cur = db_connection.cursor()
+    """Context manager for a plain (non-dict) cursor."""
+    cursor = db_connection.cursor()
     try:
-        yield cur
+        yield cursor
     finally:
-        try:
-            cur.close()
-        except Exception:
-            pass
+        if cursor:
+            try:
+                cursor.close()
+            except Exception:
+                pass
 
 
 # ---------------------------------------------------------------------------
@@ -71,7 +78,7 @@ def _plain_cursor(db_connection):
 # ---------------------------------------------------------------------------
 
 def _scrub(user: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a copy of user with all sensitive fields removed."""
+    """Return a copy of user data with sensitive fields removed."""
     return {k: v for k, v in user.items() if k not in _SENSITIVE_FIELDS}
 
 
@@ -82,7 +89,7 @@ def _scrub(user: Dict[str, Any]) -> Dict[str, Any]:
 class UserAuthenticator:
     """Handles user authentication and login tracking."""
 
-    def __init__(self, db_connection: Any, password_handler: Any):
+    def __init__(self, db_connection: Any, password_handler: PasswordHandler):
         """
         Args:
             db_connection:    Database connection (mysql.connector or PyMySQL).
@@ -100,7 +107,7 @@ class UserAuthenticator:
         Authenticate a user with username and password.
 
         Returns:
-            Dict with user info (sensitive fields stripped) if authenticated,
+            Dict with user info (sensitive fields stripped) if successful,
             None otherwise.
         """
         if not username or not password:
@@ -110,7 +117,7 @@ class UserAuthenticator:
         try:
             user = self._fetch_user(username)
         except Exception as e:
-            _logger.error("DB error while fetching user '%s': %s", username, e)
+            _logger.error("Database error while fetching user '%s': %s", username, e)
             return None
 
         if not user:
@@ -121,13 +128,14 @@ class UserAuthenticator:
             _logger.warning("Authentication failed: user '%s' is inactive", username)
             return None
 
-        if not self._password_handler.verify_password(password, user["password_hash"]):
+        if not self._password_handler.verify_password(password, user.get("password_hash")):
             _logger.warning("Authentication failed: wrong password for '%s'", username)
             return None
 
+        # Update last login (best effort - do not fail auth on error)
         self._update_last_login(user["user_id"])
-        _logger.info("User '%s' authenticated successfully", username)
 
+        _logger.info("User '%s' authenticated successfully", username)
         return _scrub(user)
 
     # ------------------------------------------------------------------
@@ -138,13 +146,14 @@ class UserAuthenticator:
         """Query the DB and return the raw user row, or None if not found."""
         with _dict_cursor(self._db) as cur:
             cur.execute(_AUTH_QUERY, (username,))
-            return cur.fetchone()
+            row = cur.fetchone()
+            return dict(row) if row else None   # ensure dict
 
     def _update_last_login(self, user_id: int) -> None:
-        """Stamp last_login for user_id; logs but never raises on failure."""
+        """Update last_login timestamp. Failures are logged but do not raise."""
         try:
             with _plain_cursor(self._db) as cur:
-                cur.execute(_UPDATE_LAST_LOGIN_QUERY, (datetime.now(UTC), user_id))
+                cur.execute(_UPDATE_LAST_LOGIN_QUERY, (datetime.now(timezone.utc), user_id))
             self._db.commit()
         except Exception as e:
-            _logger.error("Could not update last_login for user_id %s: %s", user_id, e)
+            _logger.error("Failed to update last_login for user_id %s: %s", user_id, e)

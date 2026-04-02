@@ -1,10 +1,11 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\auth\password_policy.py
 Password Policy Validator
 Enforces password strength requirements.
 """
 
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from dataclasses import dataclass, field
 
 # ---------------------------------------------------------------------------
@@ -15,10 +16,11 @@ _DEFAULT_SPECIAL_CHARS = "!@#$%^&*()_+-=[]{}|;:,.<>?"
 
 _WEAK_PASSWORDS = frozenset({
     'password', 'password1', 'password123', 'admin', 'admin123',
-    '12345678', 'qwerty123', 'letmein', 'welcome', 'monkey123',
+    '12345678', 'qwerty', 'qwerty123', 'letmein', 'welcome', 
+    'monkey', 'monkey123', 'abc123', 'iloveyou', '1234567890'
 })
 
-# Strength thresholds
+# Strength thresholds - must remain sorted descending
 _STRENGTH_LABELS = [
     (80, "Very Strong"),
     (60, "Strong"),
@@ -31,7 +33,7 @@ _STRENGTH_LABELS = [
 # Data classes
 # ---------------------------------------------------------------------------
 
-@dataclass
+@dataclass(frozen=True)
 class PasswordRequirements:
     """Password policy requirements."""
     min_length:        int  = 8
@@ -49,7 +51,7 @@ class PasswordRequirements:
 class PasswordPolicyValidator:
     """Validates passwords against a configurable security policy."""
 
-    def __init__(self, requirements: PasswordRequirements = None):
+    def __init__(self, requirements: Optional[PasswordRequirements] = None):
         self._req = requirements or PasswordRequirements()
         self._special_pattern = re.compile(f"[{re.escape(self._req.special_chars)}]")
 
@@ -110,12 +112,14 @@ class PasswordPolicyValidator:
         Returns:
             (strength_label, strength_percentage)
         """
+        if not password:
+            return "Very Weak", 0
 
-        # --- Early classification for extremely weak passwords ---
+        # Early classification for extremely weak passwords
         if len(password) < 4:
             return "Very Weak", 0
 
-        # --- Normal scoring ---
+        # Normal scoring
         score = (
             self._length_score(password)
             + self._variety_score(password)
@@ -125,8 +129,12 @@ class PasswordPolicyValidator:
         # Clamp score to 0–100
         score = max(0, min(score, 100))
 
-        label = next(label for threshold, label in _STRENGTH_LABELS if score >= threshold)
-        return label, score
+        # Safe label lookup (list must be sorted descending by threshold)
+        for threshold, label in _STRENGTH_LABELS:
+            if score >= threshold:
+                return label, score
+
+        return "Very Weak", 0  # fallback
 
     # ------------------------------------------------------------------
     # Private scoring helpers
@@ -162,18 +170,21 @@ class PasswordPolicyValidator:
     @staticmethod
     def _complexity_score(password: str) -> int:
         """Up to 30 points for additional complexity."""
-        score = 0
+        if not password:
+            return 0
+
         lower = password.lower()
+        score = 0
 
-        # Character diversity
-        if len(set(lower)) > len(lower) * 0.7:
+        # Bonus for good character diversity (at least 8 unique characters)
+        if len(set(lower)) >= 8:
             score += 10
 
-        # No triple repeated characters
-        if not any(c * 3 in lower for c in set(lower)):
+        # Avoid long repeated sequences (aaa, 111, !!!, etc.)
+        if not re.search(r'(.)\1{2,}', lower):
             score += 10
 
-        # Extra length bonus
+        # Extra bonus for very long passwords
         if len(password) >= 16:
             score += 10
 

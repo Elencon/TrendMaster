@@ -1,4 +1,5 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\auth\account_lockout.py
 Account Lockout Manager
 Handles account locking after failed login attempts.
 """

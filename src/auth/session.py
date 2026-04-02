@@ -111,10 +111,16 @@ class SessionManager:
 
     def update_user_data(self, updated_data: UserData) -> None:
         """
-        Update fields in the current user's session data.
+        Update selected fields in the current user's session data.
+
+        This performs a controlled update:
+        - Only keys present in `updated_data` are modified.
+        - Existing fields may be explicitly set to None.
+        - New fields are added only if their value is not None.
+        - Missing keys in `updated_data` are left unchanged.
 
         Args:
-            updated_data: Dictionary with updated user information.
+            updated_data: Partial user information to merge into the session.
 
         Raises:
             RuntimeError: If no user is currently logged in.
@@ -122,8 +128,11 @@ class SessionManager:
         with self._lock:
             if not self._current_user:
                 raise RuntimeError("Cannot update session data: no user is logged in")
-            self._current_user.update(updated_data)
-            _logger.debug(
-                "Updated session data for user '%s'",
-                self._current_user.get("username"),
-            )
+            
+            # Safer update - only update provided fields
+            for key, value in updated_data.items():
+                if value is not None or key in self._current_user:  # optional: decide on None handling
+                    self._current_user[key] = value
+                    
+            _logger.debug("Updated session data for user '%s'", 
+                        self._current_user.get("username"))
