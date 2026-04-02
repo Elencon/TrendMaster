@@ -20,7 +20,6 @@ sys.dont_write_bytecode = True
 os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
 
 
-
 class ETLMainWindow(QMainWindow):
     """Main window with clean architecture and theme support"""
     
@@ -144,3 +143,9 @@ class ETLMainWindow(QMainWindow):
         self._save_settings()
         event.accept()
 
+        
+def main():
+    app = QApplication(sys.argv)
+    window = ETLMainWindow()
+    window.show()
+    return app.exec()
