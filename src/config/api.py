@@ -3,7 +3,7 @@ API-specific configuration utilities and presets.
 """
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Dict, List
 from .etl_config import APIConfig
 
 

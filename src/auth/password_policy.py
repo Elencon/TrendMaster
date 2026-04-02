@@ -16,7 +16,7 @@ _DEFAULT_SPECIAL_CHARS = "!@#$%^&*()_+-=[]{}|;:,.<>?"
 
 _WEAK_PASSWORDS = frozenset({
     'password', 'password1', 'password123', 'admin', 'admin123',
-    '12345678', 'qwerty', 'qwerty123', 'letmein', 'welcome', 
+    '12345678', 'qwerty', 'qwerty123', 'letmein', 'welcome',
     'monkey', 'monkey123', 'abc123', 'iloveyou', '1234567890'
 })
 

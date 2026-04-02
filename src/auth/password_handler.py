@@ -131,7 +131,7 @@ class PasswordHandler:
             except Exception as rb_err:
                 _logger.error("Rollback failed for user %s: %s", user_id, rb_err)
             return False
-    
+
     def verify_password(self, password: str, password_hash: str) -> bool:
         """Verify password against hash."""
         return self._verify(password, password_hash)

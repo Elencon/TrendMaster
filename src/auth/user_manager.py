@@ -4,7 +4,7 @@ User management for authentication system.
 Facade that coordinates authentication, password, and repository operations.
 """
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional, List
 from .password_handler import PasswordHandler
 from .user_authenticator import UserAuthenticator
 from .user_repository import UserRepository

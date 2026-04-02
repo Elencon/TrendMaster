@@ -13,15 +13,13 @@ from .path_config import (
     CSV_PATH,
     API_PATH,
     CACHE_PATH,
-    LOGS_PATH,
-    CONFIG_PATH,
 )
 
 
 @dataclass
 class DatabaseConfig:
     """Database connection configuration with validation."""
-    
+
     user: str = field(default_factory=lambda: env_config.db_user)
     password: str = field(default_factory=lambda: env_config.db_password)
     host: str = field(default_factory=lambda: env_config.db_host)
@@ -32,11 +30,11 @@ class DatabaseConfig:
     raise_on_warnings: bool = field(default=True)
     autocommit: bool = field(default=False)
     connect_timeout: int = field(default=30)
-    
+
     # Retry settings
     max_retry_attempts: int = field(default=3)
     retry_delay: int = field(default=2)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for mysql connector."""
         return {
@@ -49,11 +47,11 @@ class DatabaseConfig:
             'autocommit': self.autocommit,
             'connect_timeout': self.connect_timeout
         }
-    
+
     def get_connection_string(self) -> str:
         raise NotImplementedError
 
-    
+
     def validate(self) -> bool:
         """Validate configuration parameters."""
         if not self.host or not self.user:
@@ -65,28 +63,28 @@ class DatabaseConfig:
 @dataclass
 class APIConfig:
     """API configuration for external data sources."""
-    
+
     base_url: str = field(default_factory=lambda: env_config.api_url)
     timeout: int = field(default=30)
     retries: int = field(default=3)
     retry_delay: float = field(default=1.0)
-    
+
     # Rate limiting
     rate_limit_calls: int = field(default=100)
     rate_limit_period: int = field(default=60)  # seconds
-    
+
     # Authentication
     api_key: Optional[str] = field(default_factory=lambda: env_config.api_key)
     bearer_token: Optional[str] = field(default_factory=lambda: env_config.api_bearer_token)
-    
+
     # Headers
     user_agent: str = field(default="ETL-Pipeline/1.0")
     accept: str = field(default="application/json")
-    
+
     # Async settings
     max_concurrent_requests: int = field(default=10)
     semaphore_limit: int = field(default=5)
-    
+
     def get_headers(self) -> Dict[str, str]:
         """Get HTTP headers for API requests."""
         headers = {
@@ -94,15 +92,15 @@ class APIConfig:
             'Accept': self.accept,
             'Content-Type': 'application/json'
         }
-        
+
         if self.api_key:
             headers['X-API-Key'] = self.api_key
-        
+
         if self.bearer_token:
             headers['Authorization'] = f'Bearer {self.bearer_token}'
-        
+
         return headers
-    
+
     def validate(self) -> bool:
         """Validate API configuration."""
         if not self.base_url:
@@ -116,32 +114,32 @@ class APIConfig:
 @dataclass
 class ProcessingConfig:
     """Data processing configuration."""
-    
+
     # Batch processing
     batch_size: int = field(default=1000)
     max_batch_size: int = field(default=10000)
-    
+
     # Memory management
     chunk_size: int = field(default=5000)
     max_memory_usage_mb: int = field(default=512)
-    
+
     # CSV processing
     csv_encoding: str = field(default='utf-8')
     csv_delimiter: str = field(default=',')
     csv_quotechar: str = field(default='"')
-    
+
     # Pandas options
     pandas_low_memory: bool = field(default=False)
     pandas_na_values: List[str] = field(default_factory=lambda: ['', 'NULL', 'null', 'NaN', 'nan'])
-    
+
     # Data validation
     validate_schema: bool = field(default=True)
     strict_validation: bool = field(default=False)
-    
+
     # Performance
     use_multiprocessing: bool = field(default=False)
     max_workers: int = field(default=4)
-    
+
     def validate(self) -> bool:
         """Validate processing configuration."""
         if self.batch_size <= 0 or self.batch_size > self.max_batch_size:
@@ -155,33 +153,33 @@ class ProcessingConfig:
 @dataclass
 class LoggingConfig:
     """Logging configuration."""
-    
+
     level: str = field(default_factory=lambda: env_config.log_level)
     format: str = field(default='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     date_format: str = field(default='%Y-%m-%d %H:%M:%S')
-    
+
     # File logging
     enable_file_logging: bool = field(default=True)
     log_file: str = field(default='logs/etl_pipeline.log')
     max_file_size: int = field(default=10_000_000)  # 10MB
     backup_count: int = field(default=5)
-    
+
     # Console logging
     enable_console_logging: bool = field(default=True)
     console_level: str = field(default='INFO')
-    
+
     # Structured logging
     use_json_format: bool = field(default=False)
     include_extra_fields: bool = field(default=True)
-    
+
     # Performance logging
     log_sql_queries: bool = field(default=False)
     log_performance_metrics: bool = field(default=True)
-    
+
     def get_log_directory(self) -> Path:
         """Get log directory path."""
         return Path(self.log_file).parent
-    
+
     def validate(self) -> bool:
         """Validate logging configuration."""
         valid_levels = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
@@ -228,9 +226,9 @@ class ApplicationConfig:
     def create_directories(self) -> None:
         """Create necessary directories if they don't exist."""
         directories = [
-            self.data_dir, 
-            self.csv_dir, 
-            self.api_dir, 
+            self.data_dir,
+            self.csv_dir,
+            self.api_dir,
             self.cache_dir
         ]
         for directory in directories:
@@ -251,13 +249,13 @@ class ApplicationConfig:
 @dataclass
 class ETLConfig:
     """Complete ETL configuration combining all components."""
-    
+
     database: DatabaseConfig = field(default_factory=DatabaseConfig)
     api: APIConfig = field(default_factory=APIConfig)
     processing: ProcessingConfig = field(default_factory=ProcessingConfig)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     application: ApplicationConfig = field(default_factory=ApplicationConfig)
-    
+
     def validate_all(self) -> Dict[str, bool]:
         """Validate all configuration sections."""
         return {
@@ -267,11 +265,11 @@ class ETLConfig:
             'logging': self.logging.validate(),
             'application': self.application.validate()
         }
-    
+
     def is_valid(self) -> bool:
         """Check if all configurations are valid."""
         return all(self.validate_all().values())
-    
+
     def get_summary(self) -> Dict[str, Any]:
         """Get configuration summary for logging."""
         return {
@@ -308,25 +306,25 @@ def load_config_from_env() -> ETLConfig:
 def load_config_from_dict(config_dict: Dict[str, Any]) -> ETLConfig:
     """Load configuration from dictionary."""
     config = ETLConfig()
-    
+
     if 'database' in config_dict:
         db_config = config_dict['database']
         for key, value in db_config.items():
             if hasattr(config.database, key):
                 setattr(config.database, key, value)
-    
+
     if 'api' in config_dict:
         api_config = config_dict['api']
         for key, value in api_config.items():
             if hasattr(config.api, key):
                 setattr(config.api, key, value)
-    
+
     if 'processing' in config_dict:
         proc_config = config_dict['processing']
         for key, value in proc_config.items():
             if hasattr(config.processing, key):
                 setattr(config.processing, key, value)
-    
+
     return config
 
 
@@ -334,12 +332,12 @@ def load_config_from_dict(config_dict: Dict[str, Any]) -> ETLConfig:
 def get_default_config() -> ETLConfig:
     """Get default configuration with sensible defaults."""
     config = ETLConfig()
-    
+
     # Override some defaults for production readiness
     config.database.pool_size = 10
     config.processing.batch_size = 2000
     config.api.max_concurrent_requests = 15
-    
+
     return config
 
 _global_config: Optional[ETLConfig] = None

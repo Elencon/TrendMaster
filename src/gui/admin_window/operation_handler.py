@@ -160,7 +160,7 @@ class AdminOperationHandler(QObject):
         load_btn = getattr(self._window, 'load_selected_files_btn', None)
         if load_btn:
             can_load = enabled and len(self._selected_csv_files) > 0
-            load_btn.setEnabled(can_load)                
+            load_btn.setEnabled(can_load)
 
     def on_operation_finished(self, operation_name: str, message: str):
         """Handle successful operation completion."""
@@ -275,7 +275,7 @@ class AdminOperationHandler(QObject):
         if not self._selected_csv_files:
             self.show_error("No Files Selected", "Please select CSV files first")
             return
-        self.start_operation("load_selected_csv_files", self._selected_csv_files, 
+        self.start_operation("load_selected_csv_files", self._selected_csv_files,
                      operation_name="Loading Selected Files")
 
     def test_csv_access(self):

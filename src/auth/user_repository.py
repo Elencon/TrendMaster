@@ -5,7 +5,7 @@ User data access and CRUD operations.
 
 import logging
 from contextlib import contextmanager
-from typing import Optional, Dict, Any, List
+from typing import Optional, List
 from datetime import datetime, timezone
 import pymysql.cursors
 

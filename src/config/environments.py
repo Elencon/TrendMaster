@@ -226,7 +226,6 @@ PROFILES: Dict[str, Type[ConfigProfile]] = {
 # ENVIRONMENT HELPERS
 # ---------------------------------------------------------------------------
 # In environments.py
-from .env_config import env_config
 
 def load_config_for_environment(environment: str = None) -> ETLConfig:
     if environment is None:

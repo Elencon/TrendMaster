@@ -21,7 +21,7 @@ class MySQLConfig(DatabaseConfig):
     """
     charset: str = "utf8mb4"
     collation: str = "utf8mb4_unicode_ci"
-    
+
     def get_connection_string(self) -> str:
         """Get connection string for logging (without password)."""
         return f"mysql://{self.user}@{self.host}:{self.port}/{self.database}"

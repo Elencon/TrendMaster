@@ -128,11 +128,11 @@ class SessionManager:
         with self._lock:
             if not self._current_user:
                 raise RuntimeError("Cannot update session data: no user is logged in")
-            
+
             # Safer update - only update provided fields
             for key, value in updated_data.items():
                 if value is not None or key in self._current_user:  # optional: decide on None handling
                     self._current_user[key] = value
-                    
-            _logger.debug("Updated session data for user '%s'", 
+
+            _logger.debug("Updated session data for user '%s'",
                         self._current_user.get("username"))

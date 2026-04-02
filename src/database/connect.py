@@ -121,7 +121,7 @@ def connect_sync(
     """Synchronous database connection with retry support."""
     cfg = deepcopy(config or DEFAULT_CONFIG_DICT)
     handler = retry or _default_retry()
-    
+
     return handler.execute_sync(_connect, cfg)
 
 
@@ -132,7 +132,7 @@ async def connect_async(
     """Asynchronous database connection with retry support."""
     cfg = deepcopy(config or DEFAULT_CONFIG_DICT)
     handler = retry or _default_retry()
-    
+
     return await handler.execute_async(
         _connect,
         cfg,

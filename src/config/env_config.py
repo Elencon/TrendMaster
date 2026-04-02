@@ -210,7 +210,7 @@ if __name__ == "__main__":
     print("db_name:", cfg.db_name)
     print("db_user:", cfg.db_user)
     print("db_password:", cfg.db_password)
-    
+
     # Test: API config
     print("api_url:", cfg.api_url)
     print("api_key:", cfg.api_key)
