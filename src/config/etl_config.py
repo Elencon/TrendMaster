@@ -62,7 +62,7 @@ class DatabaseConfig:
             return False
         return True
 
-@dataclass(frozen=True)
+@dataclass
 class APIConfig:
     """API configuration for external data sources."""
 
