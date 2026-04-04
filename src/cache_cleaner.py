@@ -21,15 +21,6 @@ class CacheCleaner:
         # Auto-detect project root reliably
         self.project_root = self._find_project_root(Path(__file__).resolve())
 
-        # Specific cache directories (kept for reference/compatibility)
-        self.specific_cache_dirs = [
-            self.project_root / "__pycache__",
-            self.project_root / "gui" / "__pycache__",
-            self.project_root / "src" / "__pycache__",
-            self.project_root / "src" / "database" / "__pycache__",
-            self.project_root / "tests" / "__pycache__",
-        ]
-
         # Cache file patterns (non-directory)
         self.cache_patterns = [
             "*.pyc",
