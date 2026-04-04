@@ -38,7 +38,6 @@ class ETLWorker(QThread):
         self._operations: Dict[str, Any] = {
             "test_connection": self._test_connection,
             "test_api": self._test_api,
-            "create_tables": self._create_tables,
             "load_csv": self._load_csv,
             "load_api": self._load_api,
             "test_csv_access": self._test_csv_access,
@@ -119,61 +118,6 @@ class ETLWorker(QThread):
 
         except Exception as e:
             self.error.emit(f"API connection failed: {e}")
-
-    # ---------------------------------------------------------
-    # Operation: Create Tables
-    # ---------------------------------------------------------
-    def _create_tables(self):
-        self.progress.emit("Creating database and tables...")
-
-        db_manager = None
-        try:
-            db_manager = DatabaseManager()
-
-            if self._is_cancelled:
-                return
-
-            self.progress.emit("Creating database if not exists...")
-            created = db_manager.create_database_if_not_exists()
-
-            if not created:
-                self.error.emit("Failed to create database - Check MySQL permissions")
-                return
-
-            if self._is_cancelled:
-                return
-
-            self.progress.emit("Creating all 9 tables with updated schema...")
-            csv_success = db_manager.create_all_tables_from_csv()
-
-            if not csv_success:
-                self.error.emit("Failed to create some tables - Check schema compatibility")
-                return
-
-            # Verify table creation
-            csv_tables = ["brands", "categories", "stores", "staffs", "products", "stocks"]
-            api_tables = ["customers", "orders", "order_items"]
-
-            table_info = []
-            for table in csv_tables + api_tables:
-                count = db_manager.get_row_count(table)
-                table_info.append(f"  {table}: {'Ready' if count >= 0 else 'Created'}")
-
-            result = (
-                "All 9 database tables created successfully!\n"
-                "Schema Updates Applied:\n"
-                "  - STOCKS: store_name (FK), product_id (PK)\n"
-                "  - STAFFS: name, store_name, street columns\n"
-                "Tables Created:\n" + "\n".join(table_info)
-            )
-
-            self.finished.emit(result)
-
-        except Exception as e:
-            self.error.emit(f"Error creating tables: {e}")
-
-        finally:
-            db_manager = None
 
     # ---------------------------------------------------------
     # Operation: Load CSV Data

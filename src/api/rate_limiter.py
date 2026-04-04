@@ -1,20 +1,22 @@
 r"""
 Path: C:\Economy\Invest\TrendMaster\src\api\rate_limiter.py
 """
+
 import asyncio
 import time
 from dataclasses import dataclass
-from typing import Optional
 from contextlib import asynccontextmanager
 
-@dataclass(frozen=True) # Frozen makes the config itself immutable
+
+@dataclass(frozen=True)
 class RateLimitConfig:
     requests_per_second: float = 5.0
     max_concurrent: int = 10
     enabled: bool = True
 
+
 class RateLimiter:
-    def __init__(self, config: Optional[RateLimitConfig] = None):
+    def __init__(self, config: RateLimitConfig | None = None):
         self._config = config or RateLimitConfig()
         self._semaphore = asyncio.Semaphore(self._config.max_concurrent)
         self._last_request_time = 0.0

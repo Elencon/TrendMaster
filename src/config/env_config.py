@@ -116,7 +116,7 @@ class EnvConfig:
 
     @property
     def db_name(self) -> str:
-        return self.get("DB_NAME", "store_manager")
+        return self.get("DB_NAME", "trend_master")
 
     @property
     def db_user(self) -> str:

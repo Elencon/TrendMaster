@@ -294,15 +294,15 @@ class DataFrameChunker:
 
         return results
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def create_pandas_optimizer(max_memory_mb=512, chunk_size=10000, auto_optimize=True):
-    """Factory function to create PandasOptimizer."""
+def create_pandas_optimizer( max_memory_mb: int = 512,
+    chunk_size: int = 10000,
+    auto_optimize: bool = True
+) -> PandasOptimizer:
     return PandasOptimizer(max_memory_mb, chunk_size, auto_optimize)
-
 
 def optimize_csv_reading(file_path: Union[str, Path], **kwargs) -> pd.DataFrame:
     """Read CSV with automatic dtype optimization and chunk fallback."""

@@ -1,6 +1,6 @@
 import pytest
 import msgspec
-from datetime import datetime
+from datetime import datetime, timezone
 from src.api.data_processor import APIDataProcessor
 from src.api.api_models import APIResponse
 
@@ -20,7 +20,7 @@ async def test_data_processor_success():
             headers={},
             url=f"https://api.test.com/users/{i}",
             request_time=0.1,
-            response_time=datetime.now()
+            response_time=datetime.now(timezone.utc)
         ) for i in range(5)
     ]
 
@@ -42,7 +42,7 @@ async def test_data_processor_partial_failure():
             headers={},
             url="https://api.test.com/users/1",
             request_time=0.1,
-            response_time=datetime.now()
+            response_time=datetime.now(timezone.utc)
         ),
         APIResponse(
             status=500, # Should be skipped
@@ -50,7 +50,7 @@ async def test_data_processor_partial_failure():
             headers={},
             url="https://api.test.com/users/2",
             request_time=0.1,
-            response_time=datetime.now()
+            response_time=datetime.now(timezone.utc)
         ),
         APIResponse(
             status=200, # Invalid data structure
@@ -58,7 +58,7 @@ async def test_data_processor_partial_failure():
             headers={},
             url="https://api.test.com/users/3",
             request_time=0.1,
-            response_time=datetime.now()
+            response_time=datetime.now(timezone.utc)
         )
     ]
 
@@ -78,7 +78,7 @@ async def test_data_processor_context_manager():
                 headers={},
                 url="url",
                 request_time=0.1,
-                response_time=datetime.now()
+                response_time=datetime.now(timezone.utc)
             )
         ]
         await processor.process_responses(responses, User)

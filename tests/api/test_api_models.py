@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from src.api.api_models import APIRequest, APIResponse, RequestMethod
 
 def test_request_method_idempotency():
@@ -27,9 +27,9 @@ def test_api_response_properties():
         headers={"Content-Type": "application/json"},
         url="https://api.example.com/data",
         request_time=0.150,
-        response_time=datetime.now()
+        response_time=datetime.now(timezone.utc)
     )
-    assert response.http_success is True
+    assert response.is_success is True
     assert response.latency_ms == 150
 
     error_response = APIResponse(
@@ -38,6 +38,6 @@ def test_api_response_properties():
         headers={},
         url="https://api.example.com/data",
         request_time=0.050,
-        response_time=datetime.now()
+        response_time=datetime.now(timezone.utc)
     )
-    assert error_response.http_success is False
+    assert error_response.is_success is False

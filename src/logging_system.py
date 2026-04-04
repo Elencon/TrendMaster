@@ -1,8 +1,7 @@
 r"""
-C:\Economy\Invest\TrendMaster\src\logging_system.py
 Modern structured logging for ETL operations.
 Uses structlog for clean, fast, structured logs with correlation IDs and performance tracking.
-Public interface unchanged.
+???????????????? Not used yet
 """
 
 from __future__ import annotations
@@ -14,30 +13,22 @@ import time
 import uuid
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Generator
+from typing import Generator
 
 import structlog
 from structlog import processors as sp
 from structlog import stdlib
 
-# ────────────────────────────────────────────────
-# Global flag to ensure idempotent configuration
-# ────────────────────────────────────────────────
-
+# Prevent double initialization
 _logging_configured = False
 
 
 # ────────────────────────────────────────────────
-# Structlog Setup (explicit call required)
+# Structlog Setup
 # ────────────────────────────────────────────────
 
 def setup_logging(log_dir: Path = Path("logs")) -> None:
-    """
-    Configure structlog + standard logging handlers.
-
-    Safe to call multiple times — subsequent calls are no-ops.
-    Call this explicitly from your application entry point.
-    """
+    """Configure structlog + standard logging handlers (idempotent)."""
     global _logging_configured
     if _logging_configured:
         return
@@ -47,14 +38,11 @@ def setup_logging(log_dir: Path = Path("logs")) -> None:
 
     use_json = "json" in sys.argv
 
-    # ────────────────────────────────────────────────
-    # Structlog processor chain (latest structlog style)
-    # ────────────────────────────────────────────────
     processors_chain = [
-        structlog.contextvars.merge_contextvars,  # picks up bind_contextvars()
+        structlog.contextvars.merge_contextvars,
         sp.add_log_level,
         sp.StackInfoRenderer(),
-        sp.format_exc_info,                      # modern replacement for set_exc_info
+        sp.format_exc_info,
         sp.TimeStamper(fmt="iso", utc=True),
         sp.JSONRenderer() if use_json else structlog.dev.ConsoleRenderer(),
     ]
@@ -66,10 +54,6 @@ def setup_logging(log_dir: Path = Path("logs")) -> None:
         cache_logger_on_first_use=True,
     )
 
-    # ────────────────────────────────────────────────
-    # Standard logging bridge
-    # Avoid duplicate handlers
-    # ────────────────────────────────────────────────
     root = logging.getLogger()
     if root.handlers:
         return
@@ -108,7 +92,7 @@ def setup_logging(log_dir: Path = Path("logs")) -> None:
 
 
 # ────────────────────────────────────────────────
-# Public API (unchanged)
+# Public API
 # ────────────────────────────────────────────────
 
 def get_logger(name: str = "etl") -> structlog.stdlib.BoundLogger:
@@ -137,9 +121,6 @@ def get_validation_logger() -> structlog.stdlib.BoundLogger:
 
 @contextmanager
 def correlation_context(correlation_id: str | None = None) -> Generator[str, None, None]:
-    """
-    Bind a correlation ID into structlog's context for the duration of this block.
-    """
     new_id = correlation_id or str(uuid.uuid4())[:8]
     structlog.contextvars.bind_contextvars(correlation_id=new_id)
     try:
@@ -153,15 +134,8 @@ def correlation_context(correlation_id: str | None = None) -> Generator[str, Non
 # ────────────────────────────────────────────────
 
 @contextmanager
-def performance_context(
-    operation: str,
-    logger: structlog.stdlib.BoundLogger | None = None,
-) -> Generator[None, None, None]:
-    """
-    Measure and log the duration of a block.
-    """
-    if logger is None:
-        logger = get_logger("etl.performance")
+def performance_context(operation: str, logger: structlog.stdlib.BoundLogger | None = None) -> Generator[None, None, None]:
+    logger = logger or get_logger("etl.performance")
 
     start = time.perf_counter()
     logger.info("operation_started", operation=operation)
@@ -192,21 +166,18 @@ def performance_context(
 # Runtime configuration overrides
 # ────────────────────────────────────────────────
 
-def configure_logging(config: dict[str, Any] | None = None) -> None:
-    """
-    Apply optional runtime overrides to logging configuration.
-    """
-    if config is None:
+def configure_logging(config: dict[str, object] | None = None) -> None:
+    if not config:
         return
 
     # Update log level
-    level_name = config.get("level", "INFO").upper()
+    level_name = str(config.get("level", "INFO")).upper()
     logging.getLogger().setLevel(getattr(logging, level_name, logging.INFO))
 
     # Update log directory
     if log_dir := config.get("directory"):
         root = logging.getLogger()
-        root.handlers.clear()  # allow reinitialization
+        root.handlers.clear()
         global _logging_configured
         _logging_configured = False
         setup_logging(Path(log_dir))

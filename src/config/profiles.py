@@ -1,5 +1,7 @@
-"""
+r"""
+C:\Economy\Invest\TrendMaster\src\config\environments.py
 Environment-specific configuration profiles.
+this code is not used
 """
 
 from typing import Dict, Type

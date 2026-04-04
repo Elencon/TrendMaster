@@ -48,16 +48,6 @@ def test_test_connection(manager_mocks, mock_config):
     dm.engine.connect.side_effect = Exception("DB Down")
     assert dm.test_connection() is False
 
-def test_create_all_tables_from_csv(manager_mocks, mock_config):
-    """Test schema proxy wrapper."""
-    _, mock_sm = manager_mocks
-    sm_instance = mock_sm.return_value
-    sm_instance.create_all_tables.return_value = True
-
-    dm = DatabaseManager(config=mock_config)
-    assert dm.create_all_tables_from_csv() is True
-    sm_instance.create_all_tables.assert_called_once()
-
 def test_close_connections(manager_mocks, mock_config):
     """Test connection disposal proxy."""
     mock_cm, _ = manager_mocks

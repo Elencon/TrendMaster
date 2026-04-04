@@ -59,7 +59,7 @@ from .api import (
 # ---------------------------------------------------------
 # Environment profiles and loaders
 # ---------------------------------------------------------
-from .environments import (
+from .profiles import (
     ConfigProfile,
     DevelopmentProfile,
     ProductionProfile,

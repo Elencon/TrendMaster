@@ -117,8 +117,7 @@ TABLE_COLUMNS: Dict[str, List[str]] = {
 
 # Foreign-key-safe creation order (default)
 DEFAULT_TABLE_ORDER: List[str] = [
-    'brands', 'categories', 'stores', 'staffs',
-    'customers', 'products', 'stocks', 'orders', 'order_items', 'users',
+    'daily_prices', 'portfolio_holdings', 'portfolios', 'tickers',  'users',
 ]
 
 

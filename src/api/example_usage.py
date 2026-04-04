@@ -46,8 +46,8 @@ async def fetch_item(client: AsyncAPIClient, item_id: int):
     request = APIRequest(url=f"posts/{item_id}")
     response = await client.request(request)
 
-    status_label = "Success" if response.http_success else "Failed"
-    color = "green" if response.http_success else "red"
+    status_label = "Success" if response.is_success else "Failed"
+    color = "green" if response.is_success else "red"
 
     logger.info(
         f"ID {item_id:02} | Status: [{color}]{status_label}[/{color}] | "
@@ -73,8 +73,8 @@ async def main():
             title="\n[bold cyan]TrendMaster Execution Summary[/bold cyan]",
             show_header=True,
             header_style="bold magenta",
-            box=box.ROUNDED,      # Full vertical and horizontal outer borders
-            show_lines=True,      # Full grid lines between all cells
+            box=box.ROUNDED,
+            show_lines=True,
             padding=(0, 1)
         )
 
@@ -82,26 +82,23 @@ async def main():
         table.add_column("Metric", style="white")
         table.add_column("Value", justify="right")
 
-        # Volumes Section
+        # Volumes Section (no empty first-column cells)
         table.add_row("Volumes", "Total Requests", str(stats['total_requests']))
         table.add_row("", "Successful", str(stats['successful_requests']), style="green")
 
-        # Highlight failures in red if they exist
         fail_style = "bold red" if stats['failed_requests'] > 0 else "white"
         table.add_row("", "Failed", str(stats['failed_requests']), style=fail_style)
-        table.add_row("", "Retried", str(stats['retried_requests']))
 
-        # Distinct Section Break
+        # Section Break
         table.add_section()
 
-        # Performance Section
+        # Performance Section (no empty first-column cells)
         table.add_row("Performance", "Total Time", f"{stats['total_response_time']}s", style="cyan")
         table.add_row("", "Avg Latency", f"{stats['avg_latency']}s")
 
         # Output the table to the console
         console.print(table)
         console.print("\n")
-
 if __name__ == "__main__":
     try:
         # anyio.run is the modern entry point for async apps

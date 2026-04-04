@@ -362,17 +362,11 @@ class DatabaseManager:
         self.data_validator = DataValidator()
 
         self.csv_files = {
-            'brands':     'brands.csv',
-            'categories': 'categories.csv',
-            'stores':     'stores.csv',
-            'staffs':     'staffs.csv',
-            'products':   'products.csv',
-            'stocks':     'stocks.csv',
-        }
-        self.api_tables = {
-            'customers':   'customers',
-            'orders':      'orders',
-            'order_items': 'order_items',
+            'daily_prices':         'daily_prices.csv',
+            'portfolio_holdings':   'portfolio_holdings.csv',
+            'portfolios':           'portfolios.csv',
+            'tickers':              'tickers.csv',
+            'users':                'users.csv',
         }
 
         # Single source of truth — imported from schema_manager to avoid drift.
@@ -606,7 +600,7 @@ class DatabaseManager:
             total_inserted = 0
             total_errors   = 0
 
-            import_order = ['brands', 'categories', 'stores', 'staffs', 'products', 'stocks']
+            import_order = ['daily_prices', 'portfolio_holdings', 'portfolios', 'tickers', 'users']
 
             for table_name in import_order:
                 if table_name not in self.csv_files:
@@ -655,7 +649,7 @@ class DatabaseManager:
 
     def verify_data(self) -> Dict[str, int]:
         """Return row counts for all known tables."""
-        all_tables = list(self.csv_files) + list(self.api_tables)
+        all_tables = list(self.csv_files)
         results    = {t: self.get_row_count(t) for t in all_tables}
         _logger.info("Data verification completed: %s", results)
         return results
@@ -717,12 +711,6 @@ class DatabaseManager:
     # def close_connections(self):
     #     """Return connections to the pool. The pool itself manages its own lifecycle."""
     #     pass
-
-# Legacy compatibility
-def create_api_tables_and_csv():
-    """Legacy compatibility function."""
-    return DatabaseManager().export_api_data_to_csv()
-
 
 if __name__ == "__main__":
     import argparse

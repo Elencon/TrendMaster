@@ -6,9 +6,10 @@ Path: C:\Economy\Invest\TrendMaster\src\api\data_processor.py
 import anyio
 import logging
 import time
+from datetime import datetime, timezone
 from collections import defaultdict
 from contextlib import asynccontextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import (
     Any,
     Callable,
@@ -19,8 +20,9 @@ from typing import (
     TypeVar,
     Union,
 )
+from msgspec import Struct, field
 
-import msgspec
+
 from .api_models import APIResponse
 
 logger = logging.getLogger(__name__)
@@ -28,20 +30,108 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")  # Input type
 R = TypeVar("R")  # Result type (msgspec.Struct)
 
-@dataclass
-class ProcessingStats:
+
+class ProcessingStats(Struct):
     """Statistics for data processing operations."""
-    total_responses: int = 0
-    successful_responses: int = 0
-    failed_responses: int = 0
+
+    # Unified naming (matches example_usage.py)
+    total_requests: int = 0
+    successful_requests: int = 0
+    failed_requests: int = 0
+
+    # Domain-specific metrics
     processed_items: int = 0
     error_items: int = 0
     processing_time: float = 0.0
-    errors_by_type: Dict[str, int] = field(default_factory=lambda: defaultdict(int))
 
+    # Error grouping
+    errors_by_type: dict[str, int] = field(default_factory=dict)
+
+    # Timestamp for metrics window
+    start_time: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+
+    # ────────────────────────────────────────────
+    # Recording
+    # ────────────────────────────────────────────
+    def record(
+        self,
+        success: bool,
+        items: int = 0,
+        errors: int = 0,
+        error_type: str | None = None,
+        duration: float = 0.0,
+    ) -> None:
+        """Record a processing event."""
+        self.total_requests += 1
+
+        if success:
+            self.successful_requests += 1
+        else:
+            self.failed_requests += 1
+
+        self.processed_items += items
+        self.error_items += errors
+        self.processing_time += duration
+
+        if error_type:
+            self.errors_by_type[error_type] = (
+                self.errors_by_type.get(error_type, 0) + 1
+            )
+
+    # ────────────────────────────────────────────
+    # Derived metrics
+    # ────────────────────────────────────────────
     @property
     def success_rate(self) -> float:
-        return (self.successful_responses / self.total_responses * 100) if self.total_responses > 0 else 0.0
+        """Fraction of successful requests (0.0–1.0)."""
+        if self.total_requests == 0:
+            return 0.0
+        return self.successful_requests / self.total_requests
+
+    @property
+    def avg_processing_time(self) -> float:
+        """Average processing time per request."""
+        if self.total_requests == 0:
+            return 0.0
+        return self.processing_time / self.total_requests
+
+    # ────────────────────────────────────────────
+    # Reset
+    # ────────────────────────────────────────────
+    def reset(self) -> None:
+        self.total_requests = 0
+        self.successful_requests = 0
+        self.failed_requests = 0
+        self.processed_items = 0
+        self.error_items = 0
+        self.processing_time = 0.0
+        self.errors_by_type = {}
+        self.start_time = datetime.now(timezone.utc)
+
+    # ────────────────────────────────────────────
+    # Serialization
+    # ────────────────────────────────────────────
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "total_requests": self.total_requests,
+            "successful_requests": self.successful_requests,
+            "failed_requests": self.failed_requests,
+
+            "processed_items": self.processed_items,
+            "error_items": self.error_items,
+
+            "processing_time": round(self.processing_time, 3),
+            "total_response_time": round(self.processing_time, 3),
+            "avg_latency": round(self.avg_processing_time, 3),
+
+            "errors_by_type": dict(self.errors_by_type),
+
+            "success_rate": self.success_rate,
+            "start_time": self.start_time.isoformat(),
+        }
+
 
 class APIDataProcessor(Generic[T, R]):
     """
@@ -94,7 +184,7 @@ class APIDataProcessor(Generic[T, R]):
         async with send_stream:
             async with self._limiter:
                 try:
-                    if not response.http_success:
+                    if not response.is_success:
                         self.stats.failed_responses += 1
                         return
 

@@ -74,10 +74,6 @@ class TestAdminWindowDelegation:
         self.window.test_db_connection()
         self.mock_handler_cls.return_value.test_db_connection.assert_called_once()
 
-    def test_create_tables(self):
-        self.window.create_tables()
-        self.mock_handler_cls.return_value.create_tables.assert_called_once()
-
     def test_load_csv_data(self):
         self.window.load_csv_data()
         self.mock_handler_cls.return_value.load_csv_data.assert_called_once()

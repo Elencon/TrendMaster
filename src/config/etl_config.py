@@ -6,6 +6,8 @@ Provides structured configuration classes using dataclasses for type safety and 
 from dataclasses import dataclass, field
 from typing import Optional, Dict, Any, List
 from pathlib import Path
+from yarl import URL
+
 from .env_config import env_config
 # Import your centralized path definitions
 from .path_config import (
@@ -60,7 +62,7 @@ class DatabaseConfig:
             return False
         return True
 
-@dataclass
+@dataclass(frozen=True)
 class APIConfig:
     """API configuration for external data sources."""
 
@@ -101,15 +103,71 @@ class APIConfig:
 
         return headers
 
+
+    def _is_valid_url(self, url: str) -> bool:
+        """Validate HTTP/HTTPS URL using yarl."""
+
+        if not url:
+            logger.error("APIConfig validation failed: base_url is missing.")
+            return False
+
+        try:
+            parsed = URL(url.strip())
+
+            if parsed.scheme not in {"http", "https"}:
+                logger.error(
+                    f"APIConfig validation failed: Unsupported URL scheme '{parsed.scheme}'."
+                )
+                return False
+
+            if parsed.host is None:
+                logger.error(
+                    f"APIConfig validation failed: URL '{url}' has no host component."
+                )
+                return False
+
+            return True
+
+        except Exception:
+            logger.error(f"APIConfig validation failed: Invalid URL '{url}'.")
+            return False
+
+
     def validate(self) -> bool:
-        """Validate API configuration."""
-        if not self.base_url:
-            return False
-        if self.timeout <= 0 or self.retries < 0:
-            return False
+        valid = True
+
+        if not self._is_valid_url(self.base_url):
+            valid = False
+
+        if self.timeout <= 0:
+            logger.error("APIConfig validation failed: timeout must be > 0.")
+            valid = False
+
+        if self.retries < 0:
+            logger.error("APIConfig validation failed: retries cannot be negative.")
+            valid = False
+
+        if self.rate_limit_calls <= 0 or self.rate_limit_period <= 0:
+            logger.error("APIConfig validation failed: rate limit values must be > 0.")
+            valid = False
+
         if self.max_concurrent_requests <= 0:
-            return False
-        return True
+            logger.error("APIConfig validation failed: max_concurrent_requests must be > 0.")
+            valid = False
+
+        if self.semaphore_limit > self.max_concurrent_requests:
+            logger.error(
+                "APIConfig validation failed: semaphore_limit cannot exceed max_concurrent_requests."
+            )
+            valid = False
+
+        if not (self.api_key or self.bearer_token):
+            logger.warning(
+                "APIConfig: No authentication provided (api_key or bearer_token). "
+                "Some APIs may reject requests."
+            )
+
+        return valid
 
 @dataclass
 class ProcessingConfig:

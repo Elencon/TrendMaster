@@ -83,17 +83,6 @@ def test_worker_test_api_failure(mock_api_client):
     assert len(result["error"]) > 0
     assert "API connection failed - no data received" in result["error"][0]
 
-def test_worker_create_tables(mock_db_manager):
-    """Test table creation."""
-    mock_db_manager.create_database_if_not_exists.return_value = True
-    mock_db_manager.create_all_tables_from_csv.return_value = True
-    mock_db_manager.get_row_count.return_value = 0
-
-    worker = ETLWorker("create_tables")
-    result = run_worker(worker)
-    assert len(result["finished"]) > 0
-    assert "All 9 database tables created successfully!" in result["finished"][0]
-
 def test_worker_test_csv_access(mock_db_manager):
     """Test CSV file access testing."""
     mock_db_manager.csv_files = {"table1": "file1.csv"}

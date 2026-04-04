@@ -3,7 +3,7 @@ C:\Economy\Invest\TrendMaster\src\database\connection_manager.py
 Standalone database connection manager — File 1 compatible,
 with improved safety, pooling, and PyMySQL backend.
 """
-
+import time
 import threading
 import logging
 import re
@@ -15,17 +15,6 @@ import pymysql
 import pymysql.cursors
 
 _logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Default config (File 1 compatibility)
-# ---------------------------------------------------------------------------
-
-default_config = {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "",
-    "database": "store_manager",
-}
 
 # ---------------------------------------------------------------------------
 # Validators
@@ -50,15 +39,6 @@ def _validate_name(name: str, kind: str = "name") -> str:
 # Connection helpers
 # ---------------------------------------------------------------------------
 
-def _safe_close(conn) -> None:
-    if conn is None:
-        return
-    try:
-        conn.close()
-    except Exception:
-        pass
-
-
 def _open_connection(config: Dict) -> Optional[Any]:
     try:
         params = config.copy()
@@ -78,15 +58,13 @@ def _open_connection(config: Dict) -> Optional[Any]:
         _logger.error("Connection creation failed: %s", exc)
         return None
 
-
-def _test_alive(conn) -> bool:
+def _safe_close(conn) -> None:
     if conn is None:
-        return False
+        return
     try:
-        conn.ping(reconnect=False)
-        return True
+        conn.close()
     except Exception:
-        return False
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -94,7 +72,7 @@ def _test_alive(conn) -> bool:
 # ---------------------------------------------------------------------------
 
 class ConnectionPool:
-    """Thread-safe connection pool (compatible + improved)."""
+    """Thread-safe connection pool (Python 3.10+ optimized)."""
 
     def __init__(self, config: Dict, pool_size: int = 5, acquire_timeout: float = 30.0):
         if pool_size < 1:
@@ -104,8 +82,8 @@ class ConnectionPool:
         self._pool_size = pool_size
         self._timeout = acquire_timeout
 
-        self._available: deque = deque()
-        self._used: set = set()
+        self._available: deque[Any] = deque()
+        self._used: set[Any] = set()
 
         self._lock = threading.Lock()
         self._cond = threading.Condition(self._lock)
@@ -114,7 +92,10 @@ class ConnectionPool:
 
         self._initialize_pool()
 
-    def _initialize_pool(self):
+    # -------------------------
+    # Initialization
+    # -------------------------
+    def _initialize_pool(self) -> None:
         conns = []
         for _ in range(self._pool_size):
             conn = _open_connection(self._config)
@@ -126,44 +107,109 @@ class ConnectionPool:
 
         _logger.info("Pool initialized: %d/%d", len(conns), self._pool_size)
 
+    # -------------------------
+    # Public API
+    # -------------------------
     @contextmanager
     def get_connection(self):
-        conn = None
+        conn = self._acquire()
         try:
-            conn = self._acquire()
             yield conn
-        except Exception as e:
-            _logger.error("Pool acquire failed: %s", e)
-            yield None
         finally:
             self._release(conn)
 
-    def _acquire(self):
+    def get_stats(self) -> Dict:
+        with self._lock:
+            return {
+                "size": self._pool_size,
+                "available": len(self._available),
+                "used": len(self._used),
+                "closed": self._closed,
+            }
+
+    def close_all(self) -> None:
         with self._cond:
             if self._closed:
-                raise RuntimeError("Pool is closed")
+                return  # idempotent
 
-            ok = self._cond.wait_for(lambda: self._available, timeout=self._timeout)
-            if not ok:
-                raise TimeoutError("Connection pool exhausted")
+            self._closed = True
 
-            conn = self._available.popleft()
+            # Wake up ALL waiting threads so they can exit
+            self._cond.notify_all()
 
-        # Check connection outside lock
-        if not _test_alive(conn):
+            all_conns = list(self._available) + list(self._used)
+            self._available.clear()
+            self._used.clear()
+
+        # Close connections outside the lock
+        for conn in all_conns:
             _safe_close(conn)
-            conn = _open_connection(self._config)
 
-        with self._cond:
-            if self._closed:
-                _safe_close(conn)
-                raise RuntimeError("Pool closed during acquire")
+        _logger.info("Pool closed")
 
-            if conn:
+    # -------------------------
+    # Internal logic
+    # -------------------------
+    def _acquire(self):
+        deadline = time.monotonic() + self._timeout
+
+        while True:
+            with self._cond:
+                if self._closed:
+                    raise RuntimeError("Pool is closed")
+
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("Connection pool exhausted")
+
+                ok = self._cond.wait_for(lambda: self._available, timeout=remaining)
+                if not ok:
+                    raise TimeoutError("Connection pool exhausted")
+
+                conn = self._available.popleft()
+
+            try:
+                conn = self._ensure_connection(conn)
+            except Exception:
+                _logger.exception("Connection validation failed, retrying...")
+                continue  # 🔥 retry instead of shrinking pool
+
+            with self._cond:
+                if self._closed:
+                    _safe_close(conn)
+                    raise RuntimeError("Pool closed during acquire")
+
                 self._used.add(conn)
+                return conn
+
+
+    def _test_alive(self, conn) -> bool:
+        try:
+            if hasattr(conn, "ping"):
+                conn.ping(reconnect=False)
+            else:
+                # fallback: lightweight query
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")
+                cursor.close()
+            return True
+        except Exception:
+            return False
+
+    def _ensure_connection(self, conn):
+        """Ensure connection is alive, retry once if needed."""
+        if conn and self._test_alive(conn):
             return conn
 
-    def _release(self, conn):
+        _safe_close(conn)
+
+        new_conn = _open_connection(self._config)
+        if not new_conn:
+            raise RuntimeError("Failed to create a new connection")
+
+        return new_conn
+
+    def _release(self, conn) -> None:
         if not conn:
             return
 
@@ -183,37 +229,18 @@ class ConnectionPool:
 
             self._cond.notify()
 
-    def close_all(self):
-        with self._lock:
-            self._closed = True
-            all_conns = list(self._available) + list(self._used)
-            self._available.clear()
-            self._used.clear()
-
-        for conn in all_conns:
-            _safe_close(conn)
-
-        _logger.info("Pool closed")
-
-    def get_stats(self) -> Dict:
-        with self._lock:
-            return {
-                "size": self._pool_size,
-                "available": len(self._available),
-                "used": len(self._used),
-                "closed": self._closed,
-            }
-
 
 # ---------------------------------------------------------------------------
-# DatabaseConnection (File 1 compatible)
+# DatabaseConnection 
 # ---------------------------------------------------------------------------
 
 class DatabaseConnection:
-    """Database manager with File 1 compatible interface."""
+    """Database manager"""
 
     _pool: Optional[ConnectionPool] = None
     _pool_lock = threading.Lock()
+
+    REQUIRED_KEYS = {"host", "user", "password",  "database"}  # add more if needed
 
     def __init__(
         self,
@@ -222,13 +249,23 @@ class DatabaseConnection:
         pool_size: int = 5,
         acquire_timeout: float = 30.0,
     ):
-        self.config = config or default_config.copy()
+        # --- Validate config ---
+        if config is None:
+            raise ValueError("config is not provided")
+
+        missing = self.REQUIRED_KEYS - config.keys()
+        if missing:
+            raise ValueError(f"Missing required config keys: {', '.join(missing)}")
+
+        # Make a defensive copy
+        self.config = config.copy()
+
         self.enable_pooling = enable_pooling
         self.connection_attempts = 0
 
-        if enable_pooling and not DatabaseConnection._pool:
+        if enable_pooling:
             with DatabaseConnection._pool_lock:
-                if not DatabaseConnection._pool:
+                if DatabaseConnection._pool is None:
                     DatabaseConnection._pool = ConnectionPool(
                         self.config,
                         pool_size=pool_size,
@@ -336,7 +373,7 @@ class DatabaseConnection:
 
 
 # ---------------------------------------------------------------------------
-# Factory (File 1 compatible)
+# Factory 
 # ---------------------------------------------------------------------------
 
 def create_connection_manager(config=None, enable_pooling=True, pool_size=5):

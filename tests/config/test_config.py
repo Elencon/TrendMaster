@@ -523,71 +523,71 @@ class TestEnvConfig:
 
 
 # ---------------------------------------------------------------------------
-# environments.py — load_config_for_environment
+# profiles.py — load_config_for_environment
 # ---------------------------------------------------------------------------
 
 class TestLoadConfigForEnvironment:
     def setup_method(self):
-        from config.environments import set_env
+        from config.profiles import set_env
         self._set_backend = set_env_backend
 
     def teardown_method(self):
-        from config.environments import set_env, DotEnvBackend
+        from config.profiles import set_env, DotEnvBackend
         set_env_backend(DotEnvBackend())
 
     def test_development(self):
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment("development")
         assert cfg.application.environment == "development"
         assert cfg.application.debug_mode is True
 
     def test_dev_alias(self):
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment("dev")
         assert cfg.application.environment == "development"
 
     def test_production(self):
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment("production")
         assert cfg.application.is_production() is True
         assert cfg.application.debug_mode is False
 
     def test_testing(self):
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment("testing")
         assert cfg.database.autocommit is True
 
     def test_staging(self):
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment("staging")
         assert cfg.processing.strict_validation is True
 
     def test_unknown_environment_raises(self):
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         with pytest.raises(ValueError, match="Unknown environment"):
             load_config_for_environment("unknown_env")
 
     def test_env_var_used_when_no_arg(self):
         self._set_backend(DictBackend({"ENVIRONMENT": "testing"}))
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment()
         assert cfg.application.environment == "testing"
 
     def test_invalid_env_var_raises(self):
         self._set_backend(DictBackend({"ENVIRONMENT": "garbage"}))
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         with pytest.raises(ValueError, match="ENVIRONMENT"):
             load_config_for_environment()
 
     def test_defaults_to_development_when_no_env_var(self):
         self._set_backend(DictBackend({}))
-        from config.environments import load_config_for_environment
+        from config.profiles import load_config_for_environment
         cfg = load_config_for_environment()
         assert cfg.application.environment == "development"
 
 
 # ---------------------------------------------------------------------------
-# environments.py — is_* helpers
+# profiles.py — is_* helpers
 # ---------------------------------------------------------------------------
 
 class TestEnvironmentHelpers:
@@ -601,20 +601,20 @@ class TestEnvironmentHelpers:
 
     def test_is_production_true(self):
         self._set_backend(DictBackend({"ENVIRONMENT": "production"}))
-        from config.environments import is_production
+        from config.profiles import is_production
         assert is_production() is True
 
     def test_is_production_false(self):
         self._set_backend(DictBackend({"ENVIRONMENT": "development"}))
-        from config.environments import is_production
+        from config.profiles import is_production
         assert is_production() is False
 
     def test_is_development_true(self):
         self._set_backend(DictBackend({"ENVIRONMENT": "dev"}))
-        from config.environments import is_development
+        from config.profiles import is_development
         assert is_development() is True
 
     def test_is_testing_true(self):
         self._set_backend(DictBackend({"ENVIRONMENT": "test"}))
-        from config.environments import is_testing
+        from config.profiles import is_testing
         assert is_testing() is True
