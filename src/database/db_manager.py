@@ -454,7 +454,8 @@ class DatabaseManager:
 
     def create_all_tables_from_csv(self) -> bool:
         """Create all database tables in foreign-key-safe order."""
-        from .schema_manager import DEFAULT_TABLE_ORDER
+        from .schema_manager import DEFAULT_TABLE_ORDER, SCHEMA_DEFINITIONS
+
         try:
             with self.get_connection() as conn:
                 if conn is None:
@@ -463,16 +464,19 @@ class DatabaseManager:
 
                 with conn.cursor() as cursor:
                     for table_name in DEFAULT_TABLE_ORDER:
-                        if table_name in SCHEMA_DEFINITIONS:
-                            cursor.execute(SCHEMA_DEFINITIONS[table_name])
-                            _logger.info("Created/verified table: %s", table_name)
+                        schema = SCHEMA_DEFINITIONS.get(table_name)
+                        if schema is None:
+                            _logger.warning("No schema found for table: %s", table_name)
+                            continue
+
+                        cursor.execute(schema)
+                        _logger.info("Created/verified table: %s", table_name)
 
                 conn.commit()
-                _logger.info("All tables created successfully")
                 return True
 
-        except Exception as e:
-            _logger.error("Error creating tables: %s", e)
+        except Exception:
+            _logger.exception("Error creating tables")
             return False
 
     # ------------------------------------------------------------------

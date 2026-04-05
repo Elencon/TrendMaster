@@ -1,7 +1,15 @@
 r"""
-Modern structured logging for ETL operations.
-Uses structlog for clean, fast, structured logs with correlation IDs and performance tracking.
-???????????????? Not used yet
+When to use which logger
+✔ Use logging.getLogger(__name__) in most modules
+This is the standard Python pattern and works perfectly with your structlog setup.
+✔ Use get_logger() from logging_system only when you want a named subsystem
+for example
+
+from src.logging_system import get_api_logger
+logger = get_api_logger()
+grouping logs by subsystem
+• 	filtering logs by namespace
+• 	giving ETL components consistent names
 """
 
 from __future__ import annotations

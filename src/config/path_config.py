@@ -1,47 +1,52 @@
 r"""
 C:\Economy\Invest\TrendMaster\src\config\path_config.py
-Centralized path configuration for the entire TrendMaster project.
+Centralized path configuration for the TrendMaster project.
 
-Features:
-- Robust project root detection
-- Clean path definitions
-- Safe sys.path handling (dev-only)
-- No duplication or side effects in production
+This module:
+- Detects the project root reliably (directory containing 'src')
+- Defines all important project paths
+- Optionally adjusts sys.path in development environments
 """
 
-import sys
 from pathlib import Path
 from functools import lru_cache
+import sys
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 # ---------------------------------------------------------
-# Locate project root (directory containing "src")
+# Project root detection
 # ---------------------------------------------------------
 
 @lru_cache(maxsize=1)
-def _find_project_root() -> Path:
+def _find_project_root(start: Path | None = None) -> Path:
     """
-    Locate the project root by searching for a directory containing 'src'.
+    Walk upward until we find a directory containing 'src'.
 
-    Uses caching to avoid repeated filesystem traversal.
+    This approach is:
+    - Simple and predictable
+    - Fast (no directory scanning)
+    - Robust across dev, CI, and most runtime environments
     """
-    current = Path(__file__).resolve()
+    start = (start or Path(__file__)).resolve()
 
-    for parent in current.parents:
-        src_dir = parent / "src"
+    for parent in [start] + list(start.parents):
+        try:
+            if (parent / "src").is_dir():
+                return parent
+        except (PermissionError, OSError):
+            continue
 
-        # Optional: strengthen detection with pyproject.toml
-        if src_dir.is_dir():
-            return parent
-
-    raise RuntimeError(
-        "Could not locate project root containing 'src' directory"
-    )
+    raise RuntimeError("Could not locate project root containing 'src' directory")
 
 
 PROJECT_ROOT: Path = _find_project_root()
 
+
 # ---------------------------------------------------------
-# Define key paths
+# Path constants
 # ---------------------------------------------------------
 
 SRC_PATH: Path = PROJECT_ROOT / "src"
@@ -53,13 +58,12 @@ API_PATH: Path = DATA_PATH / "API"
 CACHE_PATH: Path = DATA_PATH / "cache"
 
 ENV_PATH: Path = PROJECT_ROOT / ".env"
-
-# Optional: future extensions
 LOGS_PATH: Path = PROJECT_ROOT / "logs"
 CONFIG_PATH: Path = PROJECT_ROOT / "config"
 
+
 # ---------------------------------------------------------
-# sys.path management (DEV / TEST ONLY)
+# Optional sys.path adjustments (dev/test only)
 # ---------------------------------------------------------
 
 def _add_to_syspath(path: Path) -> None:
@@ -67,34 +71,29 @@ def _add_to_syspath(path: Path) -> None:
     Safely add a path to sys.path (idempotent).
     """
     resolved = str(path.resolve())
-
     if resolved not in sys.path:
         sys.path.insert(0, resolved)
 
 
 def _configure_syspath() -> None:
     """
-    Configure sys.path for development and testing environments only.
+    Enable sys.path injection only in development environments.
 
-    This is intentionally disabled in frozen/production builds.
+    Disabled automatically in frozen/packaged apps.
     """
     is_frozen = getattr(sys, "frozen", False)
-    is_pytest = "pytest" in sys.modules
 
-    # Only enable in dev/test
     if not is_frozen:
         _add_to_syspath(PROJECT_ROOT)
         _add_to_syspath(SRC_PATH)
-
-        # Optional — enable only if needed
-        # _add_to_syspath(GUI_PATH)
 
 
 # Apply configuration once at import
 _configure_syspath()
 
+
 # ---------------------------------------------------------
-# Public API (optional but clean)
+# Public API
 # ---------------------------------------------------------
 
 __all__ = [
@@ -104,10 +103,12 @@ __all__ = [
     "DATA_PATH",
     "CSV_PATH",
     "API_PATH",
+    "CACHE_PATH",
     "ENV_PATH",
     "LOGS_PATH",
     "CONFIG_PATH",
 ]
+
 
 # ---------------------------------------------------------
 # Debug / CLI usage
@@ -120,10 +121,11 @@ def _debug_print() -> None:
     print("DATA_PATH:", DATA_PATH)
     print("CSV_PATH:", CSV_PATH)
     print("API_PATH:", API_PATH)
+    print("CACHE_PATH:", CACHE_PATH)
     print("ENV_PATH:", ENV_PATH)
     print("LOGS_PATH:", LOGS_PATH)
     print("CONFIG_PATH:", CONFIG_PATH)
-    print("sys.path (head):", sys.path[:5], "...")
+    print("sys.path (head):", sys.path[:5])
 
 
 if __name__ == "__main__":

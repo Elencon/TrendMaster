@@ -1,21 +1,38 @@
 """
 DEVELOPMENT ONLY - Direct Admin Access (BYPASSES AUTHENTICATION)
 WARNING: This script provides direct access to the admin window without login.
-For production use, please run: python run_app.py
+For production use, run: python run_app.py
+
+Run:
+    python -m run_admin_direct
 """
 
 import os
 import sys
+from pathlib import Path
 
 # Prevent Python cache files from being created
 sys.dont_write_bytecode = True
-os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
 
-# Add the current directory to path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, current_dir)
+# ---------------------------------------------------------
+# Locate project root (TrendMaster folder)
+# ---------------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parent
 
-def main():
+# Ensure project root is importable
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# Now imports work cleanly
+from src.bootstrap import initialize
+from src.gui.admin_window import main as gui_main
+
+
+# ---------------------------------------------------------
+# Banner / Demo Info
+# ---------------------------------------------------------
+def print_banner() -> None:
     print("=" * 60)
     print("WARNING: DEVELOPMENT MODE - AUTHENTICATION BYPASSED")
     print("=" * 60)
@@ -82,40 +99,39 @@ def main():
     print("\nThe GUI is now running - check your screen!")
     print("Close this terminal or press Ctrl+C to stop the demo.")
 
+
+# ---------------------------------------------------------
+# Main launcher
+# ---------------------------------------------------------
+def main():
+    print_banner()
+
+    print("\n" + "=" * 60)
+    print("LAUNCHING GUI INTERFACE...")
+    print("=" * 60)
+
+    gui_main()
+
+
+# ---------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------
 if __name__ == "__main__":
-
-    def _setup_paths(current_dir: str) -> None:
-        src_path = os.path.join(current_dir, "src")
-        gui_path = os.path.join(current_dir, "gui")
-
-        for path in (src_path, gui_path):
-            if path not in sys.path:
-                sys.path.insert(0, path)
-
-
     try:
-        _setup_paths(current_dir)
+        # Initialize logging + directories
+        initialize()
 
-        # Try to launch the GUI
         print("Attempting to launch GUI interface...")
-        from src.gui.admin_window import main as gui_main
-
-        # Show demo info first
         main()
-        print("\n" + "="*60)
-        print("LAUNCHING GUI INTERFACE...")
-        print("="*60)
-
-        # Start the GUI
-        gui_main()
 
     except ImportError as e:
-        main()
+        print_banner()
         print(f"\nERROR: Could not launch GUI: {e}")
         print("\nTo launch manually, run:")
         print("   python gui/admin_window.py")
+
     except Exception as e:
-        main()
+        print_banner()
         print(f"\nERROR: {e}")
         print("\nMake sure all dependencies are installed:")
         print("   python -m pip install PySide6 pandas PyMySQL requests python-dotenv qt-material cryptography")
