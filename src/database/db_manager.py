@@ -449,37 +449,6 @@ class DatabaseManager:
             return 0.0
 
     # ------------------------------------------------------------------
-    # DDL
-    # ------------------------------------------------------------------
-
-    def create_all_tables_from_csv(self) -> bool:
-        """Create all database tables in foreign-key-safe order."""
-        from .schema_manager import DEFAULT_TABLE_ORDER, SCHEMA_DEFINITIONS
-
-        try:
-            with self.get_connection() as conn:
-                if conn is None:
-                    _logger.error("Failed to get database connection for table creation")
-                    return False
-
-                with conn.cursor() as cursor:
-                    for table_name in DEFAULT_TABLE_ORDER:
-                        schema = SCHEMA_DEFINITIONS.get(table_name)
-                        if schema is None:
-                            _logger.warning("No schema found for table: %s", table_name)
-                            continue
-
-                        cursor.execute(schema)
-                        _logger.info("Created/verified table: %s", table_name)
-
-                conn.commit()
-                return True
-
-        except Exception:
-            _logger.exception("Error creating tables")
-            return False
-
-    # ------------------------------------------------------------------
     # Validation (belongs on DatabaseManager, not BatchProcessor)
     # ------------------------------------------------------------------
 
@@ -720,7 +689,6 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="ETL Database Manager")
-    parser.add_argument("--create-tables", action="store_true", help="Create database tables")
     parser.add_argument("--import-csv",    action="store_true", help="Import CSV data")
     parser.add_argument("--verify",        action="store_true", help="Verify data")
     parser.add_argument("--pool-size",     type=int, default=5,    help="Connection pool size")
@@ -742,13 +710,6 @@ if __name__ == "__main__":
         if not db_manager.create_database_if_not_exists():
             _logger.error("Failed to create database")
             sys.exit(1)
-
-        if args.create_tables:
-            _logger.info("Creating database tables...")
-            if not db_manager.create_all_tables_from_csv():
-                _logger.error("Failed to create tables")
-                sys.exit(1)
-            _logger.info("Tables created successfully")
 
         if args.import_csv:
             _logger.info("Importing CSV data...")

@@ -132,16 +132,6 @@ class ETLWorker(QThread):
             if self._is_cancelled:
                 return
 
-            self.progress.emit("Creating tables and loading data...")
-            success = db_manager.create_all_tables_from_csv()
-
-            if not success:
-                self.error.emit("Failed to load CSV data - Check file permissions and schema compatibility")
-                return
-
-            if self._is_cancelled:
-                return
-
             self.progress.emit("Verifying data insertion...")
 
             table_counts = {
