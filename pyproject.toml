@@ -1,20 +1,16 @@
 [project]
-name = "integrityservice"
+name = "trendmaster"
 version = "0.1.0"
-description = "Database integrity checker with GUI"
+description = "TrendMaster project"
 requires-python = ">=3.10"
 dependencies = [
     "sqlalchemy",
     "python-dotenv",
 ]
 
-[project.scripts]
-integrity-gui = "integrity_service.gui.app:main"
-
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["integrity_service*"]
+where = ["src"]

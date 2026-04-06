@@ -5,7 +5,7 @@ from pathlib import Path
 from datetime import datetime
 
 # State directory (will be created next to your code)
-STATE_DIR = Path(__file__).parent / "state"
+STATE_DIR = Path(__file__).parent / "status"
 STATE_DIR.mkdir(exist_ok=True)
 
 
