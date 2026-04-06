@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-04-06T21:21:31.884089",
+  "check_type": "integrity",
+  "success": true,
+  "duration_sec": 0.035,
+  "details": {
+    "connection": null,
+    "tables": {
+      "missing_tables": [],
+      "extra_tables": []
+    },
+    "columns": null,
+    "constraints": null,
+    "foreign_keys": null,
+    "indexes": null
+  }
+}

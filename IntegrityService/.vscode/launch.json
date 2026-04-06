@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Integrity GUI",
+            "type": "python",
+            "request": "launch",
+            "module": "integrity_service.gui.app",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+[project]
+name = "trendmaster"
+version = "0.1.0"
+requires-python = ">=3.13"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["integrity_service*", "src*"]
+
+[project.scripts]
+integrity-gui = "integrity_service.gui.app:main"

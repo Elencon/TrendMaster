@@ -1,0 +1,24 @@
+QWidget {
+    background-color: #202124;
+    color: #e8eaed;
+    font-family: Segoe UI, sans-serif;
+    font-size: 13px;
+}
+
+QPushButton {
+    padding: 6px 12px;
+    background-color: #3c4043;
+    color: #e8eaed;
+    border-radius: 4px;
+}
+
+QPushButton:hover {
+    background-color: #5f6368;
+}
+
+QTextEdit {
+    background-color: #1e1e1e;
+    color: #dcdcdc;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+}
