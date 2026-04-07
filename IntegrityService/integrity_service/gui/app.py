@@ -6,8 +6,8 @@ python -m integrity_service.gui.app
 """
 import sys
 import logging
-from PySide6.QtWidgets import QApplication
-from .main_window import MainWindow
+from PySide6.QtWidgets import QApplication, QMessageBox
+from .main_window import ETLMainWindow
 
 logger = logging.getLogger(__name__)
 
@@ -20,16 +20,16 @@ def main():
     app.setApplicationVersion("1.0")
     app.setStyle("Fusion")
 
-    # Load QSS stylesheet
-    try:
-        with open("integrity_service/gui/styles.qss", "r", encoding="utf-8") as f:
-            app.setStyleSheet(f.read())
-    except FileNotFoundError:
-        # Optional: silently ignore if style file is missing
-        pass
+    # # Load QSS stylesheet
+    # try:
+    #     with open("integrity_service/gui/styles.qss", "r", encoding="utf-8") as f:
+    #         app.setStyleSheet(f.read())
+    # except FileNotFoundError:
+    #     # Optional: silently ignore if style file is missing
+    #     pass
     
     try:
-        window = MainWindow()
+        window = ETLMainWindow()
         window.show()
 
         sys.exit(app.exec())
