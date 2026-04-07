@@ -13,21 +13,7 @@ from integrity_service.integrity_runner import (
     run_integrity_and_backup,
 )
 
-
-class Worker(QThread):
-    finished = Signal(dict)
-
-    def __init__(self, mode: str):
-        super().__init__()
-        self.mode = mode
-
-    def run(self):
-        if self.mode == "integrity":
-            result = run_integrity_only()
-        else:
-            result = run_integrity_and_backup()
-
-        self.finished.emit(result)
+from integrity_service.gui.themes import ThemeManager
 
 
 class MainWindow(QWidget):

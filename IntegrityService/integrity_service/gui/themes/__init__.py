@@ -1,5 +1,4 @@
-r"""
-C:\Economy\Invest\TrendMaster\src\gui\themes\__init__.py
+"""
 Theme System for ETL Pipeline Manager
 Provides structured theme management with different visual styles
 """
