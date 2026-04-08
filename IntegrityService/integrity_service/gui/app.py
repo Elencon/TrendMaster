@@ -20,14 +20,13 @@ def main():
     app.setApplicationVersion("1.0")
     app.setStyle("Fusion")
 
-    # # Load QSS stylesheet
-    # try:
-    #     with open("integrity_service/gui/styles.qss", "r", encoding="utf-8") as f:
-    #         app.setStyleSheet(f.read())
-    # except FileNotFoundError:
-    #     # Optional: silently ignore if style file is missing
-    #     pass
-    
+    # Load QSS stylesheet through ThemeManager
+    try:
+        from integrity_service.gui.themes import ThemeManager
+        theme_manager = ThemeManager()
+        theme_manager.apply_current_theme(app)
+    except Exception as e:
+        logger.error(f"Failed to apply theme manager: {e}")
     try:
         window = ETLMainWindow()
         window.show()

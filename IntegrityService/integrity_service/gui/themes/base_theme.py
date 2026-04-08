@@ -10,10 +10,15 @@ class BaseTheme(ABC):
 
     def load_qss_template(self) -> str:
         theme_file = Path(__file__).parent / "themes" / f"{self.name.lower().replace(' ', '_')}.qss"
-        return theme_file.read_text(encoding="utf-8")
+        if theme_file.exists():
+            return theme_file.read_text(encoding="utf-8")
+        return ""
 
     def build_qss(self) -> str:
         qss = self.load_qss_template()
+        if not qss:
+            return ""
+            
         colors = self.get_palette_colors()
 
         for key, value in colors.items():
@@ -28,4 +33,7 @@ class BaseTheme(ABC):
         except Exception:
             pass
 
-        app.setStyleSheet(self.build_qss())
+        custom_qss = self.build_qss()
+        if custom_qss:
+            # apply additional custom styles if available
+            app.setStyleSheet(app.styleSheet() + "\n" + custom_qss)

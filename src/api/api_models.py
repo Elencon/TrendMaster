@@ -5,12 +5,13 @@ Path: src/api/api_models.py
 """
 from __future__ import annotations
 
+import copy
 from enum import Enum
-from typing import Any, Dict, Optional, Union, List, Generic, TypeVar
+from typing import Any, Optional, Union,  Generic, TypeVar
 from datetime import datetime, timezone
 from http import HTTPStatus
+from dataclasses import dataclass, field
 
-from msgspec import Struct, field
 
 T = TypeVar("T")
 
@@ -25,101 +26,117 @@ class RequestMethod(Enum):
     def is_idempotent(self) -> bool:
         return self in {RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE}
 
-class APIRequest(Struct):
+
+@dataclass(slots=True, kw_only=True)
+class APIRequest:
     url: str
     method: RequestMethod = RequestMethod.GET
 
-    headers: Dict[str, str] = field(default_factory=dict)
-    params: Dict[str, Any] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
+    params: dict[str, Any] = field(default_factory=dict)
 
-    # Payload options
-    json: Optional[Dict[str, Any]] = None
-    data: Optional[Union[str, bytes, Dict[str, Any]]] = None
-    form: Optional[Dict[str, Any]] = None
+    json: Optional[dict[str, Any]] = None
+    data: Optional[Union[str, bytes, dict[str, Any]]] = None
+    form: Optional[dict[str, Any]] = None
 
     timeout: Optional[float] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-class APIResponse(Struct):
+
+@dataclass(slots=True, kw_only=True)
+class APIResponse:
     status: int
     data: Any
-    headers: Dict[str, str]
+    headers: dict[str, str]
     url: str
     request_time: float
     response_time: datetime
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def is_success(self) -> bool:
-        return HTTPStatus(self.status).value // 100 == 2
+        return 200 <= self.status < 300
 
     @property
     def latency_ms(self) -> int:
         return int(self.request_time * 1000)
 
 
-class TypedAPIResponse(Struct, Generic[T]):
+T = TypeVar("T")
+
+@dataclass(slots=True, kw_only=True)
+class TypedAPIResponse(Generic[T]):
     status: int
     url: str
     request_time: float
     response_time: datetime
 
-    is_success: bool
-    latency_ms: int
-    is_valid: bool
-
     raw_data: Any = None
-    headers: Dict[str, str] = field(default_factory=dict)
-    parsed: Optional[Union[T, List[T]]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    headers: dict[str, str] = field(default_factory=dict)
+    parsed: Optional[Union[T, list[T]]] = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def is_success(self) -> bool:
+        return 200 <= self.status < 300
+
+    @property
+    def latency_ms(self) -> int:
+        return int(self.request_time * 1000)
+
+    @property
+    def is_valid(self) -> bool:
+        return self.is_success and self.parsed is not None
 
 
-class RequestStats(Struct):
+@dataclass(slots=True)
+class RequestStats:
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
-    total_response_time: float = 0.0
-    start_time: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
 
-    def record(self, success: bool, response_time: float):
+    # Renamed field
+    total_duration: float = 0.0
+
+    start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def record(self, success: bool, response_time: float) -> None:
         self.total_requests += 1
-        self.total_response_time += response_time
+        self.total_duration += response_time
 
         if success:
             self.successful_requests += 1
         else:
             self.failed_requests += 1
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "total_requests": self.total_requests,
-            "successful_requests": self.successful_requests,
-            "failed_requests": self.failed_requests,
-            "total_response_time": round(self.total_response_time, 3),
-            "avg_response_time": self.avg_response_time,
-            "success_rate": self.success_rate,
-            "start_time": self.start_time.isoformat(),
-        }
-
-    def reset(self):
+    def reset(self) -> None:
         self.total_requests = 0
         self.successful_requests = 0
         self.failed_requests = 0
-        self.total_response_time = 0.0
+        self.total_duration = 0.0
         self.start_time = datetime.now(timezone.utc)
-
+        self.metadata.clear()
 
     @property
     def avg_response_time(self) -> float:
-        total = self.total_requests
-        if total == 0:
+        if self.total_requests == 0:
             return 0.0
-        return round(self.total_response_time / total, 3)
+        return self.total_duration / self.total_requests
 
     @property
     def success_rate(self) -> float:
         if self.total_requests == 0:
             return 0.0
         return self.successful_requests / self.total_requests
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "total_requests": self.total_requests,
+            "successful_requests": self.successful_requests,
+            "failed_requests": self.failed_requests,
+            "total_duration": round(self.total_duration, 3),
+            "avg_response_time": round(self.avg_response_time, 3),
+            "success_rate": round(self.success_rate, 4),
+            "metadata": copy.deepcopy(self.metadata),
+        }

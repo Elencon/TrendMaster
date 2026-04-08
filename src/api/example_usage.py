@@ -93,8 +93,8 @@ async def main():
         table.add_section()
 
         # Performance Section (no empty first-column cells)
-        table.add_row("Performance", "Total Time", f"{stats['total_response_time']}s", style="cyan")
-        table.add_row("", "Avg Latency", f"{stats['avg_latency']}s")
+        table.add_row("Performance", "Total Time", f"{stats['total_duration']}s", style="cyan")
+        table.add_row("", "Avg Latency", f"{stats['avg_response_time']}s")
 
         # Output the table to the console
         console.print(table)

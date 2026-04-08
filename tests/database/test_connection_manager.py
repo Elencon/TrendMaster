@@ -99,40 +99,6 @@ def test_get_schema_handles_invalid_name(mock_config):
     cols = db.get_schema("123invalid")
     assert cols == []
 
-
-# -----------------------------
-# create_database_if_not_exists tests
-# -----------------------------
-
-def test_create_database_if_not_exists_calls_execute(mock_config):
-    """CREATE DATABASE is executed and committed."""
-    db = DatabaseConnection(mock_config, enable_pooling=False)
-
-    mock_cursor = MagicMock()
-    mock_conn = MagicMock()
-    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
-
-    with patch("pymysql.connect", return_value=mock_conn):
-        result = db.create_database_if_not_exists()
-        assert result is True
-        mock_cursor.execute.assert_any_call("CREATE DATABASE IF NOT EXISTS `test_db`")
-        mock_conn.commit.assert_called_once()
-
-
-def test_create_database_if_not_exists_failure(mock_config):
-    """Handles exception during database creation."""
-    db = DatabaseConnection(mock_config, enable_pooling=False)
-
-    mock_cursor = MagicMock()
-    mock_cursor.execute.side_effect = Exception("DB failure")
-    mock_conn = MagicMock()
-    mock_conn.cursor.return_value.__enter__.return_value = mock_cursor
-
-    with patch("pymysql.connect", return_value=mock_conn):
-        result = db.create_database_if_not_exists()
-        assert result is False
-
-
 # -----------------------------
 # Diagnostics
 # -----------------------------

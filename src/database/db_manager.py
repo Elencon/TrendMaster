@@ -387,10 +387,6 @@ class DatabaseManager:
         """Test database connection."""
         return self.db_connection.test_connection()
 
-    def create_database_if_not_exists(self, database_name: str = None) -> bool:
-        """Create database if it doesn't exist."""
-        return self.db_connection.create_database_if_not_exists(database_name)
-
     def get_connection_stats(self) -> Dict:
         """Get connection and batch-processing statistics."""
         stats = self.db_connection.get_connection_stats()
@@ -706,10 +702,6 @@ if __name__ == "__main__":
             _logger.error("Failed to connect to database")
             sys.exit(1)
         _logger.info("Database connection successful")
-
-        if not db_manager.create_database_if_not_exists():
-            _logger.error("Failed to create database")
-            sys.exit(1)
 
         if args.import_csv:
             _logger.info("Importing CSV data...")

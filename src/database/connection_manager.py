@@ -229,7 +229,6 @@ class ConnectionPool:
 
             self._cond.notify()
 
-
 # ---------------------------------------------------------------------------
 # DatabaseConnection 
 # ---------------------------------------------------------------------------
@@ -313,28 +312,6 @@ class DatabaseConnection:
             yield None
         finally:
             _safe_close(conn)
-
-    def create_database_if_not_exists(self, database_name: Optional[str] = None) -> bool:
-        try:
-            db_name = database_name or self.config.get("database", "store_manager")
-            _validate_name(db_name)
-
-            temp_config = {k: v for k, v in self.config.items() if k != "database"}
-
-            with self.get_connection_without_db(temp_config) as conn:
-                if not conn:
-                    return False
-                with conn.cursor() as cur:
-                    cur.execute(f"CREATE DATABASE IF NOT EXISTS `{db_name}`")
-                    cur.execute(f"USE `{db_name}`")
-                conn.commit()
-
-            _logger.info("Database '%s' ready", db_name)
-            return True
-
-        except Exception as e:
-            _logger.error("Database creation error: %s", e)
-            return False
 
     def test_connection(self) -> bool:
         try:

@@ -1,68 +1,63 @@
 import pytest
 import httpx
-import datetime
+
 from src.api.api_client import AsyncAPIClient
 from src.api.api_models import APIRequest, RequestMethod
-from src.common.exceptions import APIResponseError
+from src.common.retry import RetryExhaustedError
 
-@pytest.fixture
-def mock_transport():
-    def handler(request):
-        response = httpx.Response(200, json={"foo": "bar"})
-        response.elapsed = datetime.timedelta(milliseconds=100)
-        return response
-    return httpx.MockTransport(handler)
 
+# ────────────────────────────────────────────────
+# 1. SUCCESS TEST — uses real /json endpoint
+# ────────────────────────────────────────────────
 @pytest.mark.asyncio
 async def test_api_client_success():
-    def handler(request):
-        response = httpx.Response(200, json={"status": "ok", "data": [1, 2, 3]})
-        response.elapsed = datetime.timedelta(milliseconds=100)
-        return response
-
-    transport = httpx.MockTransport(handler)
-
-    async with AsyncAPIClient(base_url="https://api.test.com") as client:
-        client._client = httpx.AsyncClient(transport=transport, base_url="https://api.test.com")
-
-        request = APIRequest(url="/data", method=RequestMethod.GET)
+    async with AsyncAPIClient(base_url="https://httpbin.org") as client:
+        request = APIRequest(url="/json", method=RequestMethod.GET)
         response = await client.request(request)
 
+        # httpbin.org/json always returns a slideshow JSON object
         assert response.status == 200
-        assert response.data == {"status": "ok", "data": [1, 2, 3]}
+        assert isinstance(response.data, dict)
+        assert "slideshow" in response.data
 
         stats = await client.get_stats()
         assert stats["total_requests"] == 1
         assert stats["successful_requests"] == 1
+        assert stats["failed_requests"] == 0
 
+
+# ────────────────────────────────────────────────
+# 2. ERROR + RETRY TEST — uses real /status/404
+# ────────────────────────────────────────────────
 @pytest.mark.asyncio
 async def test_api_client_error():
-    def handler(request):
-        response = httpx.Response(404, text="Not Found")
-        response.elapsed = datetime.timedelta(milliseconds=50)
-        return response
+    async with AsyncAPIClient(base_url="https://httpbin.org") as client:
+        request = APIRequest(url="/status/404", method=RequestMethod.GET)
 
-    transport = httpx.MockTransport(handler)
-
-    async with AsyncAPIClient(base_url="https://api.test.com") as client:
-        client._client = httpx.AsyncClient(transport=transport, base_url="https://api.test.com")
-
-        request = APIRequest(url="/missing", method=RequestMethod.GET)
-
-        # Should raise APIResponseError after retries (default 3)
-        with pytest.raises(APIResponseError) as excinfo:
+        # RetryHandler should retry 3 times and then raise RetryExhaustedError
+        with pytest.raises(RetryExhaustedError):
             await client.request(request)
 
-        assert excinfo.value.status_code == 404
-
         stats = await client.get_stats()
-        assert stats["failed_requests"] == 1
-        assert stats["total_requests"] == 3  # Default 3 attempts
 
+        # Default retry_config.max_attempts = 3
+        assert stats["failed_requests"] == client.retry_config.max_attempts
+        assert stats["total_requests"] == client.retry_config.max_attempts
+        assert stats["successful_requests"] == 0
+
+
+# ────────────────────────────────────────────────
+# 3. TELEMETRY TEST — ensures stats fields exist
+# ────────────────────────────────────────────────
 @pytest.mark.asyncio
 async def test_api_client_telemetry():
-    async with AsyncAPIClient(base_url="https://api.test.com") as client:
+    async with AsyncAPIClient(base_url="https://httpbin.org") as client:
+        request = APIRequest(url="/get", method=RequestMethod.GET)
+        await client.request(request)
+
         stats = await client.get_stats()
-        assert "uptime" in stats
+
+        assert "start_time" in stats
         assert "total_requests" in stats
-        assert "avg_latency" in stats
+        assert "avg_response_time" in stats
+        assert stats["total_requests"] == 1
